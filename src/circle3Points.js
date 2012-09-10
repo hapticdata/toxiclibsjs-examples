@@ -1,3 +1,9 @@
+//#Circle from 3 Points
+//given any 3 points find its circle
+//
+//original example by [Karsten Schmidt](http://postspectacular.com)
+//
+//toxiclibs.js by [Kyle Phillips](http://haptic-data.com)
 
 var SineWave = toxi.math.waves.SineWave,
 	Vec2D = toxi.geom.Vec2D,

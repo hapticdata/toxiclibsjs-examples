@@ -3,7 +3,7 @@
 //**toxiclibs.js by [Kyle Phillips](http://haptic-data.com)**
 //
 require.config({
-	baseUrl: '/javascripts/',
+	baseUrl: 'javascripts/',
 	paths: { 
 		'toxi': '//localhost/~me/libs/toxiclibsjs/working_dir/lib/toxi'
 	},
@@ -31,7 +31,7 @@ require([
 	Vec3D, Vec2D, TriangleMesh, mathUtils, Rect, IsectData3D, AABB, Sphere, PerlinNoise ){
 
 	var gui = new datGUI();
-	var container = document.getElementById('container'),
+	var container = document.getElementById('example-container'),
 		width = window.innerWidth,
 		height = window.innerHeight - 100,
 		scene = new THREE.Scene(),

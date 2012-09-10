@@ -1,44 +1,44 @@
+var jade = require('jade'),
+	docco = require('docco'),
+	fs = require('fs');
 
-/**
- * Module dependencies.
- */
+var config = require('./config.json');
 
-var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
-  , http = require('http')
-  , path = require('path'),
-  fs = require('fs');
-
-var app = express();
-
-app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.locals.pretty = true;
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
+var sources = [];
+config.forEach(function( item ){
+	sources.push( __dirname+'/src/'+item.src+'.js' );
 });
 
-app.configure('development', function(){
-  app.use(express.errorHandler());
-  app.set('view options', { layout: true, pretty: true });
+docco.document(sources, { template: __dirname + "/views/docco-template.jst"}, function(){
+	config.forEach(function( item ){
+		generate( item.src, item );
+	});
 });
 
-app.get('/ex/:template/:script', function( req, res ){
-    var script = __dirname + '/src/'+req.params.script+'.js';
-    fs.readFile(script, function( err, body ){
-      res.render( req.params.template , { title: req.params.script, script: '\n'+ body });
-    });
-});
-app.get('/', routes.index);
-app.get('/users', user.list);
+function generate( file, config ){
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
-});
+	var script = fs.readFileSync( __dirname + '/src/'+file+'.js');
+	var doccoPagelet = __dirname + '/docs/'+file+'.html';
+	var layoutTemplate =  __dirname + '/views/layout.jade';
+	var jadeTemplate = __dirname + '/views/'+config.template+'.jade';
+	var outputFile =  __dirname + '/examples/'+file+'.html';
+	var template = "pjs";
+
+	var locals = { pretty: true };
+	locals.layout = true;
+	locals.title = "my title";
+
+
+	fs.readFile( doccoPagelet , function( err, body ){
+		locals.pagelet = body;
+		locals.script = script;
+		fs.readFile( jadeTemplate, function( err, body ){
+			var fn = jade.compile(body, {filename: layoutTemplate, title: "hey" });
+			var output = fn(locals);
+			fs.writeFile( outputFile, output, function( err ){
+				if( err ) throw err;
+				console.log('generated');
+			});
+		});
+	});
+}

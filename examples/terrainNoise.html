@@ -1,150 +1,150 @@
-<!DOCTYPE html>  <html> <head><link href="/stylesheets/style.css" rel="stylesheet"><title>terrainNoise.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>
-   <script src="/javascripts/require.js"></script>
-    <script>
-//Toxiclibs.js Terrain Example
-//**by [Kyle Phillips](http://haptic-data.com)**
+<!DOCTYPE html><html><head><title>my title</title><link rel="stylesheet" href="stylesheets/docco.css"><link rel="stylesheet" href="stylesheets/style.css"></head><body><script src="javascripts/require.js"></script><script>//#Terrain
+//##with [Three.js](http://mrdoob.github.com/three.js) and [Require.js](http://requirejs.org)
+//**toxiclibs.js by [Kyle Phillips](http://haptic-data.com)**
+//
 require.config({
-  baseUrl: '/javascripts/',
-  paths: { 
-    'toxi': '//localhost/~me/libs/toxiclibsjs/working_dir/lib/toxi'
-  },
-  shim: {
-    //makes THREE work within Require even though it isnt an AMD library
-    'three': { exports: 'THREE' }
-  }
+	baseUrl: 'javascripts/',
+	paths: { 
+		'toxi': '//localhost/~me/libs/toxiclibsjs/working_dir/lib/toxi'
+	},
+	shim: {
+		//[shim](http://requirejs.org/docs/api.html#config-shim) makes non-AMD libs like THREE work within Require
+		'three': { exports: 'THREE' }
+	}
 });
 
 require([
-  'three',
-  'dat/gui/GUI',
-  'toxi/THREE/ToxiclibsSupport',
-  'toxi/geom/mesh/Terrain',
-  'toxi/geom/mesh/TriangleMesh',
-  'toxi/geom/Vec3D',
-  'toxi/geom/Vec2D',
-  'toxi/geom/mesh/TriangleMesh',
-  'toxi/math/mathUtils',
-  'toxi/geom/Rect',
-  'toxi/geom/IsectData3D',
-  'toxi/geom/AABB',
-  'toxi/geom/Sphere',
-  'toxi/math/noise/PerlinNoise',
-], function(THREE, datGUI, ToxiclibsSupport, Terrain, TriangleMesh3D, 
-  Vec3D, Vec2D, TriangleMesh, mathUtils, Rect, IsectData3D, AABB, Sphere, PerlinNoise ){
+	'three',
+	'dat/gui/GUI',
+	'toxi/THREE/ToxiclibsSupport',
+	'toxi/geom/mesh/Terrain',
+	'toxi/geom/Vec3D',
+	'toxi/geom/Vec2D',
+	'toxi/geom/mesh/TriangleMesh',
+	'toxi/math/mathUtils',
+	'toxi/geom/Rect',
+	'toxi/geom/IsectData3D',
+	'toxi/geom/AABB',
+	'toxi/geom/Sphere',
+	'toxi/math/noise/PerlinNoise',
+], function(THREE, datGUI, ToxiclibsSupport, Terrain,
+	Vec3D, Vec2D, TriangleMesh, mathUtils, Rect, IsectData3D, AABB, Sphere, PerlinNoise ){
 
-  var gui = new datGUI();
-  var container = document.getElementById('toxi-container'),
-    width = window.innerWidth,
-    height = window.innerHeight - 100,
-    scene = new THREE.Scene(),
-    camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 10000 ),
-    renderer = new THREE.WebGLRenderer({ antialias: true }),
-    NOISE_SCALE = 1.0,
-    WDIM = 40,
-    HDIM = 30,
-    camOffset = new Vec3D( 0, 100, 300),
-    eyePos = new Vec3D( 0, 1000, 0 ),
-    toxiToThree = new ToxiclibsSupport( scene ),
-    terrain = new Terrain( WDIM, HDIM, 50 ),
-    perlin = new PerlinNoise(),
-    controls = new THREE.TrackballControls( camera ),
-    offset = 0,
-    frameCount = 0;
+	var gui = new datGUI();
+	var container = document.getElementById('example-container'),
+		width = window.innerWidth,
+		height = window.innerHeight - 100,
+		scene = new THREE.Scene(),
+		camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 10000 ),
+		renderer = new THREE.WebGLRenderer({ antialias: true }),
+		NOISE_SCALE = 1.0,
+		WDIM = 40,
+		HDIM = 30,
+		camOffset = new Vec3D( 0, 100, 300),
+		eyePos = new Vec3D( 0, 1000, 0 ),
+		toxiToThree = new ToxiclibsSupport( scene ),
+		terrain = new Terrain( WDIM, HDIM, 50 ),
+		perlin = new PerlinNoise(),
+		controls = new THREE.TrackballControls( camera ),
+		offset = 0,
+		frameCount = 0;
 
-  camera.position.z = 3000;
-  camera.position.y = 1000;
-  camera.lookAt( new THREE.Vector3() );
-  container.style.width = width;
-  container.style.height = height;
-  renderer.setSize( width, height );
-  container.appendChild( renderer.domElement );
+	camera.position.z = 3000;
+	camera.position.y = 1000;
+	camera.lookAt( new THREE.Vector3() );
+	container.style.width = width;
+	container.style.height = height;
+	renderer.setSize( width, height );
+	container.appendChild( renderer.domElement );
 
 
-  function randomizeElevations( frame ){
-    var amp = 200 * Math.sin( frame ) + 10;
-    var elevation = [];
-    offset += 1.0;
-    perlin.noiseSeed( 23 );
-    for (var z = 0, i = 0; z < HDIM; z++) {
-      for (var x = 0; x < WDIM; x++) {
-        elevation[i++] = (perlin.noise( x * NOISE_SCALE ,  offset + z * NOISE_SCALE ) * amp) - amp;
-        //console.log(elevation[i-1]);
-      }
-    }
-    terrain.setElevation(elevation);
-  }
-  
-  var triangleMesh = terrain.toMesh(),
-    sphere = new Sphere( (50 * WDIM) / 2);
+	function randomizeElevations( frame ){
+		var amp = 200 * Math.sin( frame ) + 10;
+		var elevation = [];
+		offset += 1.0;
+		perlin.noiseSeed( 23 );
+		for (var z = 0, i = 0; z < HDIM; z++) {
+			for (var x = 0; x < WDIM; x++) {
+				elevation[i++] = (perlin.noise( x * NOISE_SCALE ,  offset + z * NOISE_SCALE ) * amp) - amp;
+				//console.log(elevation[i-1]);
+			}
+		}
+		terrain.setElevation(elevation);
+	}
+	
+	var triangleMesh = terrain.toMesh(),
+		sphere = new Sphere( (50 * WDIM) / 2);
 
-  //go through all faces, if it isnt inside sphere, remove
+	//go through all faces, if it isnt inside sphere, remove
 
-  var threeMesh = ToxiclibsSupport.createMesh( 
-    terrain.toMesh(),
-    new THREE.MeshPhongMaterial({color: 0xffffff, wireframe: false })
-  );
+	var threeMesh = ToxiclibsSupport.createMesh( 
+		terrain.toMesh(),
+		new THREE.MeshPhongMaterial({color: 0xffffff, wireframe: false })
+	);
 
-  window.threeMesh = threeMesh;
+	window.threeMesh = threeMesh;
 
-  threeMesh.material.doubleSided = true;
-  threeMesh.rotation.x = Math.PI;
-  threeMesh.scale.set( 3, 3, 3);
+	threeMesh.material.doubleSided = true;
+	threeMesh.rotation.x = Math.PI;
+	threeMesh.scale.set( 3, 3, 3);
 
-  var threeSphere = ToxiclibsSupport.createMesh(
-    sphere.toMesh( new TriangleMesh("sphere"), 5 ),
-    new THREE.MeshLambertMaterial({ 
-      color: 0x0000ff, 
-      wireframe: true
-    })
-  );
+	var threeSphere = ToxiclibsSupport.createMesh(
+		sphere.toMesh( new TriangleMesh("sphere"), 5 ),
+		new THREE.MeshLambertMaterial({ 
+			color: 0x0000ff, 
+			wireframe: true
+		})
+	);
 
-  //scene.add( threeSphere );
-  scene.add( camera );
-  scene.add( threeMesh );
-  var light1 = new THREE.DirectionalLight(0x0000ff, 0.5);
-  light1.position.set(0.25,0.0,0.5).normalize();
-  scene.add(light1);
-  var light2 = new THREE.DirectionalLight(0x66ff66, 0.5);
-  light2.position.set(-0.25,0,0.5).normalize();
-  scene.add(light2);
-  scene.add( new THREE.AmbientLight( 0x333333 ) );
+	//scene.add( threeSphere );
+	scene.add( camera );
+	scene.add( threeMesh );
+	var light1 = new THREE.DirectionalLight(0x0000ff, 0.5);
+	light1.position.set(0.25,0.0,0.5).normalize();
+	scene.add(light1);
+	var light2 = new THREE.DirectionalLight(0x66ff66, 0.5);
+	light2.position.set(-0.25,0,0.5).normalize();
+	scene.add(light2);
+	scene.add( new THREE.AmbientLight( 0x333333 ) );
 
-  function draw(){
-    frameCount++;
-    var geometry = threeMesh.geometry;
-    randomizeElevations( frameCount / 100 );//this.frameCount / 100);
-    threeMesh.dynamic = true;
-    var newGeom = ToxiclibsSupport.createMeshGeometry( terrain.toMesh() );
-    geometry.vertices.forEach(function(v, i){
-      v.set( newGeom.vertices[i].x, newGeom.vertices[i].y, newGeom.vertices[i].z );
-    });
-    geometry.computeFaceNormals();
-    geometry.computeVertexNormals();
-    /*terrain.toMesh().vertices.forEach(function(v, i ){
-      geometry.vertices[i].set(v.x,v.y,v.z);
-    });*/
-    geometry.verticesNeedUpdate = true;
-    geometry.elementsNeedUpdate = true;
-    geometry.morphTargetsNeedUpdate = true;
-    geometry.uvsNeedUpdate = true;
-    geometry.normalsNeedUpdate = true;
-    geometry.colorsNeedUpdate = true;
-    geometry.tangentsNeedUpdate = true;   
-    //controls.update();
-    renderer.render( scene, camera );
-    //threeMesh.rotation.x += 0.0025;
-    window.requestAnimationFrame( draw );
-  }
-  draw();
+	function draw(){
+		frameCount++;
+		var geometry = threeMesh.geometry;
+		randomizeElevations( frameCount / 100 );//this.frameCount / 100);
+		threeMesh.dynamic = true;
+		var newGeom = ToxiclibsSupport.createMeshGeometry( terrain.toMesh() );
+		geometry.vertices.forEach(function(v, i){
+			v.set( newGeom.vertices[i].x, newGeom.vertices[i].y, newGeom.vertices[i].z );
+		});
+		geometry.computeFaceNormals();
+		geometry.computeVertexNormals();
+		/*terrain.toMesh().vertices.forEach(function(v, i ){
+			geometry.vertices[i].set(v.x,v.y,v.z);
+		});*/
+		geometry.verticesNeedUpdate = true;
+		geometry.elementsNeedUpdate = true;
+		geometry.morphTargetsNeedUpdate = true;
+		geometry.uvsNeedUpdate = true;
+		geometry.normalsNeedUpdate = true;
+		geometry.colorsNeedUpdate = true;
+		geometry.tangentsNeedUpdate = true;		
+		//controls.update();
+		renderer.render( scene, camera );
+		//threeMesh.rotation.x += 0.0025;
+		window.requestAnimationFrame( draw );
+	}
+	draw();
 });
-</script>
-<div class="grad" id="toxi-container"></div><div id="container">    <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               terrainNoise.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Toxiclibs.js Terrain Example
-<strong>by <a href="http://haptic-data.com">Kyle Phillips</a></strong></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">require</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
-  <span class="nx">baseUrl</span><span class="o">:</span> <span class="s1">&#39;/javascripts/&#39;</span><span class="p">,</span>
+</script><div id="example-container" class="grad"></div><section id="pagelet">  <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="additiveWaves.html">                 additiveWaves.js               </a>                                           <a class="source" href="arcPolarCoordinates.html">                 arcPolarCoordinates.js               </a>                                           <a class="source" href="attraction2d.html">                 attraction2d.js               </a>                                           <a class="source" href="circle3Points.html">                 circle3Points.js               </a>                                           <a class="source" href="meshDoodle.html">                 meshDoodle.js               </a>                                           <a class="source" href="softBodySquare.html">                 softBodySquare.js               </a>                                           <a class="source" href="terrainNoise.html">                 terrainNoise.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Terrain</h1>
+
+<h2>with <a href="http://mrdoob.github.com/three.js">Three.js</a> and <a href="http://requirejs.org">Require.js</a></h2>
+
+<p><strong>toxiclibs.js by <a href="http://haptic-data.com">Kyle Phillips</a></strong></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">require</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+  <span class="nx">baseUrl</span><span class="o">:</span> <span class="s1">&#39;javascripts/&#39;</span><span class="p">,</span>
   <span class="nx">paths</span><span class="o">:</span> <span class="p">{</span> 
     <span class="s1">&#39;toxi&#39;</span><span class="o">:</span> <span class="s1">&#39;//localhost/~me/libs/toxiclibsjs/working_dir/lib/toxi&#39;</span>
   <span class="p">},</span>
-  <span class="nx">shim</span><span class="o">:</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>makes THREE work within Require even though it isnt an AMD library</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="s1">&#39;three&#39;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;THREE&#39;</span> <span class="p">}</span>
+  <span class="nx">shim</span><span class="o">:</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p><a href="http://requirejs.org/docs/api.html#config-shim">shim</a> makes non-AMD libs like THREE work within Require</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="s1">&#39;three&#39;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;THREE&#39;</span> <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">});</span>
 
@@ -153,7 +153,6 @@ require([
   <span class="s1">&#39;dat/gui/GUI&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/THREE/ToxiclibsSupport&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/geom/mesh/Terrain&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;toxi/geom/mesh/TriangleMesh&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/geom/Vec3D&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/geom/Vec2D&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/geom/mesh/TriangleMesh&#39;</span><span class="p">,</span>
@@ -163,11 +162,11 @@ require([
   <span class="s1">&#39;toxi/geom/AABB&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/geom/Sphere&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/math/noise/PerlinNoise&#39;</span><span class="p">,</span>
-<span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">THREE</span><span class="p">,</span> <span class="nx">datGUI</span><span class="p">,</span> <span class="nx">ToxiclibsSupport</span><span class="p">,</span> <span class="nx">Terrain</span><span class="p">,</span> <span class="nx">TriangleMesh3D</span><span class="p">,</span> 
+<span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">THREE</span><span class="p">,</span> <span class="nx">datGUI</span><span class="p">,</span> <span class="nx">ToxiclibsSupport</span><span class="p">,</span> <span class="nx">Terrain</span><span class="p">,</span>
   <span class="nx">Vec3D</span><span class="p">,</span> <span class="nx">Vec2D</span><span class="p">,</span> <span class="nx">TriangleMesh</span><span class="p">,</span> <span class="nx">mathUtils</span><span class="p">,</span> <span class="nx">Rect</span><span class="p">,</span> <span class="nx">IsectData3D</span><span class="p">,</span> <span class="nx">AABB</span><span class="p">,</span> <span class="nx">Sphere</span><span class="p">,</span> <span class="nx">PerlinNoise</span> <span class="p">){</span>
 
   <span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">datGUI</span><span class="p">();</span>
-  <span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;container&#39;</span><span class="p">),</span>
+  <span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;example-container&#39;</span><span class="p">),</span>
     <span class="nx">width</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span>
     <span class="nx">height</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span> <span class="o">-</span> <span class="mi">100</span><span class="p">,</span>
     <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">(),</span>
@@ -259,4 +258,4 @@ require([
   <span class="nx">draw</span><span class="p">();</span>
 <span class="p">});</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section></body></html>

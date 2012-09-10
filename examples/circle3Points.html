@@ -1,4 +1,10 @@
-<!DOCTYPE html><html><head><title>my title</title><link rel="stylesheet" href="/stylesheets/prism.css"><link rel="stylesheet" href="/docs/docco.css"><link rel="stylesheet" href="/stylesheets/style.css"><script src="/javascripts/processing.js"></script><script src="/javascripts/prism.js"></script></head><body><script src="http://localhost/~me/libs/toxiclibsjs/working_dir/build/toxiclibs.js"></script><script type="application/processing" data-processing-target="myCanvas">
+<!DOCTYPE html><html><head><title>my title</title><link rel="stylesheet" href="stylesheets/docco.css"><link rel="stylesheet" href="stylesheets/style.css"></head><body><script src="http://localhost/~me/libs/toxiclibsjs/working_dir/build/toxiclibs.js"></script><script src="javascripts/processing.js"></script><script type="application/processing" data-processing-target="myCanvas">//#Circle from 3 Points
+//given any 3 points find its circle
+//
+//original example by [Karsten Schmidt](http://postspectacular.com)
+//
+//toxiclibs.js by [Kyle Phillips](http://haptic-data.com)
+
 var SineWave = toxi.math.waves.SineWave,
 	Vec2D = toxi.geom.Vec2D,
 	Circle = toxi.geom.Circle;
@@ -26,7 +32,13 @@ void draw() {
   	ellipse(p2.x,p2.y,3,3);
   	ellipse(p3.x,p3.y,3,3);
   }
-}</script><canvas id="myCanvas"></canvas><section id="pagelet">  <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="additiveWaves.html">                 additiveWaves.js               </a>                                           <a class="source" href="arcPolarCoordinates.html">                 arcPolarCoordinates.js               </a>                                           <a class="source" href="attraction2d.html">                 attraction2d.js               </a>                                           <a class="source" href="circle3Points.html">                 circle3Points.js               </a>                                           <a class="source" href="colorWaves_raphael.html">                 colorWaves_raphael.js               </a>                                           <a class="source" href="draggableParticles_pjs.html">                 draggableParticles_pjs.js               </a>                                           <a class="source" href="line2dIntersection.html">                 line2dIntersection.js               </a>                                           <a class="source" href="meshDoodle.html">                 meshDoodle.js               </a>                                           <a class="source" href="softBodySquare.html">                 softBodySquare.js               </a>                                           <a class="source" href="superEllipsoid.html">                 superEllipsoid.js               </a>                                           <a class="source" href="terrainNoise.html">                 terrainNoise.js               </a>                                           <a class="source" href="thread.html">                 thread.js               </a>                                           <a class="source" href="wheelInsets.html">                 wheelInsets.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">SineWave</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">waves</span><span class="p">.</span><span class="nx">SineWave</span><span class="p">,</span>
+}</script><canvas id="myCanvas"></canvas><section id="pagelet">  <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="additiveWaves.html">                 additiveWaves.js               </a>                                           <a class="source" href="arcPolarCoordinates.html">                 arcPolarCoordinates.js               </a>                                           <a class="source" href="attraction2d.html">                 attraction2d.js               </a>                                           <a class="source" href="circle3Points.html">                 circle3Points.js               </a>                                           <a class="source" href="meshDoodle.html">                 meshDoodle.js               </a>                                           <a class="source" href="softBodySquare.html">                 softBodySquare.js               </a>                                           <a class="source" href="terrainNoise.html">                 terrainNoise.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Circle from 3 Points</h1>
+
+<p>given any 3 points find its circle</p>
+
+<p>original example by <a href="http://postspectacular.com">Karsten Schmidt</a></p>
+
+<p>toxiclibs.js by <a href="http://haptic-data.com">Kyle Phillips</a></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">SineWave</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">waves</span><span class="p">.</span><span class="nx">SineWave</span><span class="p">,</span>
   <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">,</span>
   <span class="nx">Circle</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Circle</span><span class="p">;</span>
 
@@ -55,32 +67,4 @@ void draw() {
   <span class="p">}</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section><section id="info"><pre><code id="source" class="language-java">
-var SineWave = toxi.math.waves.SineWave,
-	Vec2D = toxi.geom.Vec2D,
-	Circle = toxi.geom.Circle;
-
-AbstractWave wave1=new SineWave(0,0.02,100,200);
-AbstractWave wave2=new SineWave(0,0.023,100,200);
-
-void setup() {
-  size(940, 382);
-  smooth();
-  stroke(#330077);
-  noFill();
-  ellipseMode(RADIUS); //this changes ellipse 3rd &amp; 4th parameter to being radius instead of diameter
-}
-
-void draw() {
-  background(#cceeff);
-  Vec2D p1 = new Vec2D(200, wave1.update());
-  Vec2D p2 = new Vec2D(400, wave2.update());
-  Vec2D p3 = new Vec2D(mouseX, mouseY);
- Circle circle = Circle.from3Points(p1, p2, p3);
-  if (circle != undefined) {
-  	ellipse(circle.x,circle.y,circle.getRadius(),circle.getRadius());
-  	ellipse(p1.x,p1.y,3,3);
-  	ellipse(p2.x,p2.y,3,3);
-  	ellipse(p3.x,p3.y,3,3);
-  }
-}</code></pre></section></body></html>
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section></body></html>

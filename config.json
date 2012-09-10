@@ -1,5 +1,9 @@
-{
-	"arcPolarCoordinates": { "template": "pjs" },
-	"additiveWaves": {"template": "pjs"},
-	"circle3Points": {"template": "pjs"}
-}
+[
+	{"src": "attraction2d", "template" : "pjs" },
+	{"src": "arcPolarCoordinates", "template": "pjs" },
+	{"src": "additiveWaves", "template": "pjs"},
+	{"src": "circle3Points", "template": "pjs"},
+	{"src": "meshDoodle", "template" : "pjs" },
+	{"src": "softBodySquare", "template" : "pjs" },
+	{"src": "terrainNoise", "template" : "require" }
+]

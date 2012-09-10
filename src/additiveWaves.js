@@ -3,6 +3,30 @@
 //
 //toxiclibs.js by [Kyle Phillips](http://haptic-data.com)
 
+//AdditiveWaves demo is showing how to add 2 randomly chosen waveforms
+//to create a 3D terrain. One wave is moving along the X axis and is mapped
+//to the red color channel, the other is propagating along Y and is mapped to
+//blue. In this demo each wave's frequency is modulated by a secondary wave
+//(here hardcoded as sine wave). Three of the possible waveforms chosen have
+//additional options/special behaviour:
+//
+//- AMFMSineWave also modulates the wave's overall amplitude on top of
+//frequency modulation
+//- FMHarmonicSquareWave's shape can tweaked by adjusting the number of harmonics
+//used (the higher the more square-like the wave becomes).
+//- ConstantWave is simply representing a fixed value
+//
+//Currently available wave forms are:
+//
+//- SineWave, FMSineWave, AMFMSineWave
+//- FMTriangleWave
+//- FMSawtoothWave
+//- FMSquareWave, FMHarmonicSquareWave
+//- ConstantWave
+//
+//You can also create entirely new waveforms by subclassing the parent AbstractWave
+//type and overwriting the update() method.
+
 /* 
  * Copyright (c) 2009 Karsten Schmidt
  * 

@@ -3,7 +3,9 @@ body {
   margin: 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-
+canvas:focus {
+	outline: none;
+}
 #info {
 	background-color: #f5f2f0;
 	padding: 50px;
