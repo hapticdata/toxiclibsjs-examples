@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  script(src="/javascripts/require.js")
+  script !{script}
+  div.grad#container
+  section#info
+    pre
+        code#source(class='language-javascript')= script

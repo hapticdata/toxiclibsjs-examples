@@ -1,0 +1,83 @@
+  <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="additiveWaves.html">                 additiveWaves.js               </a>                                           <a class="source" href="arcPolarCoordinates.html">                 arcPolarCoordinates.js               </a>                                           <a class="source" href="attraction2d.html">                 attraction2d.js               </a>                                           <a class="source" href="circle3Points.html">                 circle3Points.js               </a>                                           <a class="source" href="colorWaves_raphael.html">                 colorWaves_raphael.js               </a>                                           <a class="source" href="draggableParticles_pjs.html">                 draggableParticles_pjs.js               </a>                                           <a class="source" href="line2dIntersection.html">                 line2dIntersection.js               </a>                                           <a class="source" href="meshDoodle.html">                 meshDoodle.js               </a>                                           <a class="source" href="softBodySquare.html">                 softBodySquare.js               </a>                                           <a class="source" href="superEllipsoid.html">                 superEllipsoid.js               </a>                                           <a class="source" href="terrainNoise.html">                 terrainNoise.js               </a>                                           <a class="source" href="thread.html">                 thread.js               </a>                                           <a class="source" href="wheelInsets.html">                 wheelInsets.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Wheel Insets</h1>
+
+<p>This example was used for designing the outer rim of some
+generative wheels. The wheels are designed for laser cutting from
+acrylic and the outer rim has a number of cutouts for friction fitting
+wire track modules.</p>
+
+<p>The actual generative wheel design is available under GPL v3 and
+can be downloaded from:</p>
+
+<p><a href="[http://toxiclibs.org/2010/01/re-inventing-the-wheel/]">http://toxiclibs.org/2010/01/re-inventing-the-wheel/</a></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/* </span>
+<span class="cm"> * Copyright (c) 2010 Karsten Schmidt</span>
+<span class="cm"> * </span>
+<span class="cm"> * This library is free software; you can redistribute it and/or</span>
+<span class="cm"> * modify it under the terms of the GNU Lesser General Public</span>
+<span class="cm"> * License as published by the Free Software Foundation; either</span>
+<span class="cm"> * version 2.1 of the License, or (at your option) any later version.</span>
+<span class="cm"> * </span>
+<span class="cm"> * http://creativecommons.org/licenses/LGPL/2.1/</span>
+<span class="cm"> * </span>
+<span class="cm"> * This library is distributed in the hope that it will be useful,</span>
+<span class="cm"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span>
+<span class="cm"> * Lesser General Public License for more details.</span>
+<span class="cm"> * </span>
+<span class="cm"> * You should have received a copy of the GNU Lesser General Public</span>
+<span class="cm"> * License along with this library; if not, write to the Free Software</span>
+<span class="cm"> * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</span>
+<span class="cm"> */</span>
+
+<span class="kd">var</span> <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">;</span>
+
+<span class="kr">int</span> <span class="nx">NUM_CUTOUTS</span><span class="o">=</span><span class="mi">18</span><span class="p">;</span>
+<span class="kr">int</span> <span class="nx">NUM_ARCSEG</span><span class="o">=</span><span class="mi">8</span><span class="p">;</span>
+<span class="kr">int</span> <span class="nx">RADIUS</span><span class="o">=</span><span class="mi">250</span><span class="p">;</span>
+<span class="kr">float</span> <span class="nx">INSET</span><span class="o">=</span><span class="nx">RADIUS</span><span class="o">-</span><span class="mi">15</span><span class="p">;</span>
+<span class="kr">float</span> <span class="nx">MATERIAL_THICKNESS</span><span class="o">=</span><span class="mi">5</span><span class="p">;</span>
+<span class="kr">float</span> <span class="nx">TOLERANCE</span><span class="o">=</span><span class="mf">0.05</span><span class="p">;</span>
+<span class="kr">float</span> <span class="nx">SIZE</span><span class="o">=</span><span class="nx">MATERIAL_THICKNESS</span><span class="o">+</span><span class="nx">TOLERANCE</span><span class="p">;</span>
+<span class="kr">int</span> <span class="nx">BLEED</span><span class="o">=</span><span class="mi">20</span><span class="p">;</span>
+
+<span class="k">void</span> <span class="nx">setup</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">size</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="nx">RADIUS</span><span class="o">+</span><span class="nx">BLEED</span><span class="p">);</span>
+  <span class="nx">background</span><span class="p">(</span><span class="mi">255</span><span class="p">);</span>
+  <span class="nx">translate</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+  <span class="nx">noFill</span><span class="p">();</span>
+  <span class="nx">beginShape</span><span class="p">();</span>
+  <span class="k">for</span><span class="p">(</span><span class="kr">int</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">NUM_CUTOUTS</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">float</span> <span class="nx">alpha</span><span class="o">=</span><span class="nx">i</span><span class="o">*</span><span class="nx">TWO_PI</span><span class="o">/</span><span class="nx">NUM_CUTOUTS</span><span class="p">;</span>
+    <span class="kr">float</span> <span class="nx">beta</span><span class="o">=</span><span class="p">(</span><span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="nx">TWO_PI</span><span class="o">/</span><span class="nx">NUM_CUTOUTS</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>cutout</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">Vec2D</span><span class="p">[]</span> <span class="nx">insets</span><span class="o">=</span><span class="nx">computePoints</span><span class="p">(</span><span class="nx">alpha</span><span class="p">,</span><span class="nx">INSET</span><span class="p">,</span><span class="nx">SIZE</span><span class="p">);</span>
+    <span class="nx">_vertex</span><span class="p">(</span><span class="nx">insets</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="nx">_vertex</span><span class="p">(</span><span class="nx">insets</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="kr">float</span> <span class="nx">gamma</span><span class="o">=</span><span class="nx">computeAngles</span><span class="p">(</span><span class="nx">alpha</span><span class="p">,</span><span class="nx">RADIUS</span><span class="p">,</span><span class="nx">SIZE</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="kr">float</span> <span class="nx">delta</span><span class="o">=</span><span class="nx">computeAngles</span><span class="p">(</span><span class="nx">beta</span><span class="p">,</span><span class="nx">RADIUS</span><span class="p">,</span><span class="nx">SIZE</span><span class="p">)[</span><span class="mi">1</span><span class="p">];</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>arc between cutouts</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">for</span><span class="p">(</span><span class="kr">int</span> <span class="nx">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">j</span><span class="o">&lt;=</span><span class="nx">NUM_ARCSEG</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kr">float</span> <span class="nx">theta</span><span class="o">=</span><span class="nx">lerp</span><span class="p">(</span><span class="nx">gamma</span><span class="p">,</span><span class="nx">delta</span><span class="p">,</span><span class="nx">j</span><span class="o">/</span><span class="p">(</span><span class="kr">float</span><span class="p">)</span><span class="nx">NUM_ARCSEG</span><span class="p">);</span>
+      <span class="nx">_vertex</span><span class="p">(</span><span class="nx">Vec2D</span><span class="p">.</span><span class="nx">fromTheta</span><span class="p">(</span><span class="nx">theta</span><span class="p">).</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="nx">RADIUS</span><span class="p">));</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="nx">endShape</span><span class="p">(</span><span class="nx">CLOSE</span><span class="p">);</span>
+<span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>can't override methods the same way as in java, so I added the _</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">void</span> <span class="nx">_vertex</span><span class="p">(</span><span class="nx">Vec2D</span> <span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">vertex</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">v</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kr">float</span><span class="p">[]</span> <span class="nx">computeAngles</span><span class="p">(</span><span class="kr">float</span> <span class="nx">theta</span><span class="p">,</span> <span class="kr">float</span> <span class="nx">radius</span><span class="p">,</span> <span class="kr">float</span> <span class="nx">dist</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">Vec2D</span><span class="p">[]</span> <span class="nx">points</span><span class="o">=</span><span class="nx">computePoints</span><span class="p">(</span><span class="nx">theta</span><span class="p">,</span><span class="nx">radius</span><span class="p">,</span><span class="nx">dist</span><span class="p">);</span>
+  <span class="nx">Vec2D</span> <span class="nx">a</span><span class="o">=</span><span class="nx">points</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">toPolar</span><span class="p">();</span>
+  <span class="nx">Vec2D</span> <span class="nx">b</span><span class="o">=</span><span class="nx">points</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">toPolar</span><span class="p">();</span>
+  <span class="kr">float</span> <span class="nx">alpha</span><span class="o">=</span><span class="nx">a</span><span class="p">.</span><span class="nx">y</span><span class="o">&lt;</span><span class="mi">0</span> <span class="o">?</span> <span class="nx">TWO_PI</span><span class="o">+</span><span class="nx">a</span><span class="p">.</span><span class="nx">y</span> <span class="o">:</span> <span class="nx">a</span><span class="p">.</span><span class="nx">y</span><span class="p">;</span>
+  <span class="kr">float</span> <span class="nx">beta</span><span class="o">=</span><span class="nx">b</span><span class="p">.</span><span class="nx">y</span><span class="o">&lt;</span><span class="mi">0</span> <span class="o">?</span> <span class="nx">TWO_PI</span><span class="o">+</span><span class="nx">b</span><span class="p">.</span><span class="nx">y</span> <span class="o">:</span> <span class="nx">b</span><span class="p">.</span><span class="nx">y</span><span class="p">;</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="kr">float</span><span class="p">[]{</span>
+    <span class="nx">alpha</span><span class="p">,</span><span class="nx">beta</span> <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="nx">Vec2D</span><span class="p">[]</span> <span class="nx">computePoints</span><span class="p">(</span><span class="kr">float</span> <span class="nx">theta</span><span class="p">,</span> <span class="kr">float</span> <span class="nx">radius</span><span class="p">,</span> <span class="kr">float</span> <span class="nx">dist</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">Vec2D</span> <span class="nx">p</span><span class="o">=</span><span class="nx">Vec2D</span><span class="p">.</span><span class="nx">fromTheta</span><span class="p">(</span><span class="nx">theta</span><span class="p">).</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="nx">radius</span><span class="p">);</span>
+  <span class="nx">Vec2D</span> <span class="nx">n</span><span class="o">=</span><span class="nx">p</span><span class="p">.</span><span class="nx">getPerpendicular</span><span class="p">().</span><span class="nx">normalizeTo</span><span class="p">(</span><span class="nx">dist</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+  <span class="nx">Vec2D</span> <span class="nx">a</span><span class="o">=</span><span class="nx">p</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">n</span><span class="p">);</span>
+  <span class="nx">Vec2D</span> <span class="nx">b</span><span class="o">=</span><span class="nx">p</span><span class="p">.</span><span class="nx">sub</span><span class="p">(</span><span class="nx">n</span><span class="p">);</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">[]{</span>
+    <span class="nx">a</span><span class="p">,</span><span class="nx">b</span> <span class="p">};</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div>

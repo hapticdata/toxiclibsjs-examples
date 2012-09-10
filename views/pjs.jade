@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  script(src="http://localhost/~me/libs/toxiclibsjs/working_dir/build/toxiclibs.js")
+  script(type="application/processing", data-processing-target="myCanvas")!{script}
+  canvas#myCanvas
+  section#pagelet !{pagelet}
+  section#info
+    pre
+        code#source(class='language-java')= script
