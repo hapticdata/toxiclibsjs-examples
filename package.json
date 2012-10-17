@@ -8,6 +8,8 @@
   "dependencies": {
     "express": "3.0.0rc4",
     "jade": "*",
-    "docco": "~0.4.0"
+    "docco": "~0.4.0",
+    "async": "~0.1.22",
+    "wrench": "~1.3.9"
   }
 }

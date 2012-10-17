@@ -1,8 +1,8 @@
 extends layout
 
 block content
-  script(src="http://localhost/~me/libs/toxiclibsjs/working_dir/build/toxiclibs.js")
+  div.pjs#example-container
+    canvas#myCanvas
+  script(src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js")
   script(src='javascripts/processing.js')
   script(type="application/processing", data-processing-target="myCanvas")!{script}
-  canvas#myCanvas
-  section#pagelet !{pagelet}

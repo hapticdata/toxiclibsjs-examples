@@ -1,0 +1,72 @@
+@import "docco.less";
+
+body {
+  padding: 0;
+  margin: 0;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+canvas:focus {
+	outline: none;
+}
+#info {
+	background-color: #f5f2f0;
+	padding: 50px;
+}
+
+.pjs {
+	&#example-container {
+		text-align: center;
+		background-color: #222222;
+		padding: 50px;
+		canvas {
+			margin: auto;
+			.box-shadow( 0px 2px 8px black );
+			.transition( all 1sec easeIn );
+		}
+	}
+}
+
+a {
+  color: #00B7FF;
+}
+
+#navigation {
+	background-color: black;
+
+	ul {
+		display: inline-block;
+		li {
+			margin: 0;
+			padding-right: 20px;
+			display: inline-block;
+			list-style-type: none;
+		}
+	}
+}
+
+.grad {
+	margin: 0;
+	background-color: #333333;
+	background-image: linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+	background-image: -o-linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+	background-image: -moz-linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+	background-image: -webkit-linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+	background-image: -ms-linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.94, rgb(24,24,24)),
+		color-stop(0.71, rgb(51,51,51))
+	);
+}
+
+#code-container {
+	position: absolute;
+	top: 0;
+	overflow: scroll;
+}
+code {
+	font-size: 14px;
+}

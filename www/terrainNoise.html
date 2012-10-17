@@ -1,0 +1,239 @@
+<!DOCTYPE html><html><head><title>my title</title><link rel="stylesheet" href="stylesheets/style.css"></head><body><script src="javascripts/require.js"></script><script>//#Terrain
+//##with [Three.js](http://mrdoob.github.com/three.js) and [Require.js](http://requirejs.org)
+//**toxiclibs.js by [Kyle Phillips](http://haptic-data.com)**
+//
+//Demonstrates [toxi.geom.mesh.TriangleMesh](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/TriangleMesh.js) and [toxi.math.noise.PerlineNoise]
+//and using [toxi.THREE.ToxiclibsSupport](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/THREE/ToxiclibsSupport.js) for generating a [three.js] mesh.
+
+require.config({
+	baseUrl: 'javascripts/',
+	paths: {
+		'toxi': 'https://raw.github.com/hapticdata/toxiclibsjs/develop/lib/toxi'
+	},
+	shim: {
+		//[shim](http://requirejs.org/docs/api.html#config-shim) makes non-AMD libs like THREE work within Require
+		'three': { exports: 'THREE' }
+	}
+});
+//array of dependencies
+require([
+	'three',
+	'dat/gui/GUI',
+	'toxi/THREE/ToxiclibsSupport',
+	'toxi/geom/mesh/Terrain',
+	'toxi/geom/Vec3D',
+	'toxi/geom/mesh/TriangleMesh',
+	'toxi/math/mathUtils',
+	'toxi/math/noise/PerlinNoise'
+], function(THREE, datGUI, ToxiclibsSupport, Terrain, Vec3D, TriangleMesh, mathUtils, PerlinNoise ){
+
+	var gui = new datGUI();
+	var container = document.getElementById('example-container'),
+		width = window.innerWidth,
+		height = window.innerHeight - 100,
+		scene = new THREE.Scene(),
+		camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 10000 ),
+		renderer = new THREE.WebGLRenderer({ antialias: true }),
+		WDIM = 40,
+		HDIM = 30,
+		terrain = new Terrain( WDIM, HDIM, 50 ),
+		perlin = new PerlinNoise(),
+		offset = 0,
+		frameCount = 0,
+		threeMesh,
+		options;
+
+	options = {
+		running: true,
+		noiseScale: 1.0,
+		speed: 1.0
+	};
+
+	gui.add(options, 'running' ).onChange(function(){
+		//if running was previously false, kick-start draw again
+		if( options.running ){ draw(); }
+	});
+
+	gui.add(options, 'noiseScale', 0.5, 1.0 ).step(0.01);
+	gui.add(options, 'speed', 0.5, 1.5).step(0.01);
+
+	camera.position.z = 3000;
+	camera.position.y = 1000;
+	camera.lookAt( new THREE.Vector3() );
+	container.style.width = width;
+	container.style.height = height;
+	renderer.setSize( width, height );
+	container.appendChild( renderer.domElement );
+
+	//update the elevation of the terrain based on frameCount
+	function updateElevations( frame ){
+		var amp = 200 * Math.sin( frame ) + 10;
+		var elevation = [];
+		offset += options.speed;
+		perlin.noiseSeed( 23 );
+		for (var z = 0, i = 0; z < HDIM; z++) {
+			for (var x = 0; x < WDIM; x++) {
+				elevation[i++] = (perlin.noise( x * options.noiseScale ,  offset + z * options.noiseScale ) * amp) - amp;
+			}
+		}
+		terrain.setElevation(elevation);
+	}
+	//create a THREE.Mesh from the toxiclibs.js terrain
+	threeMesh = ToxiclibsSupport.createMesh(
+		terrain.toMesh(),
+		new THREE.MeshPhongMaterial({color: 0xffffff, wireframe: false })
+	);
+
+	threeMesh.rotation.x = Math.PI;
+	threeMesh.scale.set( 3, 3, 3);
+
+	scene.add( camera );
+	scene.add( threeMesh );
+	var light1 = new THREE.DirectionalLight(0x0000ff, 0.5);
+	light1.position.set(0.25,0.0,0.5).normalize();
+	scene.add(light1);
+	var light2 = new THREE.DirectionalLight(0x66ff66, 0.5);
+	light2.position.set(-0.25,0,0.5).normalize();
+	scene.add(light2);
+	scene.add( new THREE.AmbientLight( 0x333333 ) );
+
+	function draw(){
+		var newGeom;
+
+		frameCount++;
+		updateElevations( frameCount / 100 );
+		threeMesh.dynamic = true;
+		//get a new geometry for the changed terrain
+		newGeom = ToxiclibsSupport.createMeshGeometry( terrain.toMesh() );
+		//update all of the vertices
+		(function(){
+			var g = threeMesh.geometry;
+			g.vertices.forEach(function(v, i){
+				v.set( newGeom.vertices[i].x, newGeom.vertices[i].y, newGeom.vertices[i].z );
+			});
+			g.computeFaceNormals();
+			g.computeVertexNormals();
+			g.verticesNeedUpdate = true;
+			g.normalsNeedUpdate = true;
+		}());
+		renderer.render( scene, camera );
+		
+		if( options.running ){
+			//three.js bundles a polyfill, so this will work fine in all browsers
+			window.requestAnimationFrame( draw );
+		}
+	}
+	draw();
+});
+</script><div id="example-container" class="grad"></div><nav id="navigation"><ul><li><a href="#">Toxiclibs.js</a></li><li><a href="#">Examples</a></li><li>This Example:<ul><li><a href="#">Annotated Source</a></li><li><a href="#">Live Editor</a></li></ul></li></ul></nav><section id="pagelet">  <div id="container">     <div id="background"></div>            <!--div id="jump_to">         <a href="http://haptic-data.com/toxiclibsjs">Toxiclibs.js</a> > Examples &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="additiveWaves.html">                 additiveWaves.js               </a>                                           <a class="source" href="arcPolarCoordinates.html">                 arcPolarCoordinates.js               </a>                                           <a class="source" href="attraction2d.html">                 attraction2d.js               </a>                                           <a class="source" href="circle3Points.html">                 circle3Points.js               </a>                                           <a class="source" href="draggableParticles_pjs.html">                 draggableParticles_pjs.js               </a>                                           <a class="source" href="line2dIntersection.html">                 line2dIntersection.js               </a>                                           <a class="source" href="meshDoodle.html">                 meshDoodle.js               </a>                                           <a class="source" href="perlinNoiseCanvas.html">                 perlinNoiseCanvas.js               </a>                                           <a class="source" href="polarLinesPjs.html">                 polarLinesPjs.js               </a>                                           <a class="source" href="softBodySquare.html">                 softBodySquare.js               </a>                                           <a class="source" href="superEllipsoid.html">                 superEllipsoid.js               </a>                                           <a class="source" href="terrainNoise.html">                 terrainNoise.js               </a>                                           <a class="source" href="thread.html">                 thread.js               </a>                                           <a class="source" href="wheelInsets.html">                 wheelInsets.js               </a>                        </div>         </div>       </div-->          <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Terrain</h1>
+
+<h2>with <a href="http://mrdoob.github.com/three.js">Three.js</a> and <a href="http://requirejs.org">Require.js</a></h2>
+
+<p><strong>toxiclibs.js by <a href="http://haptic-data.com">Kyle Phillips</a></strong></p>
+
+<p>Demonstrates <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/TriangleMesh.js">toxi.geom.mesh.TriangleMesh</a> and [toxi.math.noise.PerlineNoise]
+and using <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/THREE/ToxiclibsSupport.js">toxi.THREE.ToxiclibsSupport</a> for generating a [three.js] mesh.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">require</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+  <span class="nx">baseUrl</span><span class="o">:</span> <span class="s1">&#39;javascripts/&#39;</span><span class="p">,</span>
+  <span class="nx">paths</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">&#39;toxi&#39;</span><span class="o">:</span> <span class="s1">&#39;https://raw.github.com/hapticdata/toxiclibsjs/develop/lib/toxi&#39;</span>
+  <span class="p">},</span>
+  <span class="nx">shim</span><span class="o">:</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p><a href="http://requirejs.org/docs/api.html#config-shim">shim</a> makes non-AMD libs like THREE work within Require</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="s1">&#39;three&#39;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;THREE&#39;</span> <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>array of dependencies</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">require</span><span class="p">([</span>
+  <span class="s1">&#39;three&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;dat/gui/GUI&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/THREE/ToxiclibsSupport&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/mesh/Terrain&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/Vec3D&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/mesh/TriangleMesh&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/math/mathUtils&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/math/noise/PerlinNoise&#39;</span>
+<span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">THREE</span><span class="p">,</span> <span class="nx">datGUI</span><span class="p">,</span> <span class="nx">ToxiclibsSupport</span><span class="p">,</span> <span class="nx">Terrain</span><span class="p">,</span> <span class="nx">Vec3D</span><span class="p">,</span> <span class="nx">TriangleMesh</span><span class="p">,</span> <span class="nx">mathUtils</span><span class="p">,</span> <span class="nx">PerlinNoise</span> <span class="p">){</span>
+
+  <span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">datGUI</span><span class="p">();</span>
+  <span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;example-container&#39;</span><span class="p">),</span>
+    <span class="nx">width</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span>
+    <span class="nx">height</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span> <span class="o">-</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">(),</span>
+    <span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span> <span class="mi">45</span><span class="p">,</span> <span class="nx">width</span> <span class="o">/</span> <span class="nx">height</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">10000</span> <span class="p">),</span>
+    <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">({</span> <span class="nx">antialias</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}),</span>
+    <span class="nx">WDIM</span> <span class="o">=</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="nx">HDIM</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nx">terrain</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Terrain</span><span class="p">(</span> <span class="nx">WDIM</span><span class="p">,</span> <span class="nx">HDIM</span><span class="p">,</span> <span class="mi">50</span> <span class="p">),</span>
+    <span class="nx">perlin</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PerlinNoise</span><span class="p">(),</span>
+    <span class="nx">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nx">frameCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nx">threeMesh</span><span class="p">,</span>
+    <span class="nx">options</span><span class="p">;</span>
+
+  <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">running</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">noiseScale</span><span class="o">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="nx">speed</span><span class="o">:</span> <span class="mf">1.0</span>
+  <span class="p">};</span>
+
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;running&#39;</span> <span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>if running was previously false, kick-start draw again</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">running</span> <span class="p">){</span> <span class="nx">draw</span><span class="p">();</span> <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;noiseScale&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span> <span class="p">).</span><span class="nx">step</span><span class="p">(</span><span class="mf">0.01</span><span class="p">);</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;speed&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">).</span><span class="nx">step</span><span class="p">(</span><span class="mf">0.01</span><span class="p">);</span>
+
+  <span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">z</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">;</span>
+  <span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
+  <span class="nx">camera</span><span class="p">.</span><span class="nx">lookAt</span><span class="p">(</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">()</span> <span class="p">);</span>
+  <span class="nx">container</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">width</span><span class="p">;</span>
+  <span class="nx">container</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">height</span><span class="p">;</span>
+  <span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span> <span class="p">);</span>
+  <span class="nx">container</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span> <span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>update the elevation of the terrain based on frameCount</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">function</span> <span class="nx">updateElevations</span><span class="p">(</span> <span class="nx">frame</span> <span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">amp</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span> <span class="nx">frame</span> <span class="p">)</span> <span class="o">+</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">elevation</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="nx">offset</span> <span class="o">+=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">speed</span><span class="p">;</span>
+    <span class="nx">perlin</span><span class="p">.</span><span class="nx">noiseSeed</span><span class="p">(</span> <span class="mi">23</span> <span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">z</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">z</span> <span class="o">&lt;</span> <span class="nx">HDIM</span><span class="p">;</span> <span class="nx">z</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">WDIM</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">elevation</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">perlin</span><span class="p">.</span><span class="nx">noise</span><span class="p">(</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">options</span><span class="p">.</span><span class="nx">noiseScale</span> <span class="p">,</span>  <span class="nx">offset</span> <span class="o">+</span> <span class="nx">z</span> <span class="o">*</span> <span class="nx">options</span><span class="p">.</span><span class="nx">noiseScale</span> <span class="p">)</span> <span class="o">*</span> <span class="nx">amp</span><span class="p">)</span> <span class="o">-</span> <span class="nx">amp</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">terrain</span><span class="p">.</span><span class="nx">setElevation</span><span class="p">(</span><span class="nx">elevation</span><span class="p">);</span>
+  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>create a THREE.Mesh from the toxiclibs.js terrain</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">threeMesh</span> <span class="o">=</span> <span class="nx">ToxiclibsSupport</span><span class="p">.</span><span class="nx">createMesh</span><span class="p">(</span>
+    <span class="nx">terrain</span><span class="p">.</span><span class="nx">toMesh</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshPhongMaterial</span><span class="p">({</span><span class="nx">color</span><span class="o">:</span> <span class="mh">0xffffff</span><span class="p">,</span> <span class="nx">wireframe</span><span class="o">:</span> <span class="kc">false</span> <span class="p">})</span>
+  <span class="p">);</span>
+
+  <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="p">;</span>
+  <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">camera</span> <span class="p">);</span>
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">threeMesh</span> <span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">light1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">DirectionalLight</span><span class="p">(</span><span class="mh">0x0000ff</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
+  <span class="nx">light1</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">).</span><span class="nx">normalize</span><span class="p">();</span>
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">light1</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">light2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">DirectionalLight</span><span class="p">(</span><span class="mh">0x66ff66</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
+  <span class="nx">light2</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="o">-</span><span class="mf">0.25</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">).</span><span class="nx">normalize</span><span class="p">();</span>
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">light2</span><span class="p">);</span>
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">AmbientLight</span><span class="p">(</span> <span class="mh">0x333333</span> <span class="p">)</span> <span class="p">);</span>
+
+  <span class="kd">function</span> <span class="nx">draw</span><span class="p">(){</span>
+    <span class="kd">var</span> <span class="nx">newGeom</span><span class="p">;</span>
+
+    <span class="nx">frameCount</span><span class="o">++</span><span class="p">;</span>
+    <span class="nx">updateElevations</span><span class="p">(</span> <span class="nx">frameCount</span> <span class="o">/</span> <span class="mi">100</span> <span class="p">);</span>
+    <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">dynamic</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>get a new geometry for the changed terrain</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">newGeom</span> <span class="o">=</span> <span class="nx">ToxiclibsSupport</span><span class="p">.</span><span class="nx">createMeshGeometry</span><span class="p">(</span> <span class="nx">terrain</span><span class="p">.</span><span class="nx">toMesh</span><span class="p">()</span> <span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>update all of the vertices</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+      <span class="kd">var</span> <span class="nx">g</span> <span class="o">=</span> <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">geometry</span><span class="p">;</span>
+      <span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">i</span><span class="p">){</span>
+        <span class="nx">v</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="nx">newGeom</span><span class="p">.</span><span class="nx">vertices</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">x</span><span class="p">,</span> <span class="nx">newGeom</span><span class="p">.</span><span class="nx">vertices</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">y</span><span class="p">,</span> <span class="nx">newGeom</span><span class="p">.</span><span class="nx">vertices</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">z</span> <span class="p">);</span>
+      <span class="p">});</span>
+      <span class="nx">g</span><span class="p">.</span><span class="nx">computeFaceNormals</span><span class="p">();</span>
+      <span class="nx">g</span><span class="p">.</span><span class="nx">computeVertexNormals</span><span class="p">();</span>
+      <span class="nx">g</span><span class="p">.</span><span class="nx">verticesNeedUpdate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="nx">g</span><span class="p">.</span><span class="nx">normalsNeedUpdate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}());</span>
+    <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span> <span class="p">);</span>
+    
+    <span class="k">if</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">running</span> <span class="p">){</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>three.js bundles a polyfill, so this will work fine in all browsers</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nb">window</span><span class="p">.</span><span class="nx">requestAnimationFrame</span><span class="p">(</span> <span class="nx">draw</span> <span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="nx">draw</span><span class="p">();</span>
+<span class="p">});</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section><footer></footer></body></html>

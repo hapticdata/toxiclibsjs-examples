@@ -1,0 +1,130 @@
+<!DOCTYPE html><html><head><title>my title</title><link rel="stylesheet" href="stylesheets/style.css"></head><body><div id="example-container" class="pjs"><canvas id="myCanvas"></canvas></div><script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script><script src="javascripts/processing.js"></script><script type="application/processing" data-processing-target="myCanvas">//#Polar Lines w/ [Processing.js](http://processingjs.org)
+//-	original example by [Karsten Schmidt](http://postspectacular.com)
+//-	Toxiclibs ported to js by [Kyle Phillips](http://haptic-data.com)
+//
+//PolarLines demo shows the difference between lines in normal cartesian and polar coordinate systems, //where a line is actually a curve/spiral. Both "lines" are shown in parallel and the only difference //is the order of the `.toCartesian()` conversion (either inside or outside the loop).
+
+/* 
+ * Copyright (c) 2006-2008 Karsten Schmidt
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * http://creativecommons.org/licenses/LGPL/2.1/
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+
+var Vec2D = toxi.geom.Vec2D;
+
+import toxi.geom.*;
+
+
+
+void setup() {
+  size(640,560);
+  smooth();
+}
+
+void draw() {
+  background(245);
+  translate(width/2,height/2);
+  stroke(255,0,0);
+  strokeWeight(2);
+
+  // start point at radius 10, 0 degrees
+  Vec2D a= new Vec2D(10,0);
+
+  // end point at mouse position
+  Vec2D b=new Vec2D(mouseX,mouseY).sub(width/2,height/2).toPolar();
+  // force at least 1 full turn to create spiral
+  b.y+=4*PI;
+
+  // draw a "line" from a -> b in POLAR space
+  // calculate intermediate points
+  for(int i=0, num=200; i<num; i++) {
+    // interpolate in polar space
+    // and only convert result into cartesian
+    Vec2D p=a.interpolateTo(b,(float)i/num).toCartesian();
+    point(p.x,p.y);
+  }
+
+  // draw a line from a -> b in CARTESIAN space
+  // transfer points into cartesian space
+  a.toCartesian();
+  b.toCartesian();
+  stroke(0,0,255);
+  // calculate intermediate points
+  for(int i=0,num=50; i<num; i++) {
+    // interpolation already happens in cartesian space
+    // no further conversion needed
+    Vec2D p=a.interpolateTo(b,(float)i/num);
+    point(p.x,p.y);
+  }
+}</script><nav id="navigation"><ul><li><a href="#">Toxiclibs.js</a></li><li><a href="#">Examples</a></li><li>This Example:<ul><li><a href="#">Annotated Source</a></li><li><a href="#">Live Editor</a></li></ul></li></ul></nav><section id="pagelet">  <div id="container">     <div id="background"></div>            <!--div id="jump_to">         <a href="http://haptic-data.com/toxiclibsjs">Toxiclibs.js</a> > Examples &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="additiveWaves.html">                 additiveWaves.js               </a>                                           <a class="source" href="arcPolarCoordinates.html">                 arcPolarCoordinates.js               </a>                                           <a class="source" href="attraction2d.html">                 attraction2d.js               </a>                                           <a class="source" href="circle3Points.html">                 circle3Points.js               </a>                                           <a class="source" href="draggableParticles_pjs.html">                 draggableParticles_pjs.js               </a>                                           <a class="source" href="line2dIntersection.html">                 line2dIntersection.js               </a>                                           <a class="source" href="meshDoodle.html">                 meshDoodle.js               </a>                                           <a class="source" href="perlinNoiseCanvas.html">                 perlinNoiseCanvas.js               </a>                                           <a class="source" href="polarLinesPjs.html">                 polarLinesPjs.js               </a>                                           <a class="source" href="softBodySquare.html">                 softBodySquare.js               </a>                                           <a class="source" href="superEllipsoid.html">                 superEllipsoid.js               </a>                                           <a class="source" href="terrainNoise.html">                 terrainNoise.js               </a>                                           <a class="source" href="thread.html">                 thread.js               </a>                                           <a class="source" href="wheelInsets.html">                 wheelInsets.js               </a>                        </div>         </div>       </div-->          <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Polar Lines w/ <a href="http://processingjs.org">Processing.js</a></h1>
+
+<ul>
+<li>original example by <a href="http://postspectacular.com">Karsten Schmidt</a></li>
+<li>Toxiclibs ported to js by <a href="http://haptic-data.com">Kyle Phillips</a></li>
+</ul>
+
+<p>PolarLines demo shows the difference between lines in normal cartesian and polar coordinate systems, //where a line is actually a curve/spiral. Both "lines" are shown in parallel and the only difference //is the order of the <code>.toCartesian()</code> conversion (either inside or outside the loop).</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/* </span>
+<span class="cm"> * Copyright (c) 2006-2008 Karsten Schmidt</span>
+<span class="cm"> * </span>
+<span class="cm"> * This library is free software; you can redistribute it and/or</span>
+<span class="cm"> * modify it under the terms of the GNU Lesser General Public</span>
+<span class="cm"> * License as published by the Free Software Foundation; either</span>
+<span class="cm"> * version 2.1 of the License, or (at your option) any later version.</span>
+<span class="cm"> * </span>
+<span class="cm"> * http://creativecommons.org/licenses/LGPL/2.1/</span>
+<span class="cm"> * </span>
+<span class="cm"> * This library is distributed in the hope that it will be useful,</span>
+<span class="cm"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span>
+<span class="cm"> * Lesser General Public License for more details.</span>
+<span class="cm"> * </span>
+<span class="cm"> * You should have received a copy of the GNU Lesser General Public</span>
+<span class="cm"> * License along with this library; if not, write to the Free Software</span>
+<span class="cm"> * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</span>
+<span class="cm"> */</span>
+
+
+<span class="kd">var</span> <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">;</span>
+
+<span class="kr">import</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="o">*</span><span class="p">;</span>
+
+
+
+<span class="k">void</span> <span class="nx">setup</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">size</span><span class="p">(</span><span class="mi">640</span><span class="p">,</span><span class="mi">560</span><span class="p">);</span>
+  <span class="nx">smooth</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">void</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">background</span><span class="p">(</span><span class="mi">245</span><span class="p">);</span>
+  <span class="nx">translate</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+  <span class="nx">stroke</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+  <span class="nx">strokeWeight</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>start point at radius 10, 0 degrees</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Vec2D</span> <span class="nx">a</span><span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>end point at mouse position</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Vec2D</span> <span class="nx">b</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span><span class="nx">mouseY</span><span class="p">).</span><span class="nx">sub</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">).</span><span class="nx">toPolar</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>force at least 1 full turn to create spiral</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">b</span><span class="p">.</span><span class="nx">y</span><span class="o">+=</span><span class="mi">4</span><span class="o">*</span><span class="nx">PI</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>draw a "line" from a -> b in POLAR space
+calculate intermediate points</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">for</span><span class="p">(</span><span class="kr">int</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nx">num</span><span class="o">=</span><span class="mi">200</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">num</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>interpolate in polar space
+and only convert result into cartesian</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">Vec2D</span> <span class="nx">p</span><span class="o">=</span><span class="nx">a</span><span class="p">.</span><span class="nx">interpolateTo</span><span class="p">(</span><span class="nx">b</span><span class="p">,(</span><span class="kr">float</span><span class="p">)</span><span class="nx">i</span><span class="o">/</span><span class="nx">num</span><span class="p">).</span><span class="nx">toCartesian</span><span class="p">();</span>
+    <span class="nx">point</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
+  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>draw a line from a -> b in CARTESIAN space
+transfer points into cartesian space</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">a</span><span class="p">.</span><span class="nx">toCartesian</span><span class="p">();</span>
+  <span class="nx">b</span><span class="p">.</span><span class="nx">toCartesian</span><span class="p">();</span>
+  <span class="nx">stroke</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>calculate intermediate points</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">for</span><span class="p">(</span><span class="kr">int</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nx">num</span><span class="o">=</span><span class="mi">50</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">num</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>interpolation already happens in cartesian space
+no further conversion needed</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">Vec2D</span> <span class="nx">p</span><span class="o">=</span><span class="nx">a</span><span class="p">.</span><span class="nx">interpolateTo</span><span class="p">(</span><span class="nx">b</span><span class="p">,(</span><span class="kr">float</span><span class="p">)</span><span class="nx">i</span><span class="o">/</span><span class="nx">num</span><span class="p">);</span>
+    <span class="nx">point</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section><footer></footer></body></html>

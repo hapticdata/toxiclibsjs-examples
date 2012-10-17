@@ -1,0 +1,191 @@
+<!DOCTYPE html><html><head><title>my title</title><link rel="stylesheet" href="stylesheets/style.css"></head><body><div id="example-container" class="pjs"><canvas id="myCanvas"></canvas></div><script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script><script src="javascripts/processing.js"></script><script type="application/processing" data-processing-target="myCanvas">/* 
+ * Copyright (c) 2010 Karsten Schmidt
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * http://creativecommons.org/licenses/LGPL/2.1/
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+
+var TriangleMesh = toxi.geom.mesh.TriangleMesh,
+    ToxiclibsSupport = toxi.processing.ToxiclibsSupport,
+    SurfaceMeshBuilder = toxi.geom.mesh.SurfaceMeshBuilder,
+    SuperEllipsoid = toxi.geom.mesh.SuperEllipsoid,
+    SineWave = toxi.math.waves.SineWave,
+    Vec3D = toxi.geom.Vec3D;
+
+
+TriangleMesh mesh = new TriangleMesh();
+
+AbstractWave modX, modY;
+ToxiclibsSupport gfx;
+
+boolean isWireFrame;
+boolean showNormals;
+
+
+void setup() {
+  size(940,480, OPENGL);
+  gfx = new ToxiclibsSupport(this);
+  isWireFrame = true;
+  modX = new SineWave(0, 0.01f, 2.5f, 2.5f);
+  modY = new SineWave(PI, 0.017f, 2.5f, 2.5f);
+}
+
+void draw() {
+  SurfaceFunction functor=new SuperEllipsoid(modX.update(), modY.update());
+  SurfaceMeshBuilder b = new SurfaceMeshBuilder(functor);
+  mesh = (TriangleMesh)b.createMesh(new TriangleMesh("se"+frameCount),20, 80);
+  mesh.computeVertexNormals();
+  background(0);
+
+  lights();
+
+  translate(width / 2, height / 2, 0);
+  rotateX(mouseY * 0.01);
+  rotateY(mouseX * 0.01);
+  
+  gfx.origin(300);
+  
+  if (isWireFrame) {
+    noFill();
+    stroke(255);
+  } 
+  else {
+    fill(255);
+    noStroke();
+  }
+
+    gfx.origin(300);
+  if (isWireFrame) {
+    noFill();
+    stroke(255);
+  } 
+  else {
+    fill(255);
+    noStroke();
+  }
+  //scale(2);
+  gfx.mesh(mesh, !isWireFrame, showNormals ? 10 : 0);
+
+}
+
+
+void keyPressed() {
+  if (key == 'w') {
+    isWireFrame = !isWireFrame;
+  }
+  if (key == 'n') {
+    showNormals = !showNormals;
+  }
+  /*if (key == 's') {
+    mesh.saveAsSTL(sketchPath("superellipsoid-"+(System.currentTimeMillis()/1000)+".stl"));
+  }*/
+}</script><nav id="navigation"><ul><li><a href="#">Toxiclibs.js</a></li><li><a href="#">Examples</a></li><li>This Example:<ul><li><a href="#">Annotated Source</a></li><li><a href="#">Live Editor</a></li></ul></li></ul></nav><section id="pagelet">  <div id="container">     <div id="background"></div>            <!--div id="jump_to">         <a href="http://haptic-data.com/toxiclibsjs">Toxiclibs.js</a> > Examples &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="additiveWaves.html">                 additiveWaves.js               </a>                                           <a class="source" href="arcPolarCoordinates.html">                 arcPolarCoordinates.js               </a>                                           <a class="source" href="attraction2d.html">                 attraction2d.js               </a>                                           <a class="source" href="circle3Points.html">                 circle3Points.js               </a>                                           <a class="source" href="draggableParticles_pjs.html">                 draggableParticles_pjs.js               </a>                                           <a class="source" href="line2dIntersection.html">                 line2dIntersection.js               </a>                                           <a class="source" href="meshDoodle.html">                 meshDoodle.js               </a>                                           <a class="source" href="perlinNoiseCanvas.html">                 perlinNoiseCanvas.js               </a>                                           <a class="source" href="polarLinesPjs.html">                 polarLinesPjs.js               </a>                                           <a class="source" href="softBodySquare.html">                 softBodySquare.js               </a>                                           <a class="source" href="superEllipsoid.html">                 superEllipsoid.js               </a>                                           <a class="source" href="terrainNoise.html">                 terrainNoise.js               </a>                                           <a class="source" href="thread.html">                 thread.js               </a>                                           <a class="source" href="wheelInsets.html">                 wheelInsets.js               </a>                        </div>         </div>       </div-->          <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/* </span>
+<span class="cm"> * Copyright (c) 2010 Karsten Schmidt</span>
+<span class="cm"> * </span>
+<span class="cm"> * This library is free software; you can redistribute it and/or</span>
+<span class="cm"> * modify it under the terms of the GNU Lesser General Public</span>
+<span class="cm"> * License as published by the Free Software Foundation; either</span>
+<span class="cm"> * version 2.1 of the License, or (at your option) any later version.</span>
+<span class="cm"> * </span>
+<span class="cm"> * http://creativecommons.org/licenses/LGPL/2.1/</span>
+<span class="cm"> * </span>
+<span class="cm"> * This library is distributed in the hope that it will be useful,</span>
+<span class="cm"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span>
+<span class="cm"> * Lesser General Public License for more details.</span>
+<span class="cm"> * </span>
+<span class="cm"> * You should have received a copy of the GNU Lesser General Public</span>
+<span class="cm"> * License along with this library; if not, write to the Free Software</span>
+<span class="cm"> * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</span>
+<span class="cm"> */</span>
+
+
+<span class="kd">var</span> <span class="nx">TriangleMesh</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">TriangleMesh</span><span class="p">,</span>
+    <span class="nx">ToxiclibsSupport</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">processing</span><span class="p">.</span><span class="nx">ToxiclibsSupport</span><span class="p">,</span>
+    <span class="nx">SurfaceMeshBuilder</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">SurfaceMeshBuilder</span><span class="p">,</span>
+    <span class="nx">SuperEllipsoid</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">SuperEllipsoid</span><span class="p">,</span>
+    <span class="nx">SineWave</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">waves</span><span class="p">.</span><span class="nx">SineWave</span><span class="p">,</span>
+    <span class="nx">Vec3D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">;</span>
+
+
+<span class="nx">TriangleMesh</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TriangleMesh</span><span class="p">();</span>
+
+<span class="nx">AbstractWave</span> <span class="nx">modX</span><span class="p">,</span> <span class="nx">modY</span><span class="p">;</span>
+<span class="nx">ToxiclibsSupport</span> <span class="nx">gfx</span><span class="p">;</span>
+
+<span class="kr">boolean</span> <span class="nx">isWireFrame</span><span class="p">;</span>
+<span class="kr">boolean</span> <span class="nx">showNormals</span><span class="p">;</span>
+
+
+<span class="k">void</span> <span class="nx">setup</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">size</span><span class="p">(</span><span class="mi">940</span><span class="p">,</span><span class="mi">480</span><span class="p">,</span> <span class="nx">OPENGL</span><span class="p">);</span>
+  <span class="nx">gfx</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ToxiclibsSupport</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+  <span class="nx">isWireFrame</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="nx">modX</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SineWave</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.01f</span><span class="p">,</span> <span class="mf">2.5f</span><span class="p">,</span> <span class="mf">2.5f</span><span class="p">);</span>
+  <span class="nx">modY</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SineWave</span><span class="p">(</span><span class="nx">PI</span><span class="p">,</span> <span class="mf">0.017f</span><span class="p">,</span> <span class="mf">2.5f</span><span class="p">,</span> <span class="mf">2.5f</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">void</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">SurfaceFunction</span> <span class="nx">functor</span><span class="o">=</span><span class="k">new</span> <span class="nx">SuperEllipsoid</span><span class="p">(</span><span class="nx">modX</span><span class="p">.</span><span class="nx">update</span><span class="p">(),</span> <span class="nx">modY</span><span class="p">.</span><span class="nx">update</span><span class="p">());</span>
+  <span class="nx">SurfaceMeshBuilder</span> <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SurfaceMeshBuilder</span><span class="p">(</span><span class="nx">functor</span><span class="p">);</span>
+  <span class="nx">mesh</span> <span class="o">=</span> <span class="p">(</span><span class="nx">TriangleMesh</span><span class="p">)</span><span class="nx">b</span><span class="p">.</span><span class="nx">createMesh</span><span class="p">(</span><span class="k">new</span> <span class="nx">TriangleMesh</span><span class="p">(</span><span class="s2">&quot;se&quot;</span><span class="o">+</span><span class="nx">frameCount</span><span class="p">),</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">);</span>
+  <span class="nx">mesh</span><span class="p">.</span><span class="nx">computeVertexNormals</span><span class="p">();</span>
+  <span class="nx">background</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+  <span class="nx">lights</span><span class="p">();</span>
+
+  <span class="nx">translate</span><span class="p">(</span><span class="nx">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="nx">rotateX</span><span class="p">(</span><span class="nx">mouseY</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">);</span>
+  <span class="nx">rotateY</span><span class="p">(</span><span class="nx">mouseX</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">);</span>
+  
+  <span class="nx">gfx</span><span class="p">.</span><span class="nx">origin</span><span class="p">(</span><span class="mi">300</span><span class="p">);</span>
+  
+  <span class="k">if</span> <span class="p">(</span><span class="nx">isWireFrame</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">noFill</span><span class="p">();</span>
+    <span class="nx">stroke</span><span class="p">(</span><span class="mi">255</span><span class="p">);</span>
+  <span class="p">}</span> 
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">fill</span><span class="p">(</span><span class="mi">255</span><span class="p">);</span>
+    <span class="nx">noStroke</span><span class="p">();</span>
+  <span class="p">}</span>
+
+    <span class="nx">gfx</span><span class="p">.</span><span class="nx">origin</span><span class="p">(</span><span class="mi">300</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">isWireFrame</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">noFill</span><span class="p">();</span>
+    <span class="nx">stroke</span><span class="p">(</span><span class="mi">255</span><span class="p">);</span>
+  <span class="p">}</span> 
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">fill</span><span class="p">(</span><span class="mi">255</span><span class="p">);</span>
+    <span class="nx">noStroke</span><span class="p">();</span>
+  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>scale(2);</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">gfx</span><span class="p">.</span><span class="nx">mesh</span><span class="p">(</span><span class="nx">mesh</span><span class="p">,</span> <span class="o">!</span><span class="nx">isWireFrame</span><span class="p">,</span> <span class="nx">showNormals</span> <span class="o">?</span> <span class="mi">10</span> <span class="o">:</span> <span class="mi">0</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+
+<span class="k">void</span> <span class="nx">keyPressed</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">key</span> <span class="o">==</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">isWireFrame</span> <span class="o">=</span> <span class="o">!</span><span class="nx">isWireFrame</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">key</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">showNormals</span> <span class="o">=</span> <span class="o">!</span><span class="nx">showNormals</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="cm">/*if (key == &#39;s&#39;) {</span>
+<span class="cm">    mesh.saveAsSTL(sketchPath(&quot;superellipsoid-&quot;+(System.currentTimeMillis()/1000)+&quot;.stl&quot;));</span>
+<span class="cm">  }*/</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section><footer></footer></body></html>

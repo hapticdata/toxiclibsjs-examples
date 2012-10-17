@@ -1,9 +1,16 @@
 [
+	{"title": "Additive Waves w/ [Processing.js](http://processingjs.org)", "src": "additiveWaves", "template": "pjs"},
 	{"src": "attraction2d", "template" : "pjs" },
 	{"src": "arcPolarCoordinates", "template": "pjs" },
-	{"src": "additiveWaves", "template": "pjs"},
 	{"src": "circle3Points", "template": "pjs"},
+	{"src": "draggableParticles_pjs", "template": "pjs" },
+	{"src": "line2dIntersection", "template": "pjs" },
 	{"src": "meshDoodle", "template" : "pjs" },
+	{"src": "perlinNoiseCanvas", "template": "pjs" },
+	{"src": "polarLinesPjs", "template": "pjs" },
 	{"src": "softBodySquare", "template" : "pjs" },
-	{"src": "terrainNoise", "template" : "require" }
+	{"src": "superEllipsoid", "template": "pjs" },
+	{"src": "terrainNoise", "template" : "require" },
+	{"src": "thread", "template": "pjs" },
+	{"src": "wheelInsets", "template": "pjs"}
 ]
