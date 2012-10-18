@@ -1,4 +1,4 @@
-/*global __dirname*/
+/*global __dirname, console*/
 var jade = require('jade'),
 	less = require('less'),
 	wrench = require('wrench'),
@@ -6,25 +6,19 @@ var jade = require('jade'),
 	async = require('async'),
 	fs = require('fs');
 
-var config = require('./config.json');
-
 var options = {
-	compress: true,
+	compress: false,
 	css: __dirname + '/www/stylesheets/',
 	html: __dirname + '/www/'
 };
 
-var sources = [];
-config.forEach(function( item ){
-	sources.push( __dirname+'/src/'+item.src+'.js' );
-});
 
 
 //re-render less
 
 watchThenDo( 'less', compileLess );
 watchThenDo( 'views', compileTemplates );
-watchThenDo( 'src', compileTemplates );
+watchThenDo( 'examples', compileTemplates );
 
 
 function watchThenDo( watchDirectory, compile ){
@@ -72,8 +66,14 @@ function compileLess( dir, file ){
 
 //re-render all templates and docco
 function compileTemplates(){
+	var config = JSON.parse( fs.readFileSync('./config.json') );
+	console.log('config', config );
+	var sources = [];
+	config.examples.forEach(function( item ){
+		sources.push( __dirname+'/examples/'+item.src+'.js' );
+	});
 	docco.document(sources, { template: __dirname + "/views/docco-template.jst"}, function(){
-		items = config.slice(0);
+		var items = config.examples.slice(0);
 		async.whilst(function whilst() {
 			return (items.length > 0 );
 		}, function doThis( callback ) {
@@ -87,25 +87,35 @@ function compileTemplates(){
 	});
 }
 
-function generateTemplates( file, config, callback ){
+function generateTemplates( file, example, callback ){
 
-	var script = fs.readFileSync( __dirname + '/src/'+file+'.js');
+	if( example.template === undefined ){
+		example.template = "index";
+	}
+	var script = fs.readFileSync( __dirname + '/examples/'+file+'.js');
 	var doccoPagelet = __dirname + '/docs/'+file+'.html';
 	var layoutTemplate =  __dirname + '/views/layout.jade';
-	var jadeTemplate = __dirname + '/views/'+config.template+'.jade';
+	var jadeTemplate = __dirname + '/views/'+example.template+'.jade';
 	var outputFile =  options.html+file+'.html';
 	var template = "pjs";
 
+
+	example.options = example.options || {};
+	example.options.filename = layoutTemplate;
+	example.options.pretty = true;
 	var locals = { pretty: true };
 	locals.layout = true;
-	locals.title = "my title";
+	locals.title = example.title + ' - Toxiclibs.js';
+	locals.includes = example.options.includes;
 
 
 	fs.readFile( doccoPagelet , function( err, body ){
 		locals.pagelet = body;
 		locals.script = script;
 		fs.readFile( jadeTemplate, function( err, body ){
-			var fn = jade.compile(body, {filename: layoutTemplate, title: "hey" });
+			console.log('example.options', example.options);
+			var fn = jade.compile(body, example.options );
+			console.log('locals ', locals);
 			var output = fn(locals);
 			fs.writeFile( outputFile, output, function( err ){
 				if( err ) throw err;

@@ -1,9 +1,23 @@
+@dark_gray: #272822;
+@focal_blue: #66D9EF;
+@off_white: #FAFAFA; //#F8F8E6;
+@selection: #383830;
+@yellow: #E6DB74;
+@green: #6B9901;
+@code_bg: #faf9f5;
+//syntax highlighting colors
+@keyword: #0076AF;
+@literal_number: #990257;
+@import "prefixer.less";
 @import "docco.less";
 
+* {
+	.box-sizing( border-box );
+}
 body {
   padding: 0;
   margin: 0;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 canvas:focus {
 	outline: none;
@@ -13,35 +27,91 @@ canvas:focus {
 	padding: 50px;
 }
 
-.pjs {
-	&#example-container {
-		text-align: center;
-		background-color: #222222;
-		padding: 50px;
-		canvas {
-			margin: auto;
-			.box-shadow( 0px 2px 8px black );
-			.transition( all 1sec easeIn );
-		}
-	}
-}
-
-a {
-  color: #00B7FF;
-}
-
 #navigation {
 	background-color: black;
-
+	.selected:not(.examples) {
+		.transition( all 1s easeIn );
+		background-color: @off_white;
+		color: black;
+		a {
+			font-weight: bold;
+			color: black;
+			text-decoration: none;
+		}
+	}
 	ul {
 		display: inline-block;
+		margin: 0;
+		height: 60px;
 		li {
+			.transition( all 1s easeIn );
+			height: 100%;
 			margin: 0;
+			padding-top: 22px;
 			padding-right: 20px;
+			padding-left: 10px;
+			padding-bottom: 0;
 			display: inline-block;
 			list-style-type: none;
 		}
 	}
+}
+
+.examples-nav {
+	text-align: center;
+	padding: 2.5%;
+	/*padding-top: 20px;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-bottom: 20px;*/
+	background-color: black;
+	width: 100%;
+	overflow: auto;
+	form {
+		text-align: left;
+		padding: 15px;
+	}
+	select {
+		font-size: 24px;
+	}
+}
+.examples-list {
+	margin: auto;
+	text-align: left;
+	.example-link {
+		font-size: 10px;
+		width:  100%/8.25;
+		height: 42px;
+		height: auto;
+		overflow: hidden;
+		display: inline-block;
+		& > img {
+
+		}
+	}
+}
+
+#example-container {
+	background-color: #222222;
+}
+.zoomed2x {
+	.transform( scale(2.0,2.0) );
+}
+.centered {
+	padding: 50px;
+	text-align: center;
+	& canvas{
+		margin: auto;
+		.box-shadow( 0px 2px 4px 4px rgba(0,0,0,0.25) );
+		.transition( all 1sec easeIn );
+	}
+}
+.pjs {
+	.centered();
+}
+
+a {
+  color: #00B7FF;
 }
 
 .grad {

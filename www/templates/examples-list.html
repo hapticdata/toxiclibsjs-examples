@@ -1,0 +1,13 @@
+<% for( var i=0, l=data.examples.length; i<l; i++ ) { %>
+	<% var ex = data.examples[i]; %>
+	<% var thumbnail = ex.thumbnail; %>
+	<% if( thumbnail === undefined ) { %>
+		<% thumbnail = ex.src + ".gif"; %>
+	<% } %>
+	<% thumbnail = "images/" + thumbnail; %>
+	<div data-tags="<%= ex.tags %>" class="example-link">
+		<a href="<%= (ex.src + '.html') %>">
+			<img src="<%= thumbnail %>" title="<% ex.title %>"><br>
+		</a>
+	</div>
+<% } %>

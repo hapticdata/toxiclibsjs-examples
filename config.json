@@ -1,16 +1,147 @@
-[
-	{"title": "Additive Waves w/ [Processing.js](http://processingjs.org)", "src": "additiveWaves", "template": "pjs"},
-	{"src": "attraction2d", "template" : "pjs" },
-	{"src": "arcPolarCoordinates", "template": "pjs" },
-	{"src": "circle3Points", "template": "pjs"},
-	{"src": "draggableParticles_pjs", "template": "pjs" },
-	{"src": "line2dIntersection", "template": "pjs" },
-	{"src": "meshDoodle", "template" : "pjs" },
-	{"src": "perlinNoiseCanvas", "template": "pjs" },
-	{"src": "polarLinesPjs", "template": "pjs" },
-	{"src": "softBodySquare", "template" : "pjs" },
-	{"src": "superEllipsoid", "template": "pjs" },
-	{"src": "terrainNoise", "template" : "require" },
-	{"src": "thread", "template": "pjs" },
-	{"src": "wheelInsets", "template": "pjs"}
-]
+{
+	"_comment": "each examples tags get mapped to apis and topics",
+	"topics": [
+		{ "id": "Geometry", "tag": "geom"},
+		{ "id": "Mesh", "tag": "mesh"},
+		{ "id": "Color", "tag": "color" },
+		{ "id": "Verlet Physics2d", "tag": "physics2d" },
+		{ "id": "Math", "tag": "math" }
+	],
+
+	"apis": [
+		{ "id": "Processing.js", "tag": "pjs" },
+		{ "id": "WebGL", "tag": "webgl" },
+		{ "id": "Three.js", "tag": "three" },
+		{ "id": "Canvas 2D", "tag": "canvas" },
+		{ "id": "Raphael.js", "tag": "raphael" },
+		{ "id": "Require.js", "tag": "require" }
+	],
+
+	"examples": [{
+		"title": "Terrain Noise",
+		"src": "terrainNoise",
+		"template": "require",
+		"thubmnail": "additiveWaves.jpg",
+		"tags": "three, require, mesh"
+	},{
+		"title": "Additive Waves",
+		"src": "additiveWaves",
+		"template": "pjs",
+		"thumbnail": "additiveWaves.jpg",
+		"tags": "pjs, math"
+	},{
+		"title": "Mesh Align-to-Axis",
+		"src": "meshAlignToAxisWebGL",
+		"template": "canvas2d",
+		"thumbnail": "meshAlignToAxisWebGL.jpg",
+		"tags": "webgl, mesh"
+	},{
+		"title": "Attraction 2D",
+		"src": "attraction2d",
+		"template" : "pjs",
+		"tags": "pjs, physics2d"
+	},{
+		"title": "Arc-Polar Coordinates",
+		"src": "arcPolarCoordinates", "template": "pjs",
+		"tags": "pjs, geom"
+	},{
+		"title": "Circle from 3 points",
+		"src": "circle3Points", "template": "pjs",
+		"tags": "pjs, geom"
+	},{
+		"title": "Draggable Particles",
+		"src": "draggableParticles_pjs", "template": "pjs",
+		"tags": "pjs, physics2d"
+	},{
+		"title": "Line2D Intersection",
+		"src": "line2dIntersection", "template": "pjs",
+		"tags": "pjs, geom"
+	},{
+		"title": "Mesh Doodle",
+		"src": "meshDoodle", "template" : "pjs",
+		"tags": "pjs, webgl, mesh"
+	},{
+		"title": "Perlin Noise",
+		"src": "perlinNoiseCanvas", "template": "canvas2d",
+		"tags": "canvas, math",
+		"options": {
+			"includes": [
+				"javascripts/vendor/dat.gui.min.js"
+			]
+		} 
+	},{
+		"title": "Simplex Noise",
+		"src": "simplexNoiseCanvas", "template": "canvas2d",
+		"thumbnail": "simplexNoiseCanvas.jpg",
+		"tags": "canvas, math",
+		"options": {
+			"includes": [
+				"javascripts/vendor/jquery.js"
+			]
+		}
+	},
+	{
+		"title": "Shiffman Flocking",
+		"src": "shiffmanFlockingPjs",
+		"template": "pjs",
+		"tags": "pjs, misc"
+	},{
+		"title": "Smooth Doodle",
+		"src": "smoothDoodleCanvas", "template": "canvas2d",
+		"tags": "canvas, geom",
+		"options": {
+			"includes": [
+				"javascripts/vendor/dat.gui.min.js"
+			]
+		}
+	},{
+		"title": "Spherical Harmonics",
+		"src": "sphericalHarmonicsThree",
+		"tags": "three.js, mesh",
+		"thumbnail": "sphericalHarmonicsThree.jpg",
+		"options": {
+			"includes": [
+				"javascripts/vendor/dat.gui.min.js",
+				"javascripts/vendor/three.js",
+				"javascripts/vendor/jquery.js"
+			]
+		}
+	},{
+		"title": "Polar Lines",
+		"src": "polarLinesPjs", "template": "pjs",
+		"tags": "pjs, geom"
+	},{
+		"title": "Polar Unravel",
+		"src": "polarUnravel", "template": "pjs",
+		"tags": "pjs, geom"
+	},{
+		"title": "Soft-body Square",
+		"src": "softBodySquare", "template" : "pjs",
+		"tags": "pjs, physics2d"
+	}, {
+		"title": "Super-Ellipsoid",
+		"src": "superEllipsoid", "template": "pjs",
+		"tags": "pjs, webgl, mesh"
+	},{
+		"title": "Thread",
+		"src": "thread", "template": "pjs",
+		"tags": "pjs, webgl, physics2d"
+	},{
+		"title": "TColor",
+		"src": "tcolorPjs", "template": "pjs",
+		"tags": "pjs, color"
+	},{
+		"title": "Color Waves",
+		"src": "colorWavesRaphael",
+		"tags": "raphael, color",
+		"options": {
+			"includes": [
+				"javascripts/vendor/raphael-min.js"
+			]
+		}
+	},{
+		"title": "Wheel Insets",
+		"src": "wheelInsets", "template": "pjs",
+		"tags": "pjs, geom"
+	}]
+}

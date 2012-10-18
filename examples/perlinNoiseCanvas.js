@@ -1,6 +1,6 @@
 //#Perlin Noise Field w/ Canvas 2D Rendering Context
 //- Toxiclibs ported to js and example by [Kyle Phillips](http://haptic-data.com)
-//Perlin Noise Field is an example showing how to use 
+//Perlin Noise Field is an example showing how to use
 //toxi.math.noise.PerlinNoise](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/math/noise/PerlinNoise.js) 
 //for animating vectors or creating procedural textures.
 
@@ -17,10 +17,10 @@
     //TColor.newHex('35e8df')
   ];
   
-  var canvas = document.getElementById('myCanvas'),
+  var canvas = document.getElementById('example'),
       ctx = canvas.getContext('2d'),
       perlin = new toxi.math.noise.PerlinNoise(),
-      offset = 0,
+      offset = 0, 
       options = {
         numStreams: 500,
         distort: 0,
@@ -30,6 +30,7 @@
       };
       streams = [];
   
+  setCanvasSize();
   var gui = new DAT.GUI();
   gui.add(options,'numStreams', 1, 4000, 1.0).name("# Streams");
   gui.add(options,'step',0.25,10,0.25).name("Speed");
@@ -94,3 +95,9 @@
   }
 
   setTimeout(draw, 1000 / 30);
+
+  function setCanvasSize(){
+    canvas.width = window.innerWidth;
+    canvas.height= 500;
+  }
+  window.addEventListener('resize', setCanvasSize, false );

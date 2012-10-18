@@ -1,4 +1,18 @@
-<!DOCTYPE html><html><head><title>my title</title><link rel="stylesheet" href="stylesheets/style.css"></head><body><div id="example-container" class="pjs"><canvas id="myCanvas"></canvas></div><script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script><script src="javascripts/processing.js"></script><script type="application/processing" data-processing-target="myCanvas">//#Line2D Intersection
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Line2D Intersection - Toxiclibs.js</title>
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/config.js"></script>
+    <script data-main="../main" src="javascripts/vendor/require.js"></script>
+  </head>
+  <body>
+    <div id="example-container" class="pjs">
+      <canvas id="myCanvas"></canvas>
+    </div>
+    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
+    <script src="javascripts/vendor/processing.js"></script>
+    <script type="application/processing" data-processing-target="myCanvas">//#Line2D Intersection
 //ported to javascript by [Kyle Phillips](http://haptic-data.com)
 //original example by [Karsten Schmidt](http://postspectacular.com)
 //
@@ -53,7 +67,17 @@ void draw() {
   }
   line(l.a.x,l.a.y,l.b.x,l.b.y);
   line(m.a.x,m.a.y,m.b.x,m.b.y);
-}</script><nav id="navigation"><ul><li><a href="#">Toxiclibs.js</a></li><li><a href="#">Examples</a></li><li>This Example:<ul><li><a href="#">Annotated Source</a></li><li><a href="#">Live Editor</a></li></ul></li></ul></nav><section id="pagelet">  <div id="container">     <div id="background"></div>            <!--div id="jump_to">         <a href="http://haptic-data.com/toxiclibsjs">Toxiclibs.js</a> > Examples &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="additiveWaves.html">                 additiveWaves.js               </a>                                           <a class="source" href="arcPolarCoordinates.html">                 arcPolarCoordinates.js               </a>                                           <a class="source" href="attraction2d.html">                 attraction2d.js               </a>                                           <a class="source" href="circle3Points.html">                 circle3Points.js               </a>                                           <a class="source" href="draggableParticles_pjs.html">                 draggableParticles_pjs.js               </a>                                           <a class="source" href="line2dIntersection.html">                 line2dIntersection.js               </a>                                           <a class="source" href="meshDoodle.html">                 meshDoodle.js               </a>                                           <a class="source" href="perlinNoiseCanvas.html">                 perlinNoiseCanvas.js               </a>                                           <a class="source" href="polarLinesPjs.html">                 polarLinesPjs.js               </a>                                           <a class="source" href="softBodySquare.html">                 softBodySquare.js               </a>                                           <a class="source" href="superEllipsoid.html">                 superEllipsoid.js               </a>                                           <a class="source" href="terrainNoise.html">                 terrainNoise.js               </a>                                           <a class="source" href="thread.html">                 thread.js               </a>                                           <a class="source" href="wheelInsets.html">                 wheelInsets.js               </a>                        </div>         </div>       </div-->          <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Line2D Intersection</h1>
+}</script>
+    <section id="waist">
+      <nav id="navigation">
+        <ul>
+          <li class="source selected"><a href="#">Source</a></li>
+          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="examples"><a href="#">Examples</a></li>
+        </ul>
+      </nav>
+    </section>
+    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Line2D Intersection</h1>
 
 <p>ported to javascript by <a href="http://haptic-data.com">Kyle Phillips</a>
 original example by <a href="http://postspectacular.com">Karsten Schmidt</a></p>
@@ -109,4 +133,7 @@ can be moved by user interactively.</p>             </td>             <td class=
   <span class="nx">line</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">a</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">m</span><span class="p">.</span><span class="nx">a</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span><span class="nx">m</span><span class="p">.</span><span class="nx">b</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">m</span><span class="p">.</span><span class="nx">b</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section><footer></footer></body></html>
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+    <footer></footer>
+  </body>
+</html>

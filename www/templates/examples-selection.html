@@ -1,0 +1,16 @@
+<form>
+	<select id="topics">
+		<option value="">Any topic…</option>
+		<% for(var i=0; i< data.topics.length; i++) { %>
+			<option value="<%= data.topics[i].tag %>" <% if ( data.selectedTopic == data.topics[i].tag ) { %> selected <% } %>><%= data.topics[i].id %></option>
+		<% } %>
+	</select>
+	<select id="apis">
+		<option value="">Any API…</option>
+		<% for(var i=0; i< data.apis.length; i++) { %>
+			<option value="<%= data.apis[i].tag %>" <% if ( data.selectedApi == data.apis[i].tag ) { %> selected <% } %>><%= data.apis[i].id %></option>
+		<% } %>
+	</select>
+</form>
+<div class="examples-list">
+</div>

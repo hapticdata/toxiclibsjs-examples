@@ -1,8 +1,6 @@
-doctype 5
-html
-  head
-    title= title
-    link(rel='stylesheet', href='stylesheets/style.css')
-    script(src='javascripts/processing.js')
-  body
-    block content
+extends layout
+
+block content
+	div#example-container
+	include toxi.min.jade
+	script !{script}

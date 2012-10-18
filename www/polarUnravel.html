@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Polar Unravel - Toxiclibs.js</title>
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/config.js"></script>
+    <script data-main="../main" src="javascripts/vendor/require.js"></script>
+  </head>
+  <body>
+    <div id="example-container" class="pjs">
+      <canvas id="myCanvas"></canvas>
+    </div>
+    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
+    <script src="javascripts/vendor/processing.js"></script>
+    <script type="application/processing" data-processing-target="myCanvas">/* 
+ * Copyright (c) 2006-2009 Karsten Schmidt
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * http://creativecommons.org/licenses/LGPL/2.1/
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+
+var InterpolateStrategy = toxi.math.InterpolateStrategy,
+    SigmoidInterpolation = toxi.math.SigmoidInterpolation,
+    MathUtils = toxi.math.MathUtils,
+    Vec2D = toxi.geom.Vec2D,
+    TColor = toxi.color.TColor;
+
+// keepers of transition state & target
+float transition, transTarget;
+
+// use a S-Curve to achieve an ease in/out effect
+InterpolateStrategy is=new SigmoidInterpolation(3);
+
+
+void setup() {
+  size(550,550);
+}
+
+void draw() {
+  background(220);
+  float w2=width * 0.5;
+  float h2=height * 0.5;
+  translate(w2, h2);
+  // update transition
+  transition += (transTarget - transition) * 0.01;
+  Vec2D normUp = new Vec2D(0, -1);
+  // define a color container using HSV
+  TColor col = TColor.newHSV(0, 1, 1);
+  for(int i = 270; i < 360 + 270; i += 2) {
+    float theta = radians(i);
+    // create a polar coordinate
+    Vec2D polar = new Vec2D(100,theta);
+    // use theta as color hue (ensure theta is properly wrapped)
+    col.setHue((polar.y / TWO_PI) % 1);
+    // also use theta to manipulate line length
+    float len = noise(polar.y * 4) * 100;
+    // convert polar coord into cartesian space (to obtain position on a circle)
+    Vec2D circ = polar.copy().toCartesian();
+    // create another coord splicing the circle at the top and using theta difference as position on a line
+    Vec2D linear = new Vec2D((MathUtils.THREE_HALVES_PI - polar.y) * w2 / PI + w2, 0);
+    // interprete circular position as normal/direction vector 
+    Vec2D dir = circ.getNormalized();
+    // interpolate both position & normal based on current transition state
+    circ.interpolateToSelf(linear, transition,is);
+    dir.interpolateToSelf(normUp, transition,is).normalizeTo(len);
+    // apply color & draw line
+    stroke(col.toARGB());
+    line(circ.x, circ.y, circ.x + dir.x, circ.y + dir.y);
+  }
+}
+
+void mousePressed() {
+  // toggle transition target state
+  transTarget=(++transTarget % 2);
+}</script>
+    <section id="waist">
+      <nav id="navigation">
+        <ul>
+          <li class="source selected"><a href="#">Source</a></li>
+          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="examples"><a href="#">Examples</a></li>
+        </ul>
+      </nav>
+    </section>
+    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/* </span>
+<span class="cm"> * Copyright (c) 2006-2009 Karsten Schmidt</span>
+<span class="cm"> * </span>
+<span class="cm"> * This library is free software; you can redistribute it and/or</span>
+<span class="cm"> * modify it under the terms of the GNU Lesser General Public</span>
+<span class="cm"> * License as published by the Free Software Foundation; either</span>
+<span class="cm"> * version 2.1 of the License, or (at your option) any later version.</span>
+<span class="cm"> * </span>
+<span class="cm"> * http://creativecommons.org/licenses/LGPL/2.1/</span>
+<span class="cm"> * </span>
+<span class="cm"> * This library is distributed in the hope that it will be useful,</span>
+<span class="cm"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span>
+<span class="cm"> * Lesser General Public License for more details.</span>
+<span class="cm"> * </span>
+<span class="cm"> * You should have received a copy of the GNU Lesser General Public</span>
+<span class="cm"> * License along with this library; if not, write to the Free Software</span>
+<span class="cm"> * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</span>
+<span class="cm"> */</span>
+
+
+<span class="kd">var</span> <span class="nx">InterpolateStrategy</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">InterpolateStrategy</span><span class="p">,</span>
+    <span class="nx">SigmoidInterpolation</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">SigmoidInterpolation</span><span class="p">,</span>
+    <span class="nx">MathUtils</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">MathUtils</span><span class="p">,</span>
+    <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">,</span>
+    <span class="nx">TColor</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">TColor</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>keepers of transition state &amp; target</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kr">float</span> <span class="nx">transition</span><span class="p">,</span> <span class="nx">transTarget</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>use a S-Curve to achieve an ease in/out effect</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">InterpolateStrategy</span> <span class="nx">is</span><span class="o">=</span><span class="k">new</span> <span class="nx">SigmoidInterpolation</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+
+
+<span class="k">void</span> <span class="nx">setup</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">size</span><span class="p">(</span><span class="mi">550</span><span class="p">,</span><span class="mi">550</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">void</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">background</span><span class="p">(</span><span class="mi">220</span><span class="p">);</span>
+  <span class="kr">float</span> <span class="nx">w2</span><span class="o">=</span><span class="nx">width</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">;</span>
+  <span class="kr">float</span> <span class="nx">h2</span><span class="o">=</span><span class="nx">height</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">;</span>
+  <span class="nx">translate</span><span class="p">(</span><span class="nx">w2</span><span class="p">,</span> <span class="nx">h2</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>update transition</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">transition</span> <span class="o">+=</span> <span class="p">(</span><span class="nx">transTarget</span> <span class="o">-</span> <span class="nx">transition</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">;</span>
+  <span class="nx">Vec2D</span> <span class="nx">normUp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>define a color container using HSV</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">TColor</span> <span class="nx">col</span> <span class="o">=</span> <span class="nx">TColor</span><span class="p">.</span><span class="nx">newHSV</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="k">for</span><span class="p">(</span><span class="kr">int</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">270</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">360</span> <span class="o">+</span> <span class="mi">270</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">float</span> <span class="nx">theta</span> <span class="o">=</span> <span class="nx">radians</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>create a polar coordinate</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">Vec2D</span> <span class="nx">polar</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="nx">theta</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>use theta as color hue (ensure theta is properly wrapped)</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">col</span><span class="p">.</span><span class="nx">setHue</span><span class="p">((</span><span class="nx">polar</span><span class="p">.</span><span class="nx">y</span> <span class="o">/</span> <span class="nx">TWO_PI</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>also use theta to manipulate line length</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kr">float</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">noise</span><span class="p">(</span><span class="nx">polar</span><span class="p">.</span><span class="nx">y</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>convert polar coord into cartesian space (to obtain position on a circle)</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">Vec2D</span> <span class="nx">circ</span> <span class="o">=</span> <span class="nx">polar</span><span class="p">.</span><span class="nx">copy</span><span class="p">().</span><span class="nx">toCartesian</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>create another coord splicing the circle at the top and using theta difference as position on a line</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">Vec2D</span> <span class="nx">linear</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">((</span><span class="nx">MathUtils</span><span class="p">.</span><span class="nx">THREE_HALVES_PI</span> <span class="o">-</span> <span class="nx">polar</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span> <span class="o">*</span> <span class="nx">w2</span> <span class="o">/</span> <span class="nx">PI</span> <span class="o">+</span> <span class="nx">w2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>interprete circular position as normal/direction vector </p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">Vec2D</span> <span class="nx">dir</span> <span class="o">=</span> <span class="nx">circ</span><span class="p">.</span><span class="nx">getNormalized</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>interpolate both position &amp; normal based on current transition state</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">circ</span><span class="p">.</span><span class="nx">interpolateToSelf</span><span class="p">(</span><span class="nx">linear</span><span class="p">,</span> <span class="nx">transition</span><span class="p">,</span><span class="nx">is</span><span class="p">);</span>
+    <span class="nx">dir</span><span class="p">.</span><span class="nx">interpolateToSelf</span><span class="p">(</span><span class="nx">normUp</span><span class="p">,</span> <span class="nx">transition</span><span class="p">,</span><span class="nx">is</span><span class="p">).</span><span class="nx">normalizeTo</span><span class="p">(</span><span class="nx">len</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>apply color &amp; draw line</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">stroke</span><span class="p">(</span><span class="nx">col</span><span class="p">.</span><span class="nx">toARGB</span><span class="p">());</span>
+    <span class="nx">line</span><span class="p">(</span><span class="nx">circ</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">circ</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span> <span class="nx">circ</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="nx">dir</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">circ</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="nx">dir</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">void</span> <span class="nx">mousePressed</span><span class="p">()</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>toggle transition target state</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">transTarget</span><span class="o">=</span><span class="p">(</span><span class="o">++</span><span class="nx">transTarget</span> <span class="o">%</span> <span class="mi">2</span><span class="p">);</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+    <footer></footer>
+  </body>
+</html>

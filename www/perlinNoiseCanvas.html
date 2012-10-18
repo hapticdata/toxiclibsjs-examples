@@ -1,6 +1,20 @@
-<!DOCTYPE html><html><head><title>my title</title><link rel="stylesheet" href="stylesheets/style.css"></head><body><div id="example-container" class="pjs"><canvas id="myCanvas"></canvas></div><script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script><script src="javascripts/processing.js"></script><script type="application/processing" data-processing-target="myCanvas">//#Perlin Noise Field w/ Canvas 2D Rendering Context
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Perlin Noise - Toxiclibs.js</title>
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/config.js"></script>
+    <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/dat.gui.min.js"></script>
+  </head>
+  <body>
+    <div id="example-container" class="canvas">
+      <canvas id="example"></canvas>
+    </div>
+    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
+    <script>//#Perlin Noise Field w/ Canvas 2D Rendering Context
 //- Toxiclibs ported to js and example by [Kyle Phillips](http://haptic-data.com)
-//Perlin Noise Field is an example showing how to use 
+//Perlin Noise Field is an example showing how to use
 //toxi.math.noise.PerlinNoise](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/math/noise/PerlinNoise.js) 
 //for animating vectors or creating procedural textures.
 
@@ -17,10 +31,10 @@
     //TColor.newHex('35e8df')
   ];
   
-  var canvas = document.getElementById('myCanvas'),
+  var canvas = document.getElementById('example'),
       ctx = canvas.getContext('2d'),
       perlin = new toxi.math.noise.PerlinNoise(),
-      offset = 0,
+      offset = 0, 
       options = {
         numStreams: 500,
         distort: 0,
@@ -30,6 +44,7 @@
       };
       streams = [];
   
+  setCanvasSize();
   var gui = new DAT.GUI();
   gui.add(options,'numStreams', 1, 4000, 1.0).name("# Streams");
   gui.add(options,'step',0.25,10,0.25).name("Speed");
@@ -93,11 +108,27 @@
     setTimeout(draw, 1000 / 30);
   }
 
-  setTimeout(draw, 1000 / 30);</script><nav id="navigation"><ul><li><a href="#">Toxiclibs.js</a></li><li><a href="#">Examples</a></li><li>This Example:<ul><li><a href="#">Annotated Source</a></li><li><a href="#">Live Editor</a></li></ul></li></ul></nav><section id="pagelet">  <div id="container">     <div id="background"></div>            <!--div id="jump_to">         <a href="http://haptic-data.com/toxiclibsjs">Toxiclibs.js</a> > Examples &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="additiveWaves.html">                 additiveWaves.js               </a>                                           <a class="source" href="arcPolarCoordinates.html">                 arcPolarCoordinates.js               </a>                                           <a class="source" href="attraction2d.html">                 attraction2d.js               </a>                                           <a class="source" href="circle3Points.html">                 circle3Points.js               </a>                                           <a class="source" href="draggableParticles_pjs.html">                 draggableParticles_pjs.js               </a>                                           <a class="source" href="line2dIntersection.html">                 line2dIntersection.js               </a>                                           <a class="source" href="meshDoodle.html">                 meshDoodle.js               </a>                                           <a class="source" href="perlinNoiseCanvas.html">                 perlinNoiseCanvas.js               </a>                                           <a class="source" href="polarLinesPjs.html">                 polarLinesPjs.js               </a>                                           <a class="source" href="softBodySquare.html">                 softBodySquare.js               </a>                                           <a class="source" href="superEllipsoid.html">                 superEllipsoid.js               </a>                                           <a class="source" href="terrainNoise.html">                 terrainNoise.js               </a>                                           <a class="source" href="thread.html">                 thread.js               </a>                                           <a class="source" href="wheelInsets.html">                 wheelInsets.js               </a>                        </div>         </div>       </div-->          <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Perlin Noise Field w/ Canvas 2D Rendering Context</h1>
+  setTimeout(draw, 1000 / 30);
+
+  function setCanvasSize(){
+    canvas.width = window.innerWidth;
+    canvas.height= 500;
+  }
+  window.addEventListener('resize', setCanvasSize, false );</script>
+    <section id="waist">
+      <nav id="navigation">
+        <ul>
+          <li class="source selected"><a href="#">Source</a></li>
+          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="examples"><a href="#">Examples</a></li>
+        </ul>
+      </nav>
+    </section>
+    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Perlin Noise Field w/ Canvas 2D Rendering Context</h1>
 
 <ul>
 <li>Toxiclibs ported to js and example by <a href="http://haptic-data.com">Kyle Phillips</a>
-Perlin Noise Field is an example showing how to use 
+Perlin Noise Field is an example showing how to use
 toxi.math.noise.PerlinNoise](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/math/noise/PerlinNoise.js) 
 for animating vectors or creating procedural textures.</li>
 </ul>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">TColor</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">TColor</span><span class="p">,</span>
@@ -110,10 +141,10 @@ for animating vectors or creating procedural textures.</li>
     <span class="nx">TColor</span><span class="p">.</span><span class="nx">newHex</span><span class="p">(</span><span class="s1">&#39;e8ca59&#39;</span><span class="p">),</span>
     <span class="nx">TColor</span><span class="p">.</span><span class="nx">newHex</span><span class="p">(</span><span class="s1">&#39;891b1b&#39;</span><span class="p">),</span><span class="c1">//.setAlpha(0.85),</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>TColor.newHex('35e8df')</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="p">];</span>
   
-  <span class="kd">var</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;myCanvas&#39;</span><span class="p">),</span>
+  <span class="kd">var</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;example&#39;</span><span class="p">),</span>
       <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">&#39;2d&#39;</span><span class="p">),</span>
       <span class="nx">perlin</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">noise</span><span class="p">.</span><span class="nx">PerlinNoise</span><span class="p">(),</span>
-      <span class="nx">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nx">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> 
       <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nx">numStreams</span><span class="o">:</span> <span class="mi">500</span><span class="p">,</span>
         <span class="nx">distort</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -123,6 +154,7 @@ for animating vectors or creating procedural textures.</li>
       <span class="p">};</span>
       <span class="nx">streams</span> <span class="o">=</span> <span class="p">[];</span>
   
+  <span class="nx">setCanvasSize</span><span class="p">();</span>
   <span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DAT</span><span class="p">.</span><span class="nx">GUI</span><span class="p">();</span>
   <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;numStreams&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;# Streams&quot;</span><span class="p">);</span>
   <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;step&#39;</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.25</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Speed&quot;</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>var noiseFolder = gui.addFolder("Noise Space Progression");</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;distort&#39;</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.001</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Noise Progression&quot;</span><span class="p">);</span>
@@ -181,4 +213,13 @@ for animating vectors or creating procedural textures.</li>
 
   <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">draw</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">/</span> <span class="mi">30</span><span class="p">);</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section><footer></footer></body></html>
+  <span class="kd">function</span> <span class="nx">setCanvasSize</span><span class="p">(){</span>
+    <span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">;</span>
+    <span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span><span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;resize&#39;</span><span class="p">,</span> <span class="nx">setCanvasSize</span><span class="p">,</span> <span class="kc">false</span> <span class="p">);</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+    <footer></footer>
+  </body>
+</html>

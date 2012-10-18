@@ -6,10 +6,6 @@
 //and using [toxi.THREE.ToxiclibsSupport](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/THREE/ToxiclibsSupport.js) for generating a [three.js] mesh.
 
 require.config({
-	baseUrl: 'javascripts/',
-	paths: {
-		'toxi': 'https://raw.github.com/hapticdata/toxiclibsjs/develop/lib/toxi'
-	},
 	shim: {
 		//[shim](http://requirejs.org/docs/api.html#config-shim) makes non-AMD libs like THREE work within Require
 		'three': { exports: 'THREE' }
