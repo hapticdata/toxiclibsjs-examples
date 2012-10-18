@@ -18,6 +18,11 @@
 	],
 
 	"examples": [{
+		"title": "Subdivision Basics",
+		"src": "subDivThree",
+		"tags": "three, webgl, mesh",
+		"template": "require"
+	},{
 		"title": "Terrain Noise",
 		"src": "terrainNoise",
 		"template": "require",

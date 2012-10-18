@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Subdivision Basics - Toxiclibs.js</title>
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/config.js"></script>
+    <script data-main="../main" src="javascripts/vendor/require.js"></script>
+  </head>
+  <body>
+    <script>console.log('subdiv');
+//#Subdivision Basics
+require([
+	'jquery',
+	'three',
+	'dat/gui/GUI',
+	'toxi/THREE/ToxiclibsSupport',
+	'toxi/geom/AABB',
+	'toxi/geom/Sphere',
+	'toxi/geom/Vec3D',
+	'toxi/geom/mesh/subdiv',
+	'toxi/geom/mesh/OBJWriter'
+	//'toxi/geom/mesh/LaplacianSmooth'
+], function( $, THREE, datGui, ToxiclibsSupport, AABB, Sphere, Vec3D, subdiv, OBJWriter, LaplacianSmooth ){
+	console.log('three', THREE );
+	var $container = $('#example-container'), gui = new datGui();
+	var scene, camera, renderer, controls, meshes = {};
+	$container.width( window.innerWidth );
+	$container.height( window.innerHeight );
+
+	var options = {
+		'wireframe': true,
+		'selectedGeometry': [ 'AABB', 'Sphere' ],
+		'deformationScalar': 0.4,
+		'strategies': [
+			'MidpointSubdivision',
+			'DualSubdivision',
+			'TriSubdivision',
+			'MidpointDisplacementSubdivision',
+			'NormalDisplacementSubdivision'
+		],
+		'selectedStrategy': 'MidpointSubdivision',
+		'subDivStrategy': new subdiv.MidpointSubdivision(),
+		'subdivide': function(){
+			meshes.toxi.subdivide( options.subDivStrategy, 0);
+			makeTHREEMesh();
+		},
+		'deform': function(){
+			meshes.toxi.getVertices().forEach(function( v ){
+				if (Math.random()<0.2) {
+					v.scaleSelf( (Math.random()*options.deformationScalar) + 0.8 );
+				}
+			});
+			meshes.toxi.rebuildIndex();
+			makeTHREEMesh();
+		},
+		'smooth': function(){
+			new LaplacianSmooth().filter( meshes.toxi, 1);
+			makeTHREEMesh();
+		},
+		saveAsOBJ: function(){
+			var objfile = new OBJWriter('deformed aabb');
+			meshes.toxi.saveAsOBJ( objfile );
+			console.log( objfile.getOutput() );
+		}
+	};
+
+	gui.add( options, 'wireframe').onChange(function(){
+		meshes.three.material.wireframe = options.wireframe;
+	});
+	gui.add(options, 'selectedStrategy', options.strategies).name('Strategy').onChange(function(){
+		var Constructor = subdiv[options.selectedStrategy];
+		if( options.selectedStrategy === 'MidpointDisplacementSubdivision' ){
+			options.subDivStrategy = new Constructor(meshes.toxi.computeCentroid(), -0.22 );
+		} else if( options.selectedStrategy == 'NormalDisplacementSubdivision' ){
+			options.subDivStrategy = new Constructor(0.15);
+		} else {
+			options.subDivStrategy = new Constructor();
+		}
+		console.log( options.subDivStrategy.computeSplitPoints );
+	});
+	gui.add(options, 'subdivide' );
+	gui.add(options,'deformationScalar',0.2,1.0);
+	gui.add(options, 'deform');
+	gui.add(options, 'smooth');
+	gui.add(options,'saveAsOBJ');
+
+	function makeTHREEMesh(){
+		var geom = ToxiclibsSupport.createMeshGeometry( meshes.toxi );
+		var material = new THREE.MeshLambertMaterial({ color: 0xffffff, wireframe: options.wireframe });
+		material.side = THREE.DoubleSide;
+		if( meshes.three !== undefined && scene.children.indexOf( meshes.three ) > -1 ){
+			scene.remove( meshes.three );
+		}
+		meshes.three = new THREE.Mesh( geom, material );
+		meshes.three.scale.set( 100, 100, 100 );
+		scene.add( meshes.three );
+	}
+	
+	scene = new THREE.Scene();
+	camera = new THREE.PerspectiveCamera(
+		45,
+		$container.width()/$container.height(),
+		0.1,
+		2000
+	);
+	camera.position.z = 1000;
+	window.camera = camera;
+	controls = new THREE.TrackballControls( camera, $container.get(0) );
+	//controls.panSpeed = 0.1;
+	controls.zoomSpeed = 0.01;
+	controls.minDistance = 500;
+	controls.maxDistance = 2000;
+	controls.dynamicDampeningFactor = 0.25;
+	renderer = new THREE.WebGLRenderer({ antialias: true });
+	renderer.setSize( $container.width(), $container.height() );
+	scene.add( camera );
+	var lights = [];
+	scene.add( new THREE.AmbientLight( 0x333333) );
+	var spot = new THREE.SpotLight( 0x33ccaa, 0.5 );
+	spot.position.set( -500, 1000, 0 );
+	lights.push( spot );
+	scene.add( spot );
+	spot = new THREE.SpotLight( 0xffffff, 0.85 );
+	spot.position.set( 500, -1000, 0 );
+	scene.add( spot );
+	lights.push( spot );
+	spot = new THREE.SpotLight( 0x8f5eff, 0.5 );
+	spot.position.set( 0, 0, 1000 );
+	scene.add( spot );
+	lights.push( spot );
+	$container.append( renderer.domElement );
+
+	new AABB( new Vec3D(), 2 ).toMesh().toWEMesh(function( wemesh ){
+		meshes.toxi = wemesh;
+		makeTHREEMesh();
+	});
+
+	draw();
+	window.lights = lights;
+	function draw(){
+		controls.update();
+		lights.forEach(function( light ){
+			light.rotation.set( camera.rotation.x, camera.rotation.y, camera.rotation.z );
+		});
+		renderer.render( scene, camera );
+		requestAnimationFrame( draw );
+	}
+
+});</script>
+    <div id="example-container" class="grad"></div>
+    <section id="waist">
+      <nav id="navigation">
+        <ul>
+          <li class="source selected"><a href="#">Source</a></li>
+          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="examples"><a href="#">Examples</a></li>
+        </ul>
+      </nav>
+    </section>
+    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;subdiv&#39;</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h1>Subdivision Basics</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">require</span><span class="p">([</span>
+  <span class="s1">&#39;jquery&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;three&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;dat/gui/GUI&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/THREE/ToxiclibsSupport&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/AABB&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/Sphere&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/Vec3D&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/mesh/subdiv&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/mesh/OBJWriter&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>'toxi/geom/mesh/LaplacianSmooth'</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">],</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">$</span><span class="p">,</span> <span class="nx">THREE</span><span class="p">,</span> <span class="nx">datGui</span><span class="p">,</span> <span class="nx">ToxiclibsSupport</span><span class="p">,</span> <span class="nx">AABB</span><span class="p">,</span> <span class="nx">Sphere</span><span class="p">,</span> <span class="nx">Vec3D</span><span class="p">,</span> <span class="nx">subdiv</span><span class="p">,</span> <span class="nx">OBJWriter</span><span class="p">,</span> <span class="nx">LaplacianSmooth</span> <span class="p">){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;three&#39;</span><span class="p">,</span> <span class="nx">THREE</span> <span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">$container</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#example-container&#39;</span><span class="p">),</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">datGui</span><span class="p">();</span>
+  <span class="kd">var</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span><span class="p">,</span> <span class="nx">renderer</span><span class="p">,</span> <span class="nx">controls</span><span class="p">,</span> <span class="nx">meshes</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="nx">$container</span><span class="p">.</span><span class="nx">width</span><span class="p">(</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span> <span class="p">);</span>
+  <span class="nx">$container</span><span class="p">.</span><span class="nx">height</span><span class="p">(</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span> <span class="p">);</span>
+
+  <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;wireframe&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s1">&#39;selectedGeometry&#39;</span><span class="o">:</span> <span class="p">[</span> <span class="s1">&#39;AABB&#39;</span><span class="p">,</span> <span class="s1">&#39;Sphere&#39;</span> <span class="p">],</span>
+    <span class="s1">&#39;deformationScalar&#39;</span><span class="o">:</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="s1">&#39;strategies&#39;</span><span class="o">:</span> <span class="p">[</span>
+      <span class="s1">&#39;MidpointSubdivision&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;DualSubdivision&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;TriSubdivision&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;MidpointDisplacementSubdivision&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;NormalDisplacementSubdivision&#39;</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;selectedStrategy&#39;</span><span class="o">:</span> <span class="s1">&#39;MidpointSubdivision&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;subDivStrategy&#39;</span><span class="o">:</span> <span class="k">new</span> <span class="nx">subdiv</span><span class="p">.</span><span class="nx">MidpointSubdivision</span><span class="p">(),</span>
+    <span class="s1">&#39;subdivide&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span><span class="p">.</span><span class="nx">subdivide</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">subDivStrategy</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="nx">makeTHREEMesh</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;deform&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span><span class="p">.</span><span class="nx">getVertices</span><span class="p">().</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span> <span class="nx">v</span> <span class="p">){</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">&lt;</span><span class="mf">0.2</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">v</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="nx">options</span><span class="p">.</span><span class="nx">deformationScalar</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.8</span> <span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+      <span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span><span class="p">.</span><span class="nx">rebuildIndex</span><span class="p">();</span>
+      <span class="nx">makeTHREEMesh</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;smooth&#39;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="k">new</span> <span class="nx">LaplacianSmooth</span><span class="p">().</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="nx">makeTHREEMesh</span><span class="p">();</span>
+    <span class="p">},</span>
+    <span class="nx">saveAsOBJ</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+      <span class="kd">var</span> <span class="nx">objfile</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OBJWriter</span><span class="p">(</span><span class="s1">&#39;deformed aabb&#39;</span><span class="p">);</span>
+      <span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span><span class="p">.</span><span class="nx">saveAsOBJ</span><span class="p">(</span> <span class="nx">objfile</span> <span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">objfile</span><span class="p">.</span><span class="nx">getOutput</span><span class="p">()</span> <span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;wireframe&#39;</span><span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">meshes</span><span class="p">.</span><span class="nx">three</span><span class="p">.</span><span class="nx">material</span><span class="p">.</span><span class="nx">wireframe</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">wireframe</span><span class="p">;</span>
+  <span class="p">});</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;selectedStrategy&#39;</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">strategies</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s1">&#39;Strategy&#39;</span><span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="kd">var</span> <span class="nx">Constructor</span> <span class="o">=</span> <span class="nx">subdiv</span><span class="p">[</span><span class="nx">options</span><span class="p">.</span><span class="nx">selectedStrategy</span><span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">selectedStrategy</span> <span class="o">===</span> <span class="s1">&#39;MidpointDisplacementSubdivision&#39;</span> <span class="p">){</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">subDivStrategy</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Constructor</span><span class="p">(</span><span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span><span class="p">.</span><span class="nx">computeCentroid</span><span class="p">(),</span> <span class="o">-</span><span class="mf">0.22</span> <span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">selectedStrategy</span> <span class="o">==</span> <span class="s1">&#39;NormalDisplacementSubdivision&#39;</span> <span class="p">){</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">subDivStrategy</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Constructor</span><span class="p">(</span><span class="mf">0.15</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">options</span><span class="p">.</span><span class="nx">subDivStrategy</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Constructor</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">subDivStrategy</span><span class="p">.</span><span class="nx">computeSplitPoints</span> <span class="p">);</span>
+  <span class="p">});</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;subdivide&#39;</span> <span class="p">);</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;deformationScalar&#39;</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">1.0</span><span class="p">);</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;deform&#39;</span><span class="p">);</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">);</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;saveAsOBJ&#39;</span><span class="p">);</span>
+
+  <span class="kd">function</span> <span class="nx">makeTHREEMesh</span><span class="p">(){</span>
+    <span class="kd">var</span> <span class="nx">geom</span> <span class="o">=</span> <span class="nx">ToxiclibsSupport</span><span class="p">.</span><span class="nx">createMeshGeometry</span><span class="p">(</span> <span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span> <span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshLambertMaterial</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="mh">0xffffff</span><span class="p">,</span> <span class="nx">wireframe</span><span class="o">:</span> <span class="nx">options</span><span class="p">.</span><span class="nx">wireframe</span> <span class="p">});</span>
+    <span class="nx">material</span><span class="p">.</span><span class="nx">side</span> <span class="o">=</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">DoubleSide</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span> <span class="nx">meshes</span><span class="p">.</span><span class="nx">three</span> <span class="o">!==</span> <span class="kc">undefined</span> <span class="o">&amp;&amp;</span> <span class="nx">scene</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span> <span class="nx">meshes</span><span class="p">.</span><span class="nx">three</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="p">){</span>
+      <span class="nx">scene</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span> <span class="nx">meshes</span><span class="p">.</span><span class="nx">three</span> <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">meshes</span><span class="p">.</span><span class="nx">three</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span> <span class="nx">geom</span><span class="p">,</span> <span class="nx">material</span> <span class="p">);</span>
+    <span class="nx">meshes</span><span class="p">.</span><span class="nx">three</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span> <span class="p">);</span>
+    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">meshes</span><span class="p">.</span><span class="nx">three</span> <span class="p">);</span>
+  <span class="p">}</span>
+  
+  <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">();</span>
+  <span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span>
+    <span class="mi">45</span><span class="p">,</span>
+    <span class="nx">$container</span><span class="p">.</span><span class="nx">width</span><span class="p">()</span><span class="o">/</span><span class="nx">$container</span><span class="p">.</span><span class="nx">height</span><span class="p">(),</span>
+    <span class="mf">0.1</span><span class="p">,</span>
+    <span class="mi">2000</span>
+  <span class="p">);</span>
+  <span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">z</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">camera</span> <span class="o">=</span> <span class="nx">camera</span><span class="p">;</span>
+  <span class="nx">controls</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">TrackballControls</span><span class="p">(</span> <span class="nx">camera</span><span class="p">,</span> <span class="nx">$container</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>controls.panSpeed = 0.1;</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">controls</span><span class="p">.</span><span class="nx">zoomSpeed</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">;</span>
+  <span class="nx">controls</span><span class="p">.</span><span class="nx">minDistance</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+  <span class="nx">controls</span><span class="p">.</span><span class="nx">maxDistance</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">;</span>
+  <span class="nx">controls</span><span class="p">.</span><span class="nx">dynamicDampeningFactor</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">;</span>
+  <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">({</span> <span class="nx">antialias</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
+  <span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span> <span class="nx">$container</span><span class="p">.</span><span class="nx">width</span><span class="p">(),</span> <span class="nx">$container</span><span class="p">.</span><span class="nx">height</span><span class="p">()</span> <span class="p">);</span>
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">camera</span> <span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">lights</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">AmbientLight</span><span class="p">(</span> <span class="mh">0x333333</span><span class="p">)</span> <span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">spot</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">SpotLight</span><span class="p">(</span> <span class="mh">0x33ccaa</span><span class="p">,</span> <span class="mf">0.5</span> <span class="p">);</span>
+  <span class="nx">spot</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="o">-</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+  <span class="nx">lights</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">spot</span> <span class="p">);</span>
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">spot</span> <span class="p">);</span>
+  <span class="nx">spot</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">SpotLight</span><span class="p">(</span> <span class="mh">0xffffff</span><span class="p">,</span> <span class="mf">0.85</span> <span class="p">);</span>
+  <span class="nx">spot</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mi">500</span><span class="p">,</span> <span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">spot</span> <span class="p">);</span>
+  <span class="nx">lights</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">spot</span> <span class="p">);</span>
+  <span class="nx">spot</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">SpotLight</span><span class="p">(</span> <span class="mh">0x8f5eff</span><span class="p">,</span> <span class="mf">0.5</span> <span class="p">);</span>
+  <span class="nx">spot</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span> <span class="p">);</span>
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">spot</span> <span class="p">);</span>
+  <span class="nx">lights</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">spot</span> <span class="p">);</span>
+  <span class="nx">$container</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span> <span class="p">);</span>
+
+  <span class="k">new</span> <span class="nx">AABB</span><span class="p">(</span> <span class="k">new</span> <span class="nx">Vec3D</span><span class="p">(),</span> <span class="mi">2</span> <span class="p">).</span><span class="nx">toMesh</span><span class="p">().</span><span class="nx">toWEMesh</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span> <span class="nx">wemesh</span> <span class="p">){</span>
+    <span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span> <span class="o">=</span> <span class="nx">wemesh</span><span class="p">;</span>
+    <span class="nx">makeTHREEMesh</span><span class="p">();</span>
+  <span class="p">});</span>
+
+  <span class="nx">draw</span><span class="p">();</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">lights</span> <span class="o">=</span> <span class="nx">lights</span><span class="p">;</span>
+  <span class="kd">function</span> <span class="nx">draw</span><span class="p">(){</span>
+    <span class="nx">controls</span><span class="p">.</span><span class="nx">update</span><span class="p">();</span>
+    <span class="nx">lights</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span> <span class="nx">light</span> <span class="p">){</span>
+      <span class="nx">light</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="nx">camera</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">camera</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span> <span class="nx">camera</span><span class="p">.</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">z</span> <span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span> <span class="p">);</span>
+    <span class="nx">requestAnimationFrame</span><span class="p">(</span> <span class="nx">draw</span> <span class="p">);</span>
+  <span class="p">}</span>
+
+<span class="p">});</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+    <footer></footer>
+  </body>
+</html>
