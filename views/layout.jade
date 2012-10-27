@@ -2,15 +2,28 @@ doctype 5
 html
   head
     title= title
+    link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Droid+Serif:400,700')
     link(rel='stylesheet', href='stylesheets/style.css')
+    script(src="javascripts/vendor/prettify.js")
     script(src="javascripts/config.js")
+    block config
     script(data-main="../main",src="javascripts/vendor/require.js")
-    - if (typeof includes !== 'undefined')
-      each include in includes
+    script(src="javascripts/vendor/xrayquire.js")
+    - if (typeof dependencies !== 'undefined')
+      each include in dependencies
         script(src="#{include}")
   body
     block content
       div#example-container
-    include navigation
-    section#pagelet !{pagelet}
+    section#waist
+      nav#navigation
+        ul
+          li.home
+            a(href="./") Toxiclibs.js
+          li.examples
+            a(href="#") Examples
+          - if (typeof name !== 'undefined')
+            li.name= name
+    - if (typeof pagelet !== 'undefined' )
+      section#pagelet !{pagelet}
     footer

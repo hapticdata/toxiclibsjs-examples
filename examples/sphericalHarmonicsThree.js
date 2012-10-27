@@ -1,137 +1,120 @@
-
-
+/*global $, toxi, THREE, requestAnimationFrame*/
+//I like this one [4, 2, 4, 6, 4, 0, 1, 1]
 var container = document.getElementById('example-container'),
-	$m = $("#m"),
-	mouse = new toxi.geom.Vec2D(),
-	cameraSensitivity = 1.2,
-	stage = new toxi.geom.Vec2D(window.innerWidth,window.innerHeight),
-	canRotateWorld = true,
+	$m = $("<div>"),
+	stage = new toxi.geom.Vec2D(window.innerWidth,window.innerHeight - 60),
 	camera = new THREE.PerspectiveCamera( 45, stage.x / stage.y, 1, 2000),
-		/*{
-		fov: 45, 
-		aspect: stage.x / stage.y,
-		near: 1,
-		far: 2000,
-		rotateSpeed: 1.0,
-		noPan: true,
-		noZoom: false,
-		staticMoving: false,
-		dynamicDampingFactor: 0.05
-	}),*/
 	scene = new THREE.Scene(),
-	renderer = new THREE.WebGLRenderer({antiaalised: true}),
-	//stats = new Stats(),
-	objectRadius = 65,
-	meshResolution = 100,
-	m = [],
-	changeHarmonics = true,
-	toxiToThreeSupport = new toxi.THREE.ToxiclibsSupport(scene),
-	threeMesh = undefined; //<--we'll put the converted mesh here
+	renderer = new THREE.WebGLRenderer({antialiased: true}),
+	opts,
+	material,
+	threeMesh; //<--we'll put the converted mesh here
 
+//set the scene
+container.style.backgroundColor = "black";
 camera.position.z = 800;
-
 scene.add( camera );
-var controls = new THREE.TrackballControls( camera );
+renderer.setSize(stage.x,stage.y);
+container.appendChild(renderer.domElement);
+//add the rotation controls
+var controls = new THREE.TrackballControls( camera, renderer.domElement );
 controls.rotateSpeed = 1.0;
 controls.zoomSpeed = 1.2;
 controls.panSpeed = 0.2;
-
 controls.noZoom = false;
 controls.noPan = false;
-
 controls.staticMoving = false;
 controls.dynamicDampingFactor = 0.1;
 
-renderer.setSize(stage.x,stage.y);
-container.appendChild(renderer.domElement);
+material = new THREE.MeshNormalMaterial({color: 0xBAE8E6, opacity: 1.0});
+material.side = THREE.DoubleSide;
 
-/*stats.domElement.style.position = 'absolute';
-stats.domElement.style.top = '0px';
-container.appendChild( stats.domElement );*/
 
-///the stuff more unique to this sketch
-var material = new THREE.MeshNormalMaterial({color: 0xBAE8E6, opacity: 1.0});
-//randomizeHarmonics();
-m = [5,8,3,1,7,3,3,7];
-//GUI
-var gui = new DAT.GUI();
-$("#guidat").find(".guidat").prepend('<div id="guiAbout">'+$("#about").html()+"</div>")
-
-gui.add(this,"objectRadius").name("Mesh Scale").min(10).max(300).onChange(function(){
-	threeMesh.scale = new THREE.Vector3(objectRadius,objectRadius,objectRadius);
-});
-gui.add(material,"wireframe");
-gui.add(this,"meshResolution").name("Mesh Resolution").min(10).max(250).step(1);
-gui.add(this,"changeHarmonics").name("New Random Parameters");
-gui.add(this,"changeMesh").name("Generate New Mesh!");
-
-function animate() { 
-	requestAnimationFrame( animate );
-	render();
-	//stats.update();
-}
-
-function render() {
-	/*if(canRotateWorld){
-		camera.position.x += ( (mouse.x*cameraSensitivity) - camera.position.x ) * 0.05;
-		camera.position.y += ( - ( mouse.y * cameraSensitivity) - camera.position.y ) * 0.05;
-	}*/
-	controls.update();
-	renderer.render( scene, camera );
-}
-
-animate();
-
-function randomizeHarmonics(){
-	m = [];
-	for(var i=0; i<8; i++) {
-	  m.push(parseInt(Math.random()*9));
+opts = {
+	objectRadius: 81,
+	meshResolution: 100,
+	changeHarmonics: true,
+	m: [5,8,3,1,7,3,3,7],
+	randomizeHarmonics: function(){
+		opts.m = [];
+		for(var i=0; i<8; i++) {
+			opts.m.push( parseInt(Math.random()*9, 10) );
+		}
+		$m.remove();
+		$m = $("<div id=\"m\">m: ["+opts.m+"]"+"</div>");
+		$("#guiAbout").append($m);
+	},
+	updateMesh: function(res){
+		var sh, builder, toxiMesh, threeGeometry;
+		if(res === undefined){
+			res = opts.meshResolution;
+		}
+		if(threeMesh !== undefined) {
+			scene.remove(threeMesh);
+		}
+		if(opts.changeHarmonics) {
+			opts.randomizeHarmonics();
+		}
+		//get the model
+		sh = new toxi.geom.mesh.SphericalHarmonics( opts.m );
+		//build the surface
+		builder = new toxi.geom.mesh.SurfaceMeshBuilder( sh );
+		//make it into a toxiclibs TriangleMesh
+		toxiMesh = builder.createMesh(new toxi.geom.mesh.TriangleMesh(),res,1,true);
+		//turn the mesh into THREE.Geometry
+		threeGeometry = toxi.THREE.ToxiclibsSupport.createMeshGeometry( toxiMesh );
+		threeMesh = new THREE.Mesh( threeGeometry, material );
+		threeMesh.scale.set(opts.objectRadius,opts.objectRadius,opts.objectRadius);
+		scene.add(threeMesh);
 	}
-	$m.remove();
-	$m = $('<div id="m">m: ['+m+']'+'</div>');
-	$("#guiAbout").append($m)
-}
-
-
-
-function changeMesh(res){
-	if(res === undefined){
-		res = meshResolution;
-	}
-	if(threeMesh !== undefined) {
-		scene.remove(threeMesh);
-	}
-	if(changeHarmonics) {
-		randomizeHarmonics();
-	}
-	var sh = new toxi.geom.mesh.SphericalHarmonics(m);
-	var mesh = new toxi.geom.mesh.SurfaceMeshBuilder( sh ); 
-	var toxiMesh = mesh.createMesh(new toxi.geom.mesh.TriangleMesh(),res,1,true);
-	threeMesh = toxiToThreeSupport.addMesh(toxiMesh,material);
-	//threeMesh = new THREE.Mesh(toxiToThreeSupport.createGeometry(toxiMesh),material);
-	threeMesh.scale = new THREE.Vector3(objectRadius,objectRadius,objectRadius);
-	threeMesh.doubleSided = true;
-	//console.log(threeMesh);
-	scene.add(threeMesh);
 };
 
 
-document.onmousemove = (function(){
-	var halfWindow = stage.scale(0.5);
-	return 	function (event) {
-		mouse.x = ( event.clientX - halfWindow.x );
-		mouse.y = ( event.clientY - halfWindow.y );
+//GUI
+var gui = new dat.GUI();
+$("#guidat")
+	.find(".guidat")
+	.prepend("<div id=\"guiAbout\">"+$("#about").html()+"</div>");
+
+gui.add(opts,"objectRadius")
+	.name("Mesh Scale").min(10).max(300)
+	.onChange(function(){
+		threeMesh.scale.set(opts.objectRadius,opts.objectRadius,opts.objectRadius);
+	});
+gui.add(material,"wireframe");
+gui.add(opts,"meshResolution")
+	.name("Mesh Resolution").min(10).max(250).step(1);
+gui.add(opts,"changeHarmonics")
+	.name("New Random Parameters");
+gui.add(opts,"updateMesh")
+	.name("Generate New Mesh!");
+
+
+(function addParticles(){
+	var positions = [];
+	for(var k=0;k<500;k++){
+		positions.push(toxi.geom.Vec3D.randomVector().scale(200+Math.random()*300));
 	}
-})();
+	var particleMaterial = new THREE.ParticleBasicMaterial({
+		color: 0xffff00,
+		transparent: true,
+		blending: THREE.AdditiveBlending
+	});
+	//if you construct a new toxi.THREE.ToxiclibsSupport
+	//and pass it the THREE.Scene it can add things for you
+	new toxi.THREE.ToxiclibsSupport( scene ).addParticles(positions, particleMaterial );
+}());
 
 //create first mesh
-changeMesh(meshResolution);
-var positions = [];
-for(var k=0;k<500;k++){
-	var p = positions.push(toxi.geom.Vec3D.randomVector().scale(200+Math.random()*300));
+opts.updateMesh();
+//start the animation loop
+animate();
+function animate() {
+	requestAnimationFrame( animate );
+	render();
 }
-toxiToThreeSupport.addParticles(positions, new THREE.ParticleBasicMaterial({
-	color: 0xffff00,
-	transparent: true,
-	blending: THREE.AdditiveBlending
-}));
+
+function render() {
+	controls.update();
+	renderer.render( scene, camera );
+}

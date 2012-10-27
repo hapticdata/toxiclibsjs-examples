@@ -2,25 +2,21 @@
 <html>
   <head>
     <title>Mesh Align-to-Axis - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
   </head>
   <body>
     <div id="example-container" class="canvas">
       <canvas id="example"></canvas>
     </div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
-    <script>var shaders = {
-	frag: [
-		"#ifdef GL_ES",
-		"precision highp float;",
-		"#endif",
-		"varying vec4 vColor;",
-		"void main(void) {",
-			"gl_FragColor = vColor;",
-		"}"
-	].join('\n'),
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script>
+/*global toxi*/
+var shaders = {
 	vertex: [
 		"attribute vec3 aVertexPosition;",
 		"attribute vec4 aVertexColor;",
@@ -31,6 +27,15 @@
 			"gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);",
 			"vColor = aVertexColor;",
 		"}"
+	].join('\n'),
+	frag: [
+		"#ifdef GL_ES",
+		"precision highp float;",
+		"#endif",
+		"varying vec4 vColor;",
+		"void main(void) {",
+			"gl_FragColor = vColor;",
+		"}"
 	].join('\n')
 };
 
@@ -40,8 +45,9 @@ var canvas, gl;
 var TWO_PI = Math.PI * 2;
 var BOX_SIZE = new toxi.geom.Vec3D(0.05,0.05,0.5),
 	NUM_BOXES = 300,
-	N_PER_BOX = 6 * 6 * 3; //(6 sides * 6 vertices * 3 floats)
-	SCALE=2;
+	N_PER_BOX = 6 * 6 * 3, //(6 sides * 6 vertices * 3 floats)
+	SCALE=2,
+	lastTime = 0;
 
 var shaderProgram;
 //our Model-view matrix
@@ -59,10 +65,10 @@ var isOver = false;
 var rotation = new toxi.geom.Vec3D();
 
 
-function mouseOver(e){
+function mouseOver(){
 	isOver = true;
 }
-function mouseOut(e) {
+function mouseOut() {
 	isOver = false;
 }
 
@@ -89,7 +95,7 @@ function init() {
 	canvas.addEventListener('mouseout',mouseOut,false);
 	canvas.addEventListener('mousemove',mouseMove,false);
 	
-	 try {
+	try {
 		gl = canvas.getContext("experimental-webgl");
 		gl.viewportWidth = canvas.width;
 		gl.viewportHeight = canvas.height;
@@ -98,7 +104,7 @@ function init() {
 	if (!gl) {
 		alert("Could not initialise WebGL, sorry :-(");
 	}
-	initShaders()
+	initShaders();
 	initBuffers();
 
 	gl.clearColor(0.95, 0.95, 0.95, 1.0);
@@ -121,8 +127,8 @@ function createShader( str, type ){
 
 
 function initShaders() {
-	var fragmentShader = createShader( shaders.frag, gl.FRAGMENT_SHADER );//getShader(gl, "shader-fs");
-	var vertexShader = createShader( shaders.vertex, gl.VERTEX_SHADER );//getShader(gl, "shader-vs");
+	var fragmentShader = createShader( shaders.frag, gl.FRAGMENT_SHADER );
+	var vertexShader = createShader( shaders.vertex, gl.VERTEX_SHADER );
 
 	shaderProgram = gl.createProgram();
 	gl.attachShader(shaderProgram, vertexShader);
@@ -151,7 +157,7 @@ function mvPushMatrix() {
 }
 
 function mvPopMatrix() {
-	if (mvMatrixStack.length == 0) {
+	if (mvMatrixStack.length === 0) {
 		throw "Invalid popMatrix!";
 	}
 	mvMatrix = mvMatrixStack.pop();
@@ -159,15 +165,12 @@ function mvPopMatrix() {
 
 
 function setMatrixUniforms() {
-	/*
-		Matrix4x4#transpose() converts the matrix between 
-		column-major to row-major (the way that WebGL/OpenGL wants it),
-		by providing Float32Array's we optimize by changing values
-		instead of constructing new objects
-	*/
-	pMatrix.transpose().toArray(pM),
-	mvMatrix.transpose().toArray(mv);
-
+	//Matrix4x4#transpose() converts the matrix between
+	//column-major to row-major (the way that WebGL/OpenGL wants it),
+	//by providing Float32Array's we optimize by changing values
+	//instead of constructing new objects
+	pMatrix.transpose().toArray( pM ),
+	mvMatrix.transpose().toArray( mv );
 	gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pM);
 	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mv);
 }
@@ -178,22 +181,27 @@ function initBuffers() {
 	boxesVertexPositionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, boxesVertexPositionBuffer);
 	
-
-	var vertices = new Float32Array(NUM_BOXES * N_PER_BOX); //number of boxes * number of sides * number of points to make a side * number of values to equal a point (x,y,z)
+	//(num of boxes) * (num of sides) * (num of points) * (floats per point [xyz])
+	var vertices = new Float32Array(NUM_BOXES * N_PER_BOX);
 	var vertIndex = 0;
-	
-	for(var i=0;i<NUM_BOXES;i++){
-		var dir= new toxi.geom.Vec3D(Math.cos(i*TWO_PI/125),Math.sin(i*TWO_PI/50),Math.sin(i*TWO_PI/25)).normalize();
+	var i, dir, pos, b, v;
+	for ( i=0; i<NUM_BOXES; i++ ){
+		dir = new toxi.geom.Vec3D({
+			x: Math.cos(i*TWO_PI/125),
+			y: Math.sin(i*TWO_PI/50),
+			z: Math.sin(i*TWO_PI/25)
+		}).normalize();
+
 		// create a position on a sphere, using the direction vector
-		var pos = dir.scale(SCALE);
+		pos = dir.scale(SCALE);
 		// create a box mesh at the origin
-		var b = new toxi.geom.AABB(new toxi.geom.Vec3D(), BOX_SIZE).toMesh( new toxi.geom.mesh.TriangleMesh("aabb") );
+		b = new toxi.geom.mesh.TriangleMesh("aabb");
+		new toxi.geom.AABB(new toxi.geom.Vec3D(), BOX_SIZE).toMesh( b );
 		// align the Z axis of the box with the direction vector
 		b.pointTowards(dir);
 		b.transform(new toxi.geom.Matrix4x4().translateSelf(pos.x,pos.y,pos.z));
-		var v = new Float32Array(N_PER_BOX);
+		v = new Float32Array(N_PER_BOX);
 		b.getMeshAsVertexArray(v,0,3);
-		window.b = b;
 		
 		vertices.set(v,vertIndex); //push the shape in
 		vertIndex += v.length;
@@ -206,27 +214,29 @@ function initBuffers() {
 
 	boxesVertexColorBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, boxesVertexColorBuffer);
-	var colors = new Float32Array(NUM_BOXES * 6 * 6 *4); //number of boxes * number of sides * number of points to make up a side * number of values to equal a color
+	//(num boxes) * (num sides) * (num points for a color [rgba])
+	var colors = new Float32Array(NUM_BOXES * 6 * 6 *4);
 	var colorIndex = 0; //this is our colors index
-	for(var i = 0;i<NUM_BOXES;i++){
-		for(var nf=0;nf<6;nf++){ //6 sides per cube (2 faces per side)
-			var color1 = toxi.color.TColor.newHSV(i/NUM_BOXES,0.5,0.75);
-			var color2 = color1.copy().darken(0.125); //second face
+
+	var nf, p, color1, color2, c1Array, c2Array;
+	for ( i=0; i<NUM_BOXES; i++ ) {
+		for ( nf=0; nf<6; nf++ ) {
+			//6 sides per cube (2 faces per side)
+			color1 = toxi.color.TColor.newHSV(i/NUM_BOXES,0.5,0.75);
+			color2 = color1.copy().darken(0.125); //second face
+			c1Array = color1.toRGBAArray();
+			c2Array = color2.toRGBAArray();
 			
-			var c1Array = color1.toRGBAArray();
-			var c2Array = color2.toRGBAArray();
-			
-			
-			
-			for(var p1=0;p1<3;p1++){ //the first face of the side
+			for ( p=0; p<3; p++ ) {
+				//the first face of the side
 				colors.set(c1Array,colorIndex);
 				colorIndex += c1Array.length;
 			}
-			for(var p2=0;p2<3;p2++){ //the second face of the side
+			for ( p=0; p<3; p++ ) {
+				//the second face of the side
 				colors.set(c2Array,colorIndex);
 				colorIndex += c2Array.length;
 			}
-			
 		}
 	}
 	
@@ -238,8 +248,8 @@ function initBuffers() {
 }
 
 
-var rBoxes = 0;
 
+var rBoxes = 0;
 function drawScene() {
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -262,10 +272,24 @@ function drawScene() {
 
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, boxesVertexPositionBuffer);
-	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, boxesVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.vertexAttribPointer(
+		shaderProgram.vertexPositionAttribute,
+		boxesVertexPositionBuffer.itemSize,
+		gl.FLOAT,
+		false,
+		0,
+		0
+	);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, boxesVertexColorBuffer);
-	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, boxesVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.vertexAttribPointer(
+		shaderProgram.vertexColorAttribute,
+		boxesVertexColorBuffer.itemSize,
+		gl.FLOAT,
+		false,
+		0,
+		0
+	);
 
 	setMatrixUniforms();
 	gl.drawArrays(gl.TRIANGLES, 0, boxesVertexPositionBuffer.numItems);
@@ -274,11 +298,11 @@ function drawScene() {
 }
 
 
-var lastTime = 0;
+
 
 function animate() {
 	var timeNow = new Date().getTime();
-	if (lastTime != 0) {
+	if (lastTime !== 0) {
 		var elapsed = timeNow - lastTime;
 
 		rBoxes += (90 * elapsed) / 8000.0;
@@ -295,22 +319,14 @@ function tick() {
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Mesh Align-to-Axis</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">shaders</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="nx">frag</span><span class="o">:</span> <span class="p">[</span>
-    <span class="s2">&quot;#ifdef GL_ES&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;precision highp float;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#endif&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;varying vec4 vColor;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;void main(void) {&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;gl_FragColor = vColor;&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;}&quot;</span>
-  <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">),</span>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="cm">/*global toxi*/</span>
+<span class="kd">var</span> <span class="nx">shaders</span> <span class="o">=</span> <span class="p">{</span>
   <span class="nx">vertex</span><span class="o">:</span> <span class="p">[</span>
     <span class="s2">&quot;attribute vec3 aVertexPosition;&quot;</span><span class="p">,</span>
     <span class="s2">&quot;attribute vec4 aVertexColor;&quot;</span><span class="p">,</span>
@@ -321,6 +337,15 @@ function tick() {
       <span class="s2">&quot;gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);&quot;</span><span class="p">,</span>
       <span class="s2">&quot;vColor = aVertexColor;&quot;</span><span class="p">,</span>
     <span class="s2">&quot;}&quot;</span>
+  <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">),</span>
+  <span class="nx">frag</span><span class="o">:</span> <span class="p">[</span>
+    <span class="s2">&quot;#ifdef GL_ES&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;precision highp float;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#endif&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;varying vec4 vColor;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;void main(void) {&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;gl_FragColor = vColor;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;}&quot;</span>
   <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">)</span>
 <span class="p">};</span>
 
@@ -330,11 +355,12 @@ function tick() {
 <span class="kd">var</span> <span class="nx">TWO_PI</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">BOX_SIZE</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.5</span><span class="p">),</span>
   <span class="nx">NUM_BOXES</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
-  <span class="nx">N_PER_BOX</span> <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">*</span> <span class="mi">3</span><span class="p">;</span> <span class="c1">//(6 sides * 6 vertices * 3 floats)</span>
-  <span class="nx">SCALE</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+  <span class="nx">N_PER_BOX</span> <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="c1">//(6 sides * 6 vertices * 3 floats)</span>
+  <span class="nx">SCALE</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+  <span class="nx">lastTime</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
-<span class="kd">var</span> <span class="nx">shaderProgram</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>our Model-view matrix</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">mvMatrix</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Matrix4x4</span><span class="p">(),</span>
-  <span class="nx">mvMatrixStack</span> <span class="o">=</span> <span class="p">[],</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>our projection matrix</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">pMatrix</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Matrix4x4</span><span class="p">(),</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>holders for the applied matrice array's</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">pM</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span>
+<span class="kd">var</span> <span class="nx">shaderProgram</span><span class="p">;</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>our Model-view matrix</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">mvMatrix</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Matrix4x4</span><span class="p">(),</span>
+  <span class="nx">mvMatrixStack</span> <span class="o">=</span> <span class="p">[],</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           <p>our projection matrix</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">pMatrix</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Matrix4x4</span><span class="p">(),</span></pre></div></div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           <p>holders for the applied matrice array's</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">pM</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span>
   <span class="nx">mv</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
 
 <span class="kd">var</span> <span class="nx">boxesVertexPositionBuffer</span><span class="p">;</span>
@@ -343,10 +369,10 @@ function tick() {
 <span class="kd">var</span> <span class="nx">rotation</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">();</span>
 
 
-<span class="kd">function</span> <span class="nx">mouseOver</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+<span class="kd">function</span> <span class="nx">mouseOver</span><span class="p">(){</span>
   <span class="nx">isOver</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
 <span class="p">}</span>
-<span class="kd">function</span> <span class="nx">mouseOut</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">function</span> <span class="nx">mouseOut</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">isOver</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 <span class="p">}</span>
 
@@ -373,7 +399,7 @@ function tick() {
   <span class="nx">canvas</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;mouseout&#39;</span><span class="p">,</span><span class="nx">mouseOut</span><span class="p">,</span><span class="kc">false</span><span class="p">);</span>
   <span class="nx">canvas</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;mousemove&#39;</span><span class="p">,</span><span class="nx">mouseMove</span><span class="p">,</span><span class="kc">false</span><span class="p">);</span>
   
-   <span class="k">try</span> <span class="p">{</span>
+  <span class="k">try</span> <span class="p">{</span>
     <span class="nx">gl</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s2">&quot;experimental-webgl&quot;</span><span class="p">);</span>
     <span class="nx">gl</span><span class="p">.</span><span class="nx">viewportWidth</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">;</span>
     <span class="nx">gl</span><span class="p">.</span><span class="nx">viewportHeight</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span><span class="p">;</span>
@@ -382,7 +408,7 @@ function tick() {
   <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">gl</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;Could not initialise WebGL, sorry :-(&quot;</span><span class="p">);</span>
   <span class="p">}</span>
-  <span class="nx">initShaders</span><span class="p">()</span>
+  <span class="nx">initShaders</span><span class="p">();</span>
   <span class="nx">initBuffers</span><span class="p">();</span>
 
   <span class="nx">gl</span><span class="p">.</span><span class="nx">clearColor</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
@@ -405,8 +431,8 @@ function tick() {
 
 
 <span class="kd">function</span> <span class="nx">initShaders</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">fragmentShader</span> <span class="o">=</span> <span class="nx">createShader</span><span class="p">(</span> <span class="nx">shaders</span><span class="p">.</span><span class="nx">frag</span><span class="p">,</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">FRAGMENT_SHADER</span> <span class="p">);</span><span class="c1">//getShader(gl, &quot;shader-fs&quot;);</span>
-  <span class="kd">var</span> <span class="nx">vertexShader</span> <span class="o">=</span> <span class="nx">createShader</span><span class="p">(</span> <span class="nx">shaders</span><span class="p">.</span><span class="nx">vertex</span><span class="p">,</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">VERTEX_SHADER</span> <span class="p">);</span><span class="c1">//getShader(gl, &quot;shader-vs&quot;);</span>
+  <span class="kd">var</span> <span class="nx">fragmentShader</span> <span class="o">=</span> <span class="nx">createShader</span><span class="p">(</span> <span class="nx">shaders</span><span class="p">.</span><span class="nx">frag</span><span class="p">,</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">FRAGMENT_SHADER</span> <span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">vertexShader</span> <span class="o">=</span> <span class="nx">createShader</span><span class="p">(</span> <span class="nx">shaders</span><span class="p">.</span><span class="nx">vertex</span><span class="p">,</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">VERTEX_SHADER</span> <span class="p">);</span>
 
   <span class="nx">shaderProgram</span> <span class="o">=</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">createProgram</span><span class="p">();</span>
   <span class="nx">gl</span><span class="p">.</span><span class="nx">attachShader</span><span class="p">(</span><span class="nx">shaderProgram</span><span class="p">,</span> <span class="nx">vertexShader</span><span class="p">);</span>
@@ -435,23 +461,18 @@ function tick() {
 <span class="p">}</span>
 
 <span class="kd">function</span> <span class="nx">mvPopMatrix</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">mvMatrixStack</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">mvMatrixStack</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">throw</span> <span class="s2">&quot;Invalid popMatrix!&quot;</span><span class="p">;</span>
   <span class="p">}</span>
   <span class="nx">mvMatrix</span> <span class="o">=</span> <span class="nx">mvMatrixStack</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
 <span class="p">}</span>
 
 
-<span class="kd">function</span> <span class="nx">setMatrixUniforms</span><span class="p">()</span> <span class="p">{</span>
-  <span class="cm">/*</span>
-<span class="cm">    Matrix4x4#transpose() converts the matrix between </span>
-<span class="cm">    column-major to row-major (the way that WebGL/OpenGL wants it),</span>
-<span class="cm">    by providing Float32Array&#39;s we optimize by changing values</span>
-<span class="cm">    instead of constructing new objects</span>
-<span class="cm">  */</span>
-  <span class="nx">pMatrix</span><span class="p">.</span><span class="nx">transpose</span><span class="p">().</span><span class="nx">toArray</span><span class="p">(</span><span class="nx">pM</span><span class="p">),</span>
-  <span class="nx">mvMatrix</span><span class="p">.</span><span class="nx">transpose</span><span class="p">().</span><span class="nx">toArray</span><span class="p">(</span><span class="nx">mv</span><span class="p">);</span>
-
+<span class="kd">function</span> <span class="nx">setMatrixUniforms</span><span class="p">()</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           <p>Matrix4x4#transpose() converts the matrix between
+column-major to row-major (the way that WebGL/OpenGL wants it),
+by providing Float32Array's we optimize by changing values
+instead of constructing new objects</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">pMatrix</span><span class="p">.</span><span class="nx">transpose</span><span class="p">().</span><span class="nx">toArray</span><span class="p">(</span> <span class="nx">pM</span> <span class="p">),</span>
+  <span class="nx">mvMatrix</span><span class="p">.</span><span class="nx">transpose</span><span class="p">().</span><span class="nx">toArray</span><span class="p">(</span> <span class="nx">mv</span> <span class="p">);</span>
   <span class="nx">gl</span><span class="p">.</span><span class="nx">uniformMatrix4fv</span><span class="p">(</span><span class="nx">shaderProgram</span><span class="p">.</span><span class="nx">pMatrixUniform</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">pM</span><span class="p">);</span>
   <span class="nx">gl</span><span class="p">.</span><span class="nx">uniformMatrix4fv</span><span class="p">(</span><span class="nx">shaderProgram</span><span class="p">.</span><span class="nx">mvMatrixUniform</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">mv</span><span class="p">);</span>
 <span class="p">}</span>
@@ -461,17 +482,19 @@ function tick() {
 
   <span class="nx">boxesVertexPositionBuffer</span> <span class="o">=</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">createBuffer</span><span class="p">();</span>
   <span class="nx">gl</span><span class="p">.</span><span class="nx">bindBuffer</span><span class="p">(</span><span class="nx">gl</span><span class="p">.</span><span class="nx">ARRAY_BUFFER</span><span class="p">,</span> <span class="nx">boxesVertexPositionBuffer</span><span class="p">);</span>
-  
-
-  <span class="kd">var</span> <span class="nx">vertices</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="nx">NUM_BOXES</span> <span class="o">*</span> <span class="nx">N_PER_BOX</span><span class="p">);</span> <span class="c1">//number of boxes * number of sides * number of points to make a side * number of values to equal a point (x,y,z)</span>
+  </pre></div></div>                      </li>                              <li id="section-6">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>                           <p>(num of boxes) * (num of sides) * (num of points) * (floats per point [xyz])</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">vertices</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="nx">NUM_BOXES</span> <span class="o">*</span> <span class="nx">N_PER_BOX</span><span class="p">);</span>
   <span class="kd">var</span> <span class="nx">vertIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  
-  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="nx">NUM_BOXES</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
-    <span class="kd">var</span> <span class="nx">dir</span><span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">cos</span><span class="p">(</span><span class="nx">i</span><span class="o">*</span><span class="nx">TWO_PI</span><span class="o">/</span><span class="mi">125</span><span class="p">),</span><span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span><span class="o">*</span><span class="nx">TWO_PI</span><span class="o">/</span><span class="mi">50</span><span class="p">),</span><span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span><span class="o">*</span><span class="nx">TWO_PI</span><span class="o">/</span><span class="mi">25</span><span class="p">)).</span><span class="nx">normalize</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>create a position on a sphere, using the direction vector</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">pos</span> <span class="o">=</span> <span class="nx">dir</span><span class="p">.</span><span class="nx">scale</span><span class="p">(</span><span class="nx">SCALE</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>create a box mesh at the origin</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">AABB</span><span class="p">(</span><span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">(),</span> <span class="nx">BOX_SIZE</span><span class="p">).</span><span class="nx">toMesh</span><span class="p">(</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">TriangleMesh</span><span class="p">(</span><span class="s2">&quot;aabb&quot;</span><span class="p">)</span> <span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>align the Z axis of the box with the direction vector</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">b</span><span class="p">.</span><span class="nx">pointTowards</span><span class="p">(</span><span class="nx">dir</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">dir</span><span class="p">,</span> <span class="nx">pos</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">v</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">NUM_BOXES</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">){</span>
+    <span class="nx">dir</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">({</span>
+      <span class="nx">x</span><span class="o">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">cos</span><span class="p">(</span><span class="nx">i</span><span class="o">*</span><span class="nx">TWO_PI</span><span class="o">/</span><span class="mi">125</span><span class="p">),</span>
+      <span class="nx">y</span><span class="o">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span><span class="o">*</span><span class="nx">TWO_PI</span><span class="o">/</span><span class="mi">50</span><span class="p">),</span>
+      <span class="nx">z</span><span class="o">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span><span class="o">*</span><span class="nx">TWO_PI</span><span class="o">/</span><span class="mi">25</span><span class="p">)</span>
+    <span class="p">}).</span><span class="nx">normalize</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-7">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>                           <p>create a position on a sphere, using the direction vector</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">pos</span> <span class="o">=</span> <span class="nx">dir</span><span class="p">.</span><span class="nx">scale</span><span class="p">(</span><span class="nx">SCALE</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-8">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>                           <p>create a box mesh at the origin</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">TriangleMesh</span><span class="p">(</span><span class="s2">&quot;aabb&quot;</span><span class="p">);</span>
+    <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">AABB</span><span class="p">(</span><span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">(),</span> <span class="nx">BOX_SIZE</span><span class="p">).</span><span class="nx">toMesh</span><span class="p">(</span> <span class="nx">b</span> <span class="p">);</span></pre></div></div>                      </li>                              <li id="section-9">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>                           <p>align the Z axis of the box with the direction vector</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">b</span><span class="p">.</span><span class="nx">pointTowards</span><span class="p">(</span><span class="nx">dir</span><span class="p">);</span>
     <span class="nx">b</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Matrix4x4</span><span class="p">().</span><span class="nx">translateSelf</span><span class="p">(</span><span class="nx">pos</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">pos</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span><span class="nx">pos</span><span class="p">.</span><span class="nx">z</span><span class="p">));</span>
-    <span class="kd">var</span> <span class="nx">v</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="nx">N_PER_BOX</span><span class="p">);</span>
+    <span class="nx">v</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="nx">N_PER_BOX</span><span class="p">);</span>
     <span class="nx">b</span><span class="p">.</span><span class="nx">getMeshAsVertexArray</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
-    <span class="nb">window</span><span class="p">.</span><span class="nx">b</span> <span class="o">=</span> <span class="nx">b</span><span class="p">;</span>
     
     <span class="nx">vertices</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span><span class="nx">vertIndex</span><span class="p">);</span> <span class="c1">//push the shape in</span>
     <span class="nx">vertIndex</span> <span class="o">+=</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
@@ -483,28 +506,22 @@ function tick() {
   <span class="nx">boxesVertexPositionBuffer</span><span class="p">.</span><span class="nx">numItems</span> <span class="o">=</span> <span class="mi">36</span> <span class="o">*</span> <span class="nx">NUM_BOXES</span><span class="p">;</span>
 
   <span class="nx">boxesVertexColorBuffer</span> <span class="o">=</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">createBuffer</span><span class="p">();</span>
-  <span class="nx">gl</span><span class="p">.</span><span class="nx">bindBuffer</span><span class="p">(</span><span class="nx">gl</span><span class="p">.</span><span class="nx">ARRAY_BUFFER</span><span class="p">,</span> <span class="nx">boxesVertexColorBuffer</span><span class="p">);</span>
-  <span class="kd">var</span> <span class="nx">colors</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="nx">NUM_BOXES</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">*</span><span class="mi">4</span><span class="p">);</span> <span class="c1">//number of boxes * number of sides * number of points to make up a side * number of values to equal a color</span>
+  <span class="nx">gl</span><span class="p">.</span><span class="nx">bindBuffer</span><span class="p">(</span><span class="nx">gl</span><span class="p">.</span><span class="nx">ARRAY_BUFFER</span><span class="p">,</span> <span class="nx">boxesVertexColorBuffer</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-10">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>                           <p>(num boxes) * (num sides) * (num points for a color [rgba])</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">colors</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Float32Array</span><span class="p">(</span><span class="nx">NUM_BOXES</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">*</span><span class="mi">4</span><span class="p">);</span>
   <span class="kd">var</span> <span class="nx">colorIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">//this is our colors index</span>
-  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="nx">NUM_BOXES</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
-    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">nf</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">nf</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">;</span><span class="nx">nf</span><span class="o">++</span><span class="p">){</span> <span class="c1">//6 sides per cube (2 faces per side)</span>
-      <span class="kd">var</span> <span class="nx">color1</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">TColor</span><span class="p">.</span><span class="nx">newHSV</span><span class="p">(</span><span class="nx">i</span><span class="o">/</span><span class="nx">NUM_BOXES</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.75</span><span class="p">);</span>
-      <span class="kd">var</span> <span class="nx">color2</span> <span class="o">=</span> <span class="nx">color1</span><span class="p">.</span><span class="nx">copy</span><span class="p">().</span><span class="nx">darken</span><span class="p">(</span><span class="mf">0.125</span><span class="p">);</span> <span class="c1">//second face</span>
+
+  <span class="kd">var</span> <span class="nx">nf</span><span class="p">,</span> <span class="nx">p</span><span class="p">,</span> <span class="nx">color1</span><span class="p">,</span> <span class="nx">color2</span><span class="p">,</span> <span class="nx">c1Array</span><span class="p">,</span> <span class="nx">c2Array</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">NUM_BOXES</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="nx">nf</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">nf</span><span class="o">&lt;</span><span class="mi">6</span><span class="p">;</span> <span class="nx">nf</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-11">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>                           <p>6 sides per cube (2 faces per side)</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="nx">color1</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">TColor</span><span class="p">.</span><span class="nx">newHSV</span><span class="p">(</span><span class="nx">i</span><span class="o">/</span><span class="nx">NUM_BOXES</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.75</span><span class="p">);</span>
+      <span class="nx">color2</span> <span class="o">=</span> <span class="nx">color1</span><span class="p">.</span><span class="nx">copy</span><span class="p">().</span><span class="nx">darken</span><span class="p">(</span><span class="mf">0.125</span><span class="p">);</span> <span class="c1">//second face</span>
+      <span class="nx">c1Array</span> <span class="o">=</span> <span class="nx">color1</span><span class="p">.</span><span class="nx">toRGBAArray</span><span class="p">();</span>
+      <span class="nx">c2Array</span> <span class="o">=</span> <span class="nx">color2</span><span class="p">.</span><span class="nx">toRGBAArray</span><span class="p">();</span>
       
-      <span class="kd">var</span> <span class="nx">c1Array</span> <span class="o">=</span> <span class="nx">color1</span><span class="p">.</span><span class="nx">toRGBAArray</span><span class="p">();</span>
-      <span class="kd">var</span> <span class="nx">c2Array</span> <span class="o">=</span> <span class="nx">color2</span><span class="p">.</span><span class="nx">toRGBAArray</span><span class="p">();</span>
-      
-      
-      
-      <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">p1</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">p1</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="nx">p1</span><span class="o">++</span><span class="p">){</span> <span class="c1">//the first face of the side</span>
-        <span class="nx">colors</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">c1Array</span><span class="p">,</span><span class="nx">colorIndex</span><span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span> <span class="nx">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">p</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="nx">p</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-12">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>                           <p>the first face of the side</p>             </div>                          <div class="content"><div class="highlight"><pre>        <span class="nx">colors</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">c1Array</span><span class="p">,</span><span class="nx">colorIndex</span><span class="p">);</span>
         <span class="nx">colorIndex</span> <span class="o">+=</span> <span class="nx">c1Array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
       <span class="p">}</span>
-      <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">p2</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">p2</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="nx">p2</span><span class="o">++</span><span class="p">){</span> <span class="c1">//the second face of the side</span>
-        <span class="nx">colors</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">c2Array</span><span class="p">,</span><span class="nx">colorIndex</span><span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span> <span class="nx">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">p</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="nx">p</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-13">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>                           <p>the second face of the side</p>             </div>                          <div class="content"><div class="highlight"><pre>        <span class="nx">colors</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">c2Array</span><span class="p">,</span><span class="nx">colorIndex</span><span class="p">);</span>
         <span class="nx">colorIndex</span> <span class="o">+=</span> <span class="nx">c2Array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
       <span class="p">}</span>
-      
     <span class="p">}</span>
   <span class="p">}</span>
   
@@ -516,8 +533,8 @@ function tick() {
 <span class="p">}</span>
 
 
-<span class="kd">var</span> <span class="nx">rBoxes</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
+<span class="kd">var</span> <span class="nx">rBoxes</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="kd">function</span> <span class="nx">drawScene</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">gl</span><span class="p">.</span><span class="nx">viewport</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">viewportWidth</span><span class="p">,</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">viewportHeight</span><span class="p">);</span>
   <span class="nx">gl</span><span class="p">.</span><span class="nx">clear</span><span class="p">(</span><span class="nx">gl</span><span class="p">.</span><span class="nx">COLOR_BUFFER_BIT</span> <span class="o">|</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">DEPTH_BUFFER_BIT</span><span class="p">);</span>
@@ -540,10 +557,24 @@ function tick() {
 
 
   <span class="nx">gl</span><span class="p">.</span><span class="nx">bindBuffer</span><span class="p">(</span><span class="nx">gl</span><span class="p">.</span><span class="nx">ARRAY_BUFFER</span><span class="p">,</span> <span class="nx">boxesVertexPositionBuffer</span><span class="p">);</span>
-  <span class="nx">gl</span><span class="p">.</span><span class="nx">vertexAttribPointer</span><span class="p">(</span><span class="nx">shaderProgram</span><span class="p">.</span><span class="nx">vertexPositionAttribute</span><span class="p">,</span> <span class="nx">boxesVertexPositionBuffer</span><span class="p">.</span><span class="nx">itemSize</span><span class="p">,</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">FLOAT</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="nx">gl</span><span class="p">.</span><span class="nx">vertexAttribPointer</span><span class="p">(</span>
+    <span class="nx">shaderProgram</span><span class="p">.</span><span class="nx">vertexPositionAttribute</span><span class="p">,</span>
+    <span class="nx">boxesVertexPositionBuffer</span><span class="p">.</span><span class="nx">itemSize</span><span class="p">,</span>
+    <span class="nx">gl</span><span class="p">.</span><span class="nx">FLOAT</span><span class="p">,</span>
+    <span class="kc">false</span><span class="p">,</span>
+    <span class="mi">0</span><span class="p">,</span>
+    <span class="mi">0</span>
+  <span class="p">);</span>
 
   <span class="nx">gl</span><span class="p">.</span><span class="nx">bindBuffer</span><span class="p">(</span><span class="nx">gl</span><span class="p">.</span><span class="nx">ARRAY_BUFFER</span><span class="p">,</span> <span class="nx">boxesVertexColorBuffer</span><span class="p">);</span>
-  <span class="nx">gl</span><span class="p">.</span><span class="nx">vertexAttribPointer</span><span class="p">(</span><span class="nx">shaderProgram</span><span class="p">.</span><span class="nx">vertexColorAttribute</span><span class="p">,</span> <span class="nx">boxesVertexColorBuffer</span><span class="p">.</span><span class="nx">itemSize</span><span class="p">,</span> <span class="nx">gl</span><span class="p">.</span><span class="nx">FLOAT</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="nx">gl</span><span class="p">.</span><span class="nx">vertexAttribPointer</span><span class="p">(</span>
+    <span class="nx">shaderProgram</span><span class="p">.</span><span class="nx">vertexColorAttribute</span><span class="p">,</span>
+    <span class="nx">boxesVertexColorBuffer</span><span class="p">.</span><span class="nx">itemSize</span><span class="p">,</span>
+    <span class="nx">gl</span><span class="p">.</span><span class="nx">FLOAT</span><span class="p">,</span>
+    <span class="kc">false</span><span class="p">,</span>
+    <span class="mi">0</span><span class="p">,</span>
+    <span class="mi">0</span>
+  <span class="p">);</span>
 
   <span class="nx">setMatrixUniforms</span><span class="p">();</span>
   <span class="nx">gl</span><span class="p">.</span><span class="nx">drawArrays</span><span class="p">(</span><span class="nx">gl</span><span class="p">.</span><span class="nx">TRIANGLES</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">boxesVertexPositionBuffer</span><span class="p">.</span><span class="nx">numItems</span><span class="p">);</span>
@@ -552,11 +583,11 @@ function tick() {
 <span class="p">}</span>
 
 
-<span class="kd">var</span> <span class="nx">lastTime</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
 
 <span class="kd">function</span> <span class="nx">animate</span><span class="p">()</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">timeNow</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">lastTime</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">lastTime</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">elapsed</span> <span class="o">=</span> <span class="nx">timeNow</span> <span class="o">-</span> <span class="nx">lastTime</span><span class="p">;</span>
 
     <span class="nx">rBoxes</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">90</span> <span class="o">*</span> <span class="nx">elapsed</span><span class="p">)</span> <span class="o">/</span> <span class="mf">8000.0</span><span class="p">;</span>
@@ -571,7 +602,7 @@ function tick() {
   <span class="nx">animate</span><span class="p">();</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

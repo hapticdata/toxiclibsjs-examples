@@ -1,0 +1,60 @@
+
+/*---------------------- Low resolutions (> 320px) ---------------------*/
+@media only screen and (min-width: 320px) {
+
+  #navigation {
+    ul {
+      li { font-size: 11px; }
+    }
+  }
+
+  .example-link {
+    .inner {
+      padding-left: 10px;
+    }
+  }
+
+  .pjs{
+    canvas {
+      max-width: 100%;
+    }
+  }
+  .docco{
+    .pilwrap { display: none; }
+
+    ul.sections > li > div {
+      display: block;
+      padding:5px 10px 0 10px;
+    }
+
+    ul.sections > li > div.annotation {
+      background: #fff;
+    }
+
+    ul.sections > li > div.annotation ul, ul.sections > li > div.annotation ol {
+      padding-left: 30px;
+    }
+
+    ul.sections > li > div.content {
+      background: #f5f5ff;
+      overflow-x:auto;
+      -webkit-box-shadow: inset 0 0 5px #e5e5ee;
+      box-shadow: inset 0 0 5px #e5e5ee;
+      border: 1px solid #dedede;
+      margin:5px 10px 5px 10px;
+      padding-bottom: 5px;
+    }
+
+    ul.sections > li > div.annotation pre {
+      margin: 7px 0 7px;
+      padding-left: 15px;
+    }
+
+    ul.sections > li > div.annotation p tt, .annotation p code {
+      background: #f8f8ff;
+      border: 1px solid #dedede;
+      font-size: 12px;
+      padding: 0 0.2em;
+    }
+  }
+}

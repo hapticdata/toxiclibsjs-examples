@@ -2,26 +2,40 @@
 <html>
   <head>
     <title>Subdivision Basics - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
+    <script>
+      - if (src)
+        - src = src.split('.')[0]
+        requirejs.config({
+          config: {
+            'main': { example: 'examples/subDivThree.js' }
+          }
+        });
+        
+    </script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
   </head>
   <body>
-    <script>console.log('subdiv');
+    <script>
 //#Subdivision Basics
 require([
 	'jquery',
 	'three',
 	'dat/gui/GUI',
 	'toxi/THREE/ToxiclibsSupport',
+	'toxi/geom/mesh/Terrain',
 	'toxi/geom/AABB',
 	'toxi/geom/Sphere',
 	'toxi/geom/Vec3D',
 	'toxi/geom/mesh/subdiv',
-	'toxi/geom/mesh/OBJWriter'
-	//'toxi/geom/mesh/LaplacianSmooth'
-], function( $, THREE, datGui, ToxiclibsSupport, AABB, Sphere, Vec3D, subdiv, OBJWriter, LaplacianSmooth ){
-	console.log('three', THREE );
+	'toxi/geom/mesh/OBJWriter',
+	'toxi/geom/mesh/LaplacianSmooth'
+], function( $, THREE, datGui, ToxiclibsSupport, Terrain, AABB, Sphere, Vec3D, subdiv, OBJWriter, LaplacianSmooth ){
+	
 	var $container = $('#example-container'), gui = new datGui();
 	var scene, camera, renderer, controls, meshes = {};
 	$container.width( window.innerWidth );
@@ -130,10 +144,8 @@ require([
 	lights.push( spot );
 	$container.append( renderer.domElement );
 
-	new AABB( new Vec3D(), 2 ).toMesh().toWEMesh(function( wemesh ){
-		meshes.toxi = wemesh;
-		makeTHREEMesh();
-	});
+	meshes.toxi = new AABB( new Vec3D(), 2 ).toMesh().toWEMesh();
+	makeTHREEMesh();
 
 	draw();
 	window.lights = lights;
@@ -147,27 +159,30 @@ require([
 	}
 
 });</script>
-    <div id="example-container" class="grad"></div>
+    <div id="example-container"></div>
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Subdivision Basics</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;subdiv&#39;</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h1>Subdivision Basics</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">require</span><span class="p">([</span>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>Subdivision Basics</h1>             </div>                          <div class="content"><div class="highlight"><pre><span class="nx">require</span><span class="p">([</span>
   <span class="s1">&#39;jquery&#39;</span><span class="p">,</span>
   <span class="s1">&#39;three&#39;</span><span class="p">,</span>
   <span class="s1">&#39;dat/gui/GUI&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/THREE/ToxiclibsSupport&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/mesh/Terrain&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/geom/AABB&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/geom/Sphere&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/geom/Vec3D&#39;</span><span class="p">,</span>
   <span class="s1">&#39;toxi/geom/mesh/subdiv&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;toxi/geom/mesh/OBJWriter&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>'toxi/geom/mesh/LaplacianSmooth'</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">],</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">$</span><span class="p">,</span> <span class="nx">THREE</span><span class="p">,</span> <span class="nx">datGui</span><span class="p">,</span> <span class="nx">ToxiclibsSupport</span><span class="p">,</span> <span class="nx">AABB</span><span class="p">,</span> <span class="nx">Sphere</span><span class="p">,</span> <span class="nx">Vec3D</span><span class="p">,</span> <span class="nx">subdiv</span><span class="p">,</span> <span class="nx">OBJWriter</span><span class="p">,</span> <span class="nx">LaplacianSmooth</span> <span class="p">){</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;three&#39;</span><span class="p">,</span> <span class="nx">THREE</span> <span class="p">);</span>
+  <span class="s1">&#39;toxi/geom/mesh/OBJWriter&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;toxi/geom/mesh/LaplacianSmooth&#39;</span>
+<span class="p">],</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">$</span><span class="p">,</span> <span class="nx">THREE</span><span class="p">,</span> <span class="nx">datGui</span><span class="p">,</span> <span class="nx">ToxiclibsSupport</span><span class="p">,</span> <span class="nx">Terrain</span><span class="p">,</span> <span class="nx">AABB</span><span class="p">,</span> <span class="nx">Sphere</span><span class="p">,</span> <span class="nx">Vec3D</span><span class="p">,</span> <span class="nx">subdiv</span><span class="p">,</span> <span class="nx">OBJWriter</span><span class="p">,</span> <span class="nx">LaplacianSmooth</span> <span class="p">){</span>
+  
   <span class="kd">var</span> <span class="nx">$container</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#example-container&#39;</span><span class="p">),</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">datGui</span><span class="p">();</span>
   <span class="kd">var</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span><span class="p">,</span> <span class="nx">renderer</span><span class="p">,</span> <span class="nx">controls</span><span class="p">,</span> <span class="nx">meshes</span> <span class="o">=</span> <span class="p">{};</span>
   <span class="nx">$container</span><span class="p">.</span><span class="nx">width</span><span class="p">(</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span> <span class="p">);</span>
@@ -251,7 +266,7 @@ require([
   <span class="p">);</span>
   <span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">z</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
   <span class="nb">window</span><span class="p">.</span><span class="nx">camera</span> <span class="o">=</span> <span class="nx">camera</span><span class="p">;</span>
-  <span class="nx">controls</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">TrackballControls</span><span class="p">(</span> <span class="nx">camera</span><span class="p">,</span> <span class="nx">$container</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>controls.panSpeed = 0.1;</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">controls</span><span class="p">.</span><span class="nx">zoomSpeed</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">;</span>
+  <span class="nx">controls</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">TrackballControls</span><span class="p">(</span> <span class="nx">camera</span><span class="p">,</span> <span class="nx">$container</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">);</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>controls.panSpeed = 0.1;</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">controls</span><span class="p">.</span><span class="nx">zoomSpeed</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">;</span>
   <span class="nx">controls</span><span class="p">.</span><span class="nx">minDistance</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
   <span class="nx">controls</span><span class="p">.</span><span class="nx">maxDistance</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">;</span>
   <span class="nx">controls</span><span class="p">.</span><span class="nx">dynamicDampeningFactor</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">;</span>
@@ -274,10 +289,8 @@ require([
   <span class="nx">lights</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">spot</span> <span class="p">);</span>
   <span class="nx">$container</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span> <span class="p">);</span>
 
-  <span class="k">new</span> <span class="nx">AABB</span><span class="p">(</span> <span class="k">new</span> <span class="nx">Vec3D</span><span class="p">(),</span> <span class="mi">2</span> <span class="p">).</span><span class="nx">toMesh</span><span class="p">().</span><span class="nx">toWEMesh</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span> <span class="nx">wemesh</span> <span class="p">){</span>
-    <span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span> <span class="o">=</span> <span class="nx">wemesh</span><span class="p">;</span>
-    <span class="nx">makeTHREEMesh</span><span class="p">();</span>
-  <span class="p">});</span>
+  <span class="nx">meshes</span><span class="p">.</span><span class="nx">toxi</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AABB</span><span class="p">(</span> <span class="k">new</span> <span class="nx">Vec3D</span><span class="p">(),</span> <span class="mi">2</span> <span class="p">).</span><span class="nx">toMesh</span><span class="p">().</span><span class="nx">toWEMesh</span><span class="p">();</span>
+  <span class="nx">makeTHREEMesh</span><span class="p">();</span>
 
   <span class="nx">draw</span><span class="p">();</span>
   <span class="nb">window</span><span class="p">.</span><span class="nx">lights</span> <span class="o">=</span> <span class="nx">lights</span><span class="p">;</span>
@@ -292,7 +305,7 @@ require([
 
 <span class="p">});</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

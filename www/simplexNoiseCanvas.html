@@ -2,185 +2,191 @@
 <html>
   <head>
     <title>Simplex Noise - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
     <script src="javascripts/vendor/jquery.js"></script>
+    <script src="javascripts/vendor/dat.gui.min.js"></script>
   </head>
   <body>
     <div id="example-container" class="canvas">
       <canvas id="example"></canvas>
     </div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
-    <script>$('#example-container')
-  .addClass('centered')
-  .append([
-    '<select id="dimensions" style="position:relative;left:50px;">',
-      '<option value="1">1 dimension</option>',
-      '<option value="2">2 dimensions</option>',
-      '<option value="3">3 dimensions</option>',
-      '<option value="4" selected>4 dimensions</option>',
-    '</select>'
-    ].join(''));
-$("#dimensions").change(function(e){
-    NOISE_DIMENSIONS = Number($(this).find(":selected").val());
-});
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script>
+//#Simplex Noise
+//**Usage:** use the select box to change dimensions
+//Demonstrates the use of [toxi.math.noise.SimplexNoise](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/math/noise/simplexNoise.js)
 
-var simplexNoise = toxi.math.noise.simplexNoise;
-
-
-var size = 175;
-    canvas = document.getElementById('example'),
-    ctx = canvas.getContext('2d');
+/*global $, toxi*/
+var simplexNoise = toxi.math.noise.simplexNoise,
+	opts,
+	size = 150,
+	canvasScale = 2.5,
+	canvas = document.getElementById('example'),
+	ctx = canvas.getContext('2d'),
+	noiseOffset = 100,
+	frameCount = 1,
+	imageData;
 
 canvas.width = canvas.height = size;
-$(canvas).css({ width: size*2, height: size*2 });
+$(canvas)
+	.css({ width: size*canvasScale, height: size*canvasScale })
+	.parent().addClass('centered');
+	
+imageData = ctx.createImageData( canvas.width, canvas.height );
 
-var imageData = ctx.createImageData(canvas.width,canvas.height),
-    setPixel = function(x, y, r, g, b, a) {
-        index = (x + y * imageData.width) * 4;
-        imageData.data[index+0] = r;
-        imageData.data[index+1] = g;
-        imageData.data[index+2] = b;
-        imageData.data[index+3] = a;
-    },
-    NOISE_DIMENSIONS=4, // increase upto 4
-    noiseOffest = 100,
-    NS = 0.05, // noise scale (try from 0.005 to 0.5)
-    noiseOffset = 100,
-    frameCount = 1;
-
-
-var draw = function() {
-  
-  var i = 0,
-      j = 0,
-      noiseVal = 0;
-
-  for (i = 0; i < canvas.width; i++) {
-    for (j = 0; j < canvas.height; j++) {
-      switch(NOISE_DIMENSIONS) {
-        case 2:
-          noiseVal = simplexNoise.noise(i * NS + noiseOffset, j * NS + noiseOffset); 
-          break;
-        case 3: 
-          noiseVal = simplexNoise.noise(i * NS + noiseOffset, j * NS + noiseOffset , frameCount * 0.01); 
-          break;
-        case 4: 
-          noiseVal = simplexNoise.noise(i * NS + noiseOffset, j * NS + noiseOffset, 0 , frameCount * 0.01); 
-          break;
-        default:
-          noiseVal = simplexNoise.noise(i * NS + noiseOffset, 0); 
-          break;
-      }
-
-      var c = Math.floor(noiseVal * 127 + 128);
-      
-      setPixel(i, j, c, c, c, 255);
-    }
-  }
-
-  ctx.putImageData(imageData,0,0);
-  noiseOffset+=NS/2;
-
-  frameCount++;
-
-  setTimeout(draw, 1000 / 30);
+opts = {
+	size: 150,
+	speed: 0.01,
+	canvasScale: 2.5,
+	dimensions: 4,
+	xyScalar: 0.05,
+	zScalar: 0.01,
+	wScalar: 0.02,
+	noiseOffset: 100
 };
 
+function setPixel(x, y, r, g, b, a) {
+	var index = (x + y * imageData.width) * 4;
+	imageData.data[index+0] = r;
+	imageData.data[index+1] = g;
+	imageData.data[index+2] = b;
+	imageData.data[index+3] = a;
+}
 
+(function initGui(){
+	var gui = new dat.GUI();
+	gui.add(opts, 'dimensions', 1,4).step(1);
+	gui.add(opts, 'xyScalar', 0.005, 0.25).name('1 & 2nd dim scalar');
+	gui.add(opts, 'zScalar', 0.001, 0.25).name('3rd dim Scalar');
+	gui.add(opts, 'wScalar', 0.001, 0.25).name('offset speed');
+}());
 
-setTimeout(draw,1000/30);</script>
+function draw() {
+	var i = 0,
+		j = 0,
+		c = 0,
+		noiseVal = 0;
+	for (i = 0; i < canvas.width; i++) {
+		for (j = 0; j < canvas.height; j++) {
+			switch(opts.dimensions) {
+				case 2:
+					noiseVal = simplexNoise.noise( i*opts.xyScalar+noiseOffset, j*opts.xyScalar+noiseOffset );
+					break;
+				case 3:
+					noiseVal = simplexNoise.noise( i*opts.xyScalar+noiseOffset, j*opts.xyScalar+noiseOffset, frameCount*opts.zScalar );
+					break;
+				case 4:
+					noiseVal = simplexNoise.noise( i*opts.xyScalar+noiseOffset, j*opts.xyScalar+noiseOffset, 0, frameCount*opts.zScalar );
+					break;
+				default:
+					noiseVal = simplexNoise.noise( i*opts.xyScalar+noiseOffset, 0 );
+			}
+			c = Math.floor( noiseVal*127 + 128);
+			setPixel(i, j, c, c, c, 255);
+		}
+	}
+	ctx.putImageData(imageData,0,0);
+	noiseOffset += opts.wScalar;
+	frameCount++;
+	//start the animation loop 60 fps
+	setTimeout(draw, 1000 / 60);
+}
+
+draw();</script>
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Simplex Noise</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#example-container&#39;</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;centered&#39;</span><span class="p">)</span>
-  <span class="p">.</span><span class="nx">append</span><span class="p">([</span>
-    <span class="s1">&#39;&lt;select id=&quot;dimensions&quot; style=&quot;position:relative;left:50px;&quot;&gt;&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;&lt;option value=&quot;1&quot;&gt;1 dimension&lt;/option&gt;&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;&lt;option value=&quot;2&quot;&gt;2 dimensions&lt;/option&gt;&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;&lt;option value=&quot;3&quot;&gt;3 dimensions&lt;/option&gt;&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;&lt;option value=&quot;4&quot; selected&gt;4 dimensions&lt;/option&gt;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;&lt;/select&gt;&#39;</span>
-    <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">));</span>
-<span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#dimensions&quot;</span><span class="p">).</span><span class="nx">change</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
-    <span class="nx">NOISE_DIMENSIONS</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;:selected&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">());</span>
-<span class="p">});</span>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>Simplex Noise</h1>
 
-<span class="kd">var</span> <span class="nx">simplexNoise</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">noise</span><span class="p">.</span><span class="nx">simplexNoise</span><span class="p">;</span>
-
-
-<span class="kd">var</span> <span class="nx">size</span> <span class="o">=</span> <span class="mi">175</span><span class="p">;</span>
-    <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;example&#39;</span><span class="p">),</span>
-    <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">&#39;2d&#39;</span><span class="p">);</span>
+<p><strong>Usage:</strong> use the select box to change dimensions
+Demonstrates the use of <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/math/noise/simplexNoise.js">toxi.math.noise.SimplexNoise</a></p>             </div>                          <div class="content"><div class="highlight"><pre><span class="cm">/*global $, toxi*/</span>
+<span class="kd">var</span> <span class="nx">simplexNoise</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">noise</span><span class="p">.</span><span class="nx">simplexNoise</span><span class="p">,</span>
+  <span class="nx">opts</span><span class="p">,</span>
+  <span class="nx">size</span> <span class="o">=</span> <span class="mi">150</span><span class="p">,</span>
+  <span class="nx">canvasScale</span> <span class="o">=</span> <span class="mf">2.5</span><span class="p">,</span>
+  <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;example&#39;</span><span class="p">),</span>
+  <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">&#39;2d&#39;</span><span class="p">),</span>
+  <span class="nx">noiseOffset</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="nx">frameCount</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">imageData</span><span class="p">;</span>
 
 <span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">size</span><span class="p">;</span>
-<span class="nx">$</span><span class="p">(</span><span class="nx">canvas</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span> <span class="nx">width</span><span class="o">:</span> <span class="nx">size</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="nx">size</span><span class="o">*</span><span class="mi">2</span> <span class="p">});</span>
-
-<span class="kd">var</span> <span class="nx">imageData</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">createImageData</span><span class="p">(</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span><span class="p">),</span>
-    <span class="nx">setPixel</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">index</span> <span class="o">=</span> <span class="p">(</span><span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span> <span class="o">*</span> <span class="nx">imageData</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">;</span>
-        <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="o">+</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span>
-        <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">g</span><span class="p">;</span>
-        <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nx">b</span><span class="p">;</span>
-        <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
-    <span class="p">},</span>
-    <span class="nx">NOISE_DIMENSIONS</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="c1">// increase upto 4</span>
-    <span class="nx">noiseOffest</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-    <span class="nx">NS</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span> <span class="c1">// noise scale (try from 0.005 to 0.5)</span>
-    <span class="nx">noiseOffset</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-    <span class="nx">frameCount</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-
-
-<span class="kd">var</span> <span class="nx">draw</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class="nx">$</span><span class="p">(</span><span class="nx">canvas</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">css</span><span class="p">({</span> <span class="nx">width</span><span class="o">:</span> <span class="nx">size</span><span class="o">*</span><span class="nx">canvasScale</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="nx">size</span><span class="o">*</span><span class="nx">canvasScale</span> <span class="p">})</span>
+  <span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;centered&#39;</span><span class="p">);</span>
   
-  <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="nx">noiseVal</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nx">imageData</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">createImageData</span><span class="p">(</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span> <span class="p">);</span>
 
+<span class="nx">opts</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">size</span><span class="o">:</span> <span class="mi">150</span><span class="p">,</span>
+  <span class="nx">speed</span><span class="o">:</span> <span class="mf">0.01</span><span class="p">,</span>
+  <span class="nx">canvasScale</span><span class="o">:</span> <span class="mf">2.5</span><span class="p">,</span>
+  <span class="nx">dimensions</span><span class="o">:</span> <span class="mi">4</span><span class="p">,</span>
+  <span class="nx">xyScalar</span><span class="o">:</span> <span class="mf">0.05</span><span class="p">,</span>
+  <span class="nx">zScalar</span><span class="o">:</span> <span class="mf">0.01</span><span class="p">,</span>
+  <span class="nx">wScalar</span><span class="o">:</span> <span class="mf">0.02</span><span class="p">,</span>
+  <span class="nx">noiseOffset</span><span class="o">:</span> <span class="mi">100</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">setPixel</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="p">(</span><span class="nx">x</span> <span class="o">+</span> <span class="nx">y</span> <span class="o">*</span> <span class="nx">imageData</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="o">+</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span>
+  <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">g</span><span class="p">;</span>
+  <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nx">b</span><span class="p">;</span>
+  <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">index</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">(</span><span class="kd">function</span> <span class="nx">initGui</span><span class="p">(){</span>
+  <span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">dat</span><span class="p">.</span><span class="nx">GUI</span><span class="p">();</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span> <span class="s1">&#39;dimensions&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">).</span><span class="nx">step</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span> <span class="s1">&#39;xyScalar&#39;</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s1">&#39;1 &amp; 2nd dim scalar&#39;</span><span class="p">);</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span> <span class="s1">&#39;zScalar&#39;</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s1">&#39;3rd dim Scalar&#39;</span><span class="p">);</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span> <span class="s1">&#39;wScalar&#39;</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s1">&#39;offset speed&#39;</span><span class="p">);</span>
+<span class="p">}());</span>
+
+<span class="kd">function</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nx">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nx">noiseVal</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
   <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">switch</span><span class="p">(</span><span class="nx">NOISE_DIMENSIONS</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">switch</span><span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">dimensions</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
-          <span class="nx">noiseVal</span> <span class="o">=</span> <span class="nx">simplexNoise</span><span class="p">.</span><span class="nx">noise</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">NS</span> <span class="o">+</span> <span class="nx">noiseOffset</span><span class="p">,</span> <span class="nx">j</span> <span class="o">*</span> <span class="nx">NS</span> <span class="o">+</span> <span class="nx">noiseOffset</span><span class="p">);</span> 
+          <span class="nx">noiseVal</span> <span class="o">=</span> <span class="nx">simplexNoise</span><span class="p">.</span><span class="nx">noise</span><span class="p">(</span> <span class="nx">i</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">xyScalar</span><span class="o">+</span><span class="nx">noiseOffset</span><span class="p">,</span> <span class="nx">j</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">xyScalar</span><span class="o">+</span><span class="nx">noiseOffset</span> <span class="p">);</span>
           <span class="k">break</span><span class="p">;</span>
-        <span class="k">case</span> <span class="mi">3</span><span class="o">:</span> 
-          <span class="nx">noiseVal</span> <span class="o">=</span> <span class="nx">simplexNoise</span><span class="p">.</span><span class="nx">noise</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">NS</span> <span class="o">+</span> <span class="nx">noiseOffset</span><span class="p">,</span> <span class="nx">j</span> <span class="o">*</span> <span class="nx">NS</span> <span class="o">+</span> <span class="nx">noiseOffset</span> <span class="p">,</span> <span class="nx">frameCount</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">);</span> 
+        <span class="k">case</span> <span class="mi">3</span><span class="o">:</span>
+          <span class="nx">noiseVal</span> <span class="o">=</span> <span class="nx">simplexNoise</span><span class="p">.</span><span class="nx">noise</span><span class="p">(</span> <span class="nx">i</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">xyScalar</span><span class="o">+</span><span class="nx">noiseOffset</span><span class="p">,</span> <span class="nx">j</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">xyScalar</span><span class="o">+</span><span class="nx">noiseOffset</span><span class="p">,</span> <span class="nx">frameCount</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">zScalar</span> <span class="p">);</span>
           <span class="k">break</span><span class="p">;</span>
-        <span class="k">case</span> <span class="mi">4</span><span class="o">:</span> 
-          <span class="nx">noiseVal</span> <span class="o">=</span> <span class="nx">simplexNoise</span><span class="p">.</span><span class="nx">noise</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">NS</span> <span class="o">+</span> <span class="nx">noiseOffset</span><span class="p">,</span> <span class="nx">j</span> <span class="o">*</span> <span class="nx">NS</span> <span class="o">+</span> <span class="nx">noiseOffset</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span> <span class="nx">frameCount</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">);</span> 
+        <span class="k">case</span> <span class="mi">4</span><span class="o">:</span>
+          <span class="nx">noiseVal</span> <span class="o">=</span> <span class="nx">simplexNoise</span><span class="p">.</span><span class="nx">noise</span><span class="p">(</span> <span class="nx">i</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">xyScalar</span><span class="o">+</span><span class="nx">noiseOffset</span><span class="p">,</span> <span class="nx">j</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">xyScalar</span><span class="o">+</span><span class="nx">noiseOffset</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">frameCount</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">zScalar</span> <span class="p">);</span>
           <span class="k">break</span><span class="p">;</span>
         <span class="k">default</span><span class="o">:</span>
-          <span class="nx">noiseVal</span> <span class="o">=</span> <span class="nx">simplexNoise</span><span class="p">.</span><span class="nx">noise</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">NS</span> <span class="o">+</span> <span class="nx">noiseOffset</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> 
-          <span class="k">break</span><span class="p">;</span>
+          <span class="nx">noiseVal</span> <span class="o">=</span> <span class="nx">simplexNoise</span><span class="p">.</span><span class="nx">noise</span><span class="p">(</span> <span class="nx">i</span><span class="o">*</span><span class="nx">opts</span><span class="p">.</span><span class="nx">xyScalar</span><span class="o">+</span><span class="nx">noiseOffset</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
       <span class="p">}</span>
-
-      <span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">noiseVal</span> <span class="o">*</span> <span class="mi">127</span> <span class="o">+</span> <span class="mi">128</span><span class="p">);</span>
-      
+      <span class="nx">c</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span> <span class="nx">noiseVal</span><span class="o">*</span><span class="mi">127</span> <span class="o">+</span> <span class="mi">128</span><span class="p">);</span>
       <span class="nx">setPixel</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="mi">255</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">}</span>
-
   <span class="nx">ctx</span><span class="p">.</span><span class="nx">putImageData</span><span class="p">(</span><span class="nx">imageData</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
-  <span class="nx">noiseOffset</span><span class="o">+=</span><span class="nx">NS</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
+  <span class="nx">noiseOffset</span> <span class="o">+=</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">wScalar</span><span class="p">;</span>
+  <span class="nx">frameCount</span><span class="o">++</span><span class="p">;</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>start the animation loop 60 fps</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">draw</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">/</span> <span class="mi">60</span><span class="p">);</span>
+<span class="p">}</span>
 
-  <span class="nx">frameCount</span><span class="o">++</span><span class="p">;</span>
+<span class="nx">draw</span><span class="p">();</span>
 
-  <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">draw</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">/</span> <span class="mi">30</span><span class="p">);</span>
-<span class="p">};</span>
-
-
-
-<span class="nx">setTimeout</span><span class="p">(</span><span class="nx">draw</span><span class="p">,</span><span class="mi">1000</span><span class="o">/</span><span class="mi">30</span><span class="p">);</span>
-
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

@@ -2,76 +2,111 @@
 <html>
   <head>
     <title>Color Waves - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
     <script src="javascripts/vendor/raphael-min.js"></script>
   </head>
   <body>
-    <div id="example-container"></div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
-    <script>window.onload = function(e){
-		
-		
-	var columns = 6, rows = 4;
-	var columnWidth, rowHeight;
-	var circles = [];
-	var translateX = 100, translateY = 100;
-	var width = window.innerWidth;
-	var height = 600;
-	var container = document.getElementById("example-container");
+    <h1>Toxiclibs.js</h1>
+    <div id="example-container"></div><p>Toxiclibs.js is an open-source computational design library ported to 
+javascript by <a href="http://hapticdata.com">Kyle Phillips</a> originally written by 
+<a href="http://postspectacular.com">Karsten Schmidt</a> for Java and
+<a href="http://processing.org">Processing</a>. Examples of the original library can be
+found and more information can be found at <a href="http://toxiclibs.org">toxiclibs.org</a></p>
 
-	var notepad = Raphael(container,width,height);
+<p>Toxiclibs.js works great with Canvas, with SVG or any ordinary DOM element.
+Examples below pair with such fine libraries as: 
+<a href="http://processingjs.org">Processing.js</a>, <a href="http://threejs.org">Three.js</a>,
+or <a href="http://raphaeljs.com">Raphael.js</a> for SVG.</p>
+    <ul class="twitter">
+      <li><a href="http://twitter.com/hapticdata">@hapticdata</a></li>
+      <li class="button"><a href="https://twitter.com/hapticdata" data-show-count="false" data-show-screen-name="false" data-dnt="true" class="twitter-follow-button">Follow @hapticdata</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+      </li>
+      <li class="button"><a href="https://twitter.com/share" data-via="hapticdata" class="twitter-share-button"></a>
+        <Tweet></Tweet>
+        <script>
+          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+          
+        </script>
+      </li>
+    </ul>
+    <pre class="prettyprint linenums">var Vec2D = toxi.geom.Vec2D;
+var o = new Vec2D(0,0).addSelf(x,y,z);
+if ( o.equals( new Vec2D() ) || o.x &lt; 0 ) {
+  hey();
+}</pre><h1>Getting Started with Toxiclibs.js</h1>
 
+<p>Toxiclibs.js can be used in the following ways:</p>
 
-	columnWidth = width / (columns-1);
-	rowHeight = height / (rows-1);
+<ul>
+<li>As a single javascript file loaded into a webpage, with the contents of the entire library within a global <em>toxi</em> object.</li>
+<li>As <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">AMD</a> modules that can be loaded independently or in packages, via <a href="http://requirejs.org">RequireJS</a></li>
+<li>In <a href="http://nodejs.org">Node.js</a> applications, as AMD modules that require the &#39;requirejs&#39; library for Node.js.</li>
+</ul>
 
-	for(var r=0;r<rows;r++){ 
-		for(var c=0;c<columns;c++){
-			var circle = notepad.circle(c*columnWidth+translateX,r*rowHeight+translateY,1,1);
-			circle.attr({fill: "#dddddd", "stroke": "#dddddd", "opacity":0.5,"scale": 4.0});
-			circles.push(circle); 
-		}
-	}
+<p>To use as a single javascript file:</p>
 
-	document.addEventListener("mousemove",function(event){
-		updateFor(event.pageX,event.pageY);
-	},false);
+<pre><code>//copy the file build/toxiclibs.js into your javascript folder
+&lt;script type="text/javascript" src="js/toxiclibs.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+  var myVector = new toxi.geom.Vec2D(window.innerWidth,window.innerHeight).scaleSelf(0.5);
+  var myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);
+&lt;/script&gt;
+</code></pre>
 
-	document.addEventListener("touchmove",function(event){
-		event.preventDefault();
-		updateFor(event.touches[0].pageX,event.touches[0].pageY);
-	},false);
+<p>To use with <a href="http://requirejs.org">RequireJS</a>:</p>
 
-	function updateFor(activeX,activeY){
-		var x = activeX - container.offsetLeft;
-		var y = activeY - container.offsetTop;
+<pre><code>//copy the lib/ contents into your projects folder for loading modules
+require([&#39;toxi/geom/Vec2D&#39;, toxi/color/TColor], function(Vec2D, TColor){
+  var myVector = new Vec2D(window.innerWidth,window.innerHeight).scaleSelf(0.5);
+  var myColor = TColor.newRGB(128/255,64/255,32/255);
+});
+</code></pre>
 
-		var l = circles.length;
-		for(var i=0;i<l;i++){
-			var circle = circles[i];
-			var box = circle.getBBox();
-			var dx = x - box.x;
-			var dy = y - box.y;
-			var distance = Math.sqrt((dx * dx) + (dy * dy));
-			var color = toxi.color.TColor.newHSV(distance/width,0.5,1.0);
+<p>To use with <a href="http://nodejs.org">Node.js</a>:</p>
 
-			var rgba = "rgba("+(color.red()*255)+","+(color.green()*255)+","+(color.blue()*255)+","+color.alpha()+")";
-			circle.attr({"fill": rgba, "scale":distance*0.25});
-		}
-	}
-}</script>
+<p>npm install toxiclibsjs
+then:</p>
+
+<pre><code>var toxi = require(&#39;toxiclibsjs&#39;),
+myVector = new toxi.geom.Ve2D(0.5,0.5),
+myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);
+</code></pre>
+
+<p>There are many different ways to use toxiclibs.js. Most of the <a href="http://haptic-data.com/toxiclibsjs/#examples">examples</a> currently use <a href="http://processingjs.org">Processing.js</a> and are created using the java-syntax style of the original <a href="http://processing.org">Processing</a>. This can be helpful to those that are making the transition from Java, but can be confusing to others. I will explain the basics of using toxiclibs.js and the few differences between it and <a href="http://toxiclibs.org">the original toxiclibs</a>. </p>
+
+<p>For comprehensive documentation, read the original libraries <a href="http://toxiclibs.org/javadocs/">javadocs</a>. As the library is still growing, you can compare that documentation to this list of implemented classes.</p>
+
+<h2>Toxiclibs.js follows the original package structure</h2>
+
+<p>The following objects are returned when loading the entire library</p>
+
+<ul>
+<li><strong>color</strong> - the color utils package</li>
+<li><strong>geom</strong> - the geometry utils package</li>
+<li><em>internals</em> - functionality used within the library</li>
+<li><strong>math</strong> - the math utils package</li>
+<li><strong>physics2d</strong> - the Verlet Physics 2D package</li>
+<li><strong>processing</strong> - the processing package, eases use with <a href="http://processingjs.org">Processing.js</a></li>
+<li><strong>THREE</strong> - features to ease use with <a href="http://github.com/mrdoob/three.js">Three.js</a></li>
+<li><strong>utils</strong> - the utils package</li>
+</ul>
+    <script src="../../working_dir/build/toxiclibs.js"></script>
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Color Waves</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
     
     
   <span class="kd">var</span> <span class="nx">columns</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="nx">rows</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
@@ -124,7 +159,7 @@
   <span class="p">}</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

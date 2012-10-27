@@ -2,17 +2,21 @@
 <html>
   <head>
     <title>Thread - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
   </head>
   <body>
     <div id="example-container" class="pjs">
-      <canvas id="myCanvas"></canvas>
+      <canvas id="myCanvas" data-processing-sources="javascripts/examples/thread.pde"></canvas>
     </div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
     <script src="javascripts/vendor/processing.js"></script>
-    <script type="application/processing" data-processing-target="myCanvas">/**
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script type="application/processing" data-processing-target="myCanvas">
+/**
  *
  * @author Karsten Schmidt <info at postspectacular dot com>
  */
@@ -104,13 +108,13 @@ void mousePressed() {
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Thread</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/**</span>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="cm">/**</span>
 <span class="cm"> *</span>
 <span class="cm"> * @author Karsten Schmidt &lt;info at postspectacular dot com&gt;</span>
 <span class="cm"> */</span>
@@ -200,7 +204,7 @@ void mousePressed() {
   <span class="p">}</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

@@ -2,17 +2,21 @@
 <html>
   <head>
     <title>Perlin Noise - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
     <script src="javascripts/vendor/dat.gui.min.js"></script>
   </head>
   <body>
     <div id="example-container" class="canvas">
       <canvas id="example"></canvas>
     </div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
-    <script>//#Perlin Noise Field w/ Canvas 2D Rendering Context
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script>
+//#Perlin Noise Field w/ Canvas 2D Rendering Context
 //- Toxiclibs ported to js and example by [Kyle Phillips](http://haptic-data.com)
 //Perlin Noise Field is an example showing how to use
 //toxi.math.noise.PerlinNoise](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/math/noise/PerlinNoise.js) 
@@ -45,7 +49,7 @@
       streams = [];
   
   setCanvasSize();
-  var gui = new DAT.GUI();
+  var gui = new dat.GUI();
   gui.add(options,'numStreams', 1, 4000, 1.0).name("# Streams");
   gui.add(options,'step',0.25,10,0.25).name("Speed");
   //var noiseFolder = gui.addFolder("Noise Space Progression");
@@ -118,20 +122,20 @@
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Perlin Noise</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Perlin Noise Field w/ Canvas 2D Rendering Context</h1>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>Perlin Noise Field w/ Canvas 2D Rendering Context</h1>
 
 <ul>
 <li>Toxiclibs ported to js and example by <a href="http://haptic-data.com">Kyle Phillips</a>
 Perlin Noise Field is an example showing how to use
 toxi.math.noise.PerlinNoise](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/math/noise/PerlinNoise.js) 
 for animating vectors or creating procedural textures.</li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">TColor</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">TColor</span><span class="p">,</span>
+</ul>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">TColor</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">TColor</span><span class="p">,</span>
       <span class="nx">PerlinNoise</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">noise</span><span class="p">.</span><span class="nx">PerlinNoise</span><span class="p">;</span>
   <span class="kd">var</span> <span class="nx">palette</span> <span class="o">=</span> <span class="p">[</span>
     <span class="nx">TColor</span><span class="p">.</span><span class="nx">newHex</span><span class="p">(</span><span class="s1">&#39;1c0f17&#39;</span><span class="p">),</span>
@@ -139,7 +143,7 @@ for animating vectors or creating procedural textures.</li>
     <span class="nx">TColor</span><span class="p">.</span><span class="nx">newHex</span><span class="p">(</span><span class="s1">&#39;2c3857&#39;</span><span class="p">),</span>
     <span class="nx">TColor</span><span class="p">.</span><span class="nx">newHex</span><span class="p">(</span><span class="s1">&#39;155e73&#39;</span><span class="p">).</span><span class="nx">setBrightness</span><span class="p">(</span><span class="mf">0.9</span><span class="p">),</span>
     <span class="nx">TColor</span><span class="p">.</span><span class="nx">newHex</span><span class="p">(</span><span class="s1">&#39;e8ca59&#39;</span><span class="p">),</span>
-    <span class="nx">TColor</span><span class="p">.</span><span class="nx">newHex</span><span class="p">(</span><span class="s1">&#39;891b1b&#39;</span><span class="p">),</span><span class="c1">//.setAlpha(0.85),</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>TColor.newHex('35e8df')</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="p">];</span>
+    <span class="nx">TColor</span><span class="p">.</span><span class="nx">newHex</span><span class="p">(</span><span class="s1">&#39;891b1b&#39;</span><span class="p">),</span><span class="c1">//.setAlpha(0.85),</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>TColor.newHex('35e8df')</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="p">];</span>
   
   <span class="kd">var</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;example&#39;</span><span class="p">),</span>
       <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">&#39;2d&#39;</span><span class="p">),</span>
@@ -155,14 +159,14 @@ for animating vectors or creating procedural textures.</li>
       <span class="nx">streams</span> <span class="o">=</span> <span class="p">[];</span>
   
   <span class="nx">setCanvasSize</span><span class="p">();</span>
-  <span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DAT</span><span class="p">.</span><span class="nx">GUI</span><span class="p">();</span>
+  <span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">dat</span><span class="p">.</span><span class="nx">GUI</span><span class="p">();</span>
   <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;numStreams&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;# Streams&quot;</span><span class="p">);</span>
-  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;step&#39;</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.25</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Speed&quot;</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>var noiseFolder = gui.addFolder("Noise Space Progression");</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;distort&#39;</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.001</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Noise Progression&quot;</span><span class="p">);</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;step&#39;</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.25</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Speed&quot;</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           <p>var noiseFolder = gui.addFolder("Noise Space Progression");</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;distort&#39;</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.001</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Noise Progression&quot;</span><span class="p">);</span>
   <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;strength&#39;</span><span class="p">,</span><span class="mf">0.01</span><span class="p">,</span><span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="mf">0.01</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Directional Influence&quot;</span><span class="p">);</span>
   <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span><span class="s1">&#39;scaler&#39;</span><span class="p">,</span><span class="mf">0.01</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="mf">0.01</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Scalar&quot;</span><span class="p">);</span>
 
   <span class="kd">var</span> <span class="nx">getRandomVector</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
-    <span class="kd">var</span> <span class="nx">vec</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>since javascript is a loose-typed language, im just gonna through a color property on there</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">vec</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="nx">palette</span><span class="p">[</span><span class="nb">parseInt</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="nx">palette</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span><span class="mi">10</span><span class="p">)];</span>
+    <span class="kd">var</span> <span class="nx">vec</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           <p>since javascript is a loose-typed language, im just gonna through a color property on there</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">vec</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="nx">palette</span><span class="p">[</span><span class="nb">parseInt</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="nx">palette</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span><span class="mi">10</span><span class="p">)];</span>
     <span class="k">return</span> <span class="nx">vec</span><span class="p">;</span>
   <span class="p">};</span>
 
@@ -173,7 +177,7 @@ for animating vectors or creating procedural textures.</li>
 
   <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillStyle</span> <span class="o">=</span> <span class="s2">&quot;#000000&quot;</span><span class="p">;</span>
   <span class="nx">ctx</span><span class="p">.</span><span class="nx">strokeStyle</span> <span class="o">=</span> <span class="s2">&quot;#ff0000&quot;</span><span class="p">;</span>
-  <span class="nx">ctx</span><span class="p">.</span><span class="nx">lineWidth</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>ctx.fillRect(0,0,canvas.width,canvas.height);</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">draw</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">ctx</span><span class="p">.</span><span class="nx">lineWidth</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">;</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           <p>ctx.fillRect(0,0,canvas.width,canvas.height);</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">draw</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="k">while</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">numStreams</span> <span class="o">&gt;</span> <span class="nx">streams</span><span class="p">.</span><span class="nx">length</span><span class="p">){</span>
       <span class="nx">streams</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">getRandomVector</span><span class="p">());</span>
     <span class="p">}</span>
@@ -219,7 +223,7 @@ for animating vectors or creating procedural textures.</li>
   <span class="p">}</span>
   <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;resize&#39;</span><span class="p">,</span> <span class="nx">setCanvasSize</span><span class="p">,</span> <span class="kc">false</span> <span class="p">);</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

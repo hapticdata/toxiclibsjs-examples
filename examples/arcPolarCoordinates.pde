@@ -25,6 +25,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+//scope the Vec2D object locally so that you can refer to it the way
+//you naturally would in java/processing
 var Vec2D = toxi.geom.Vec2D;
 
 float theta=0;
@@ -33,7 +35,7 @@ float outerRadius=180;
 int numSteps=10;
 
 void setup() {
-  size(940,380);
+  size(640,380);
 }
 
 void draw() {

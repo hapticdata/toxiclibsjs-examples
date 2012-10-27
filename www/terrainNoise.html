@@ -2,35 +2,46 @@
 <html>
   <head>
     <title>Terrain Noise - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
+    <script>
+      - if (src)
+        - src = src.split('.')[0]
+        requirejs.config({
+          config: {
+            'main': { example: 'examples/terrainNoise.js' }
+          }
+        });
+        
+    </script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
   </head>
   <body>
-    <script>//#Terrain
+    <script>
+//#Terrain
 //##with [Three.js](http://mrdoob.github.com/three.js) and [Require.js](http://requirejs.org)
 //**toxiclibs.js by [Kyle Phillips](http://haptic-data.com)**
 //
 //Demonstrates [toxi.geom.mesh.TriangleMesh](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/TriangleMesh.js) and [toxi.math.noise.PerlineNoise]
 //and using [toxi.THREE.ToxiclibsSupport](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/THREE/ToxiclibsSupport.js) for generating a [three.js] mesh.
 
-require.config({
+/*require.config({
 	shim: {
 		//[shim](http://requirejs.org/docs/api.html#config-shim) makes non-AMD libs like THREE work within Require
 		'three': { exports: 'THREE' }
 	}
-});
+});*/
 //array of dependencies
-require([
-	'three',
-	'dat/gui/GUI',
-	'toxi/THREE/ToxiclibsSupport',
-	'toxi/geom/mesh/Terrain',
-	'toxi/geom/Vec3D',
-	'toxi/geom/mesh/TriangleMesh',
-	'toxi/math/mathUtils',
-	'toxi/math/noise/PerlinNoise'
-], function(THREE, datGUI, ToxiclibsSupport, Terrain, Vec3D, TriangleMesh, mathUtils, PerlinNoise ){
+define('example',function( require ){
+
+	var THREE = require('three'),
+		datGUI = require('dat/gui/GUI'),
+		ToxiclibsSupport = require('toxi/THREE/ToxiclibsSupport'),
+		Terrain = require('toxi/geom/mesh/Terrain'),
+		PerlinNoise = require('toxi/math/noise/PerlinNoise');
 
 	var gui = new datGUI();
 	var container = document.getElementById('example-container'),
@@ -39,7 +50,7 @@ require([
 		scene = new THREE.Scene(),
 		camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 10000 ),
 		renderer = new THREE.WebGLRenderer({ antialias: true }),
-		WDIM = 40,
+		WDIM = 25,
 		HDIM = 30,
 		terrain = new Terrain( WDIM, HDIM, 50 ),
 		perlin = new PerlinNoise(),
@@ -130,37 +141,38 @@ require([
 	}
 	draw();
 });
+require(['example']);
 </script>
-    <div id="example-container" class="grad"></div>
+    <div id="example-container"></div>
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Terrain Noise</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Terrain</h1>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>Terrain</h1>
 
 <h2>with <a href="http://mrdoob.github.com/three.js">Three.js</a> and <a href="http://requirejs.org">Require.js</a></h2>
 
 <p><strong>toxiclibs.js by <a href="http://haptic-data.com">Kyle Phillips</a></strong></p>
 
 <p>Demonstrates <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/TriangleMesh.js">toxi.geom.mesh.TriangleMesh</a> and [toxi.math.noise.PerlineNoise]
-and using <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/THREE/ToxiclibsSupport.js">toxi.THREE.ToxiclibsSupport</a> for generating a [three.js] mesh.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">require</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
-  <span class="nx">shim</span><span class="o">:</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p><a href="http://requirejs.org/docs/api.html#config-shim">shim</a> makes non-AMD libs like THREE work within Require</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="s1">&#39;three&#39;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">exports</span><span class="o">:</span> <span class="s1">&#39;THREE&#39;</span> <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>array of dependencies</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">require</span><span class="p">([</span>
-  <span class="s1">&#39;three&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;dat/gui/GUI&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;toxi/THREE/ToxiclibsSupport&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;toxi/geom/mesh/Terrain&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;toxi/geom/Vec3D&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;toxi/geom/mesh/TriangleMesh&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;toxi/math/mathUtils&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;toxi/math/noise/PerlinNoise&#39;</span>
-<span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">THREE</span><span class="p">,</span> <span class="nx">datGUI</span><span class="p">,</span> <span class="nx">ToxiclibsSupport</span><span class="p">,</span> <span class="nx">Terrain</span><span class="p">,</span> <span class="nx">Vec3D</span><span class="p">,</span> <span class="nx">TriangleMesh</span><span class="p">,</span> <span class="nx">mathUtils</span><span class="p">,</span> <span class="nx">PerlinNoise</span> <span class="p">){</span>
+and using <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/THREE/ToxiclibsSupport.js">toxi.THREE.ToxiclibsSupport</a> for generating a [three.js] mesh.</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="cm">/*require.config({</span>
+<span class="cm">  shim: {</span>
+
+<span class="cm">//DIVIDER</span>
+<span class="cm">    &#39;three&#39;: { exports: &#39;THREE&#39; }</span>
+<span class="cm">  }</span>
+<span class="cm">});*/</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p><a href="http://requirejs.org/docs/api.html#config-shim">shim</a> makes non-AMD libs like THREE work within Require</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="nx">define</span><span class="p">(</span><span class="s1">&#39;example&#39;</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span> <span class="nx">require</span> <span class="p">){</span>
+
+  <span class="kd">var</span> <span class="nx">THREE</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;three&#39;</span><span class="p">),</span>
+    <span class="nx">datGUI</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;dat/gui/GUI&#39;</span><span class="p">),</span>
+    <span class="nx">ToxiclibsSupport</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;toxi/THREE/ToxiclibsSupport&#39;</span><span class="p">),</span>
+    <span class="nx">Terrain</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;toxi/geom/mesh/Terrain&#39;</span><span class="p">),</span>
+    <span class="nx">PerlinNoise</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;toxi/math/noise/PerlinNoise&#39;</span><span class="p">);</span>
 
   <span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">datGUI</span><span class="p">();</span>
   <span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;example-container&#39;</span><span class="p">),</span>
@@ -169,7 +181,7 @@ and using <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/tox
     <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">(),</span>
     <span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span> <span class="mi">45</span><span class="p">,</span> <span class="nx">width</span> <span class="o">/</span> <span class="nx">height</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">10000</span> <span class="p">),</span>
     <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">({</span> <span class="nx">antialias</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}),</span>
-    <span class="nx">WDIM</span> <span class="o">=</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="nx">WDIM</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
     <span class="nx">HDIM</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
     <span class="nx">terrain</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Terrain</span><span class="p">(</span> <span class="nx">WDIM</span><span class="p">,</span> <span class="nx">HDIM</span><span class="p">,</span> <span class="mi">50</span> <span class="p">),</span>
     <span class="nx">perlin</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PerlinNoise</span><span class="p">(),</span>
@@ -184,7 +196,7 @@ and using <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/tox
     <span class="nx">speed</span><span class="o">:</span> <span class="mf">1.0</span>
   <span class="p">};</span>
 
-  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;running&#39;</span> <span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>if running was previously false, kick-start draw again</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">running</span> <span class="p">){</span> <span class="nx">draw</span><span class="p">();</span> <span class="p">}</span>
+  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;running&#39;</span> <span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           <p>array of dependencies</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="k">if</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">running</span> <span class="p">){</span> <span class="nx">draw</span><span class="p">();</span> <span class="p">}</span>
   <span class="p">});</span>
 
   <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="s1">&#39;noiseScale&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span> <span class="p">).</span><span class="nx">step</span><span class="p">(</span><span class="mf">0.01</span><span class="p">);</span>
@@ -196,7 +208,7 @@ and using <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/tox
   <span class="nx">container</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">width</span><span class="p">;</span>
   <span class="nx">container</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">height</span><span class="p">;</span>
   <span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span> <span class="p">);</span>
-  <span class="nx">container</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span> <span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>update the elevation of the terrain based on frameCount</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">function</span> <span class="nx">updateElevations</span><span class="p">(</span> <span class="nx">frame</span> <span class="p">){</span>
+  <span class="nx">container</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span> <span class="p">);</span></pre></div></div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           <p>if running was previously false, kick-start draw again</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="kd">function</span> <span class="nx">updateElevations</span><span class="p">(</span> <span class="nx">frame</span> <span class="p">){</span>
     <span class="kd">var</span> <span class="nx">amp</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span> <span class="nx">frame</span> <span class="p">)</span> <span class="o">+</span> <span class="mi">10</span><span class="p">;</span>
     <span class="kd">var</span> <span class="nx">elevation</span> <span class="o">=</span> <span class="p">[];</span>
     <span class="nx">offset</span> <span class="o">+=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">speed</span><span class="p">;</span>
@@ -207,7 +219,7 @@ and using <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/tox
       <span class="p">}</span>
     <span class="p">}</span>
     <span class="nx">terrain</span><span class="p">.</span><span class="nx">setElevation</span><span class="p">(</span><span class="nx">elevation</span><span class="p">);</span>
-  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>create a THREE.Mesh from the toxiclibs.js terrain</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">threeMesh</span> <span class="o">=</span> <span class="nx">ToxiclibsSupport</span><span class="p">.</span><span class="nx">createMesh</span><span class="p">(</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           <p>update the elevation of the terrain based on frameCount</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">threeMesh</span> <span class="o">=</span> <span class="nx">ToxiclibsSupport</span><span class="p">.</span><span class="nx">createMesh</span><span class="p">(</span>
     <span class="nx">terrain</span><span class="p">.</span><span class="nx">toMesh</span><span class="p">(),</span>
     <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshPhongMaterial</span><span class="p">({</span><span class="nx">color</span><span class="o">:</span> <span class="mh">0xffffff</span><span class="p">,</span> <span class="nx">wireframe</span><span class="o">:</span> <span class="kc">false</span> <span class="p">})</span>
   <span class="p">);</span>
@@ -230,7 +242,7 @@ and using <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/tox
 
     <span class="nx">frameCount</span><span class="o">++</span><span class="p">;</span>
     <span class="nx">updateElevations</span><span class="p">(</span> <span class="nx">frameCount</span> <span class="o">/</span> <span class="mi">100</span> <span class="p">);</span>
-    <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">dynamic</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>get a new geometry for the changed terrain</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">newGeom</span> <span class="o">=</span> <span class="nx">ToxiclibsSupport</span><span class="p">.</span><span class="nx">createMeshGeometry</span><span class="p">(</span> <span class="nx">terrain</span><span class="p">.</span><span class="nx">toMesh</span><span class="p">()</span> <span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>update all of the vertices</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">dynamic</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div></div>                      </li>                              <li id="section-6">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>                           <p>create a THREE.Mesh from the toxiclibs.js terrain</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">newGeom</span> <span class="o">=</span> <span class="nx">ToxiclibsSupport</span><span class="p">.</span><span class="nx">createMeshGeometry</span><span class="p">(</span> <span class="nx">terrain</span><span class="p">.</span><span class="nx">toMesh</span><span class="p">()</span> <span class="p">);</span></pre></div></div>                      </li>                              <li id="section-7">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>                           <p>get a new geometry for the changed terrain</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
       <span class="kd">var</span> <span class="nx">g</span> <span class="o">=</span> <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">geometry</span><span class="p">;</span>
       <span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">i</span><span class="p">){</span>
         <span class="nx">v</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="nx">newGeom</span><span class="p">.</span><span class="nx">vertices</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">x</span><span class="p">,</span> <span class="nx">newGeom</span><span class="p">.</span><span class="nx">vertices</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">y</span><span class="p">,</span> <span class="nx">newGeom</span><span class="p">.</span><span class="nx">vertices</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">z</span> <span class="p">);</span>
@@ -242,13 +254,14 @@ and using <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/tox
     <span class="p">}());</span>
     <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span> <span class="p">);</span>
     
-    <span class="k">if</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">running</span> <span class="p">){</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>three.js bundles a polyfill, so this will work fine in all browsers</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nb">window</span><span class="p">.</span><span class="nx">requestAnimationFrame</span><span class="p">(</span> <span class="nx">draw</span> <span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span> <span class="nx">options</span><span class="p">.</span><span class="nx">running</span> <span class="p">){</span></pre></div></div>                      </li>                              <li id="section-8">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>                           <p>update all of the vertices</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="nb">window</span><span class="p">.</span><span class="nx">requestAnimationFrame</span><span class="p">(</span> <span class="nx">draw</span> <span class="p">);</span>
     <span class="p">}</span>
   <span class="p">}</span>
   <span class="nx">draw</span><span class="p">();</span>
 <span class="p">});</span>
+<span class="nx">require</span><span class="p">([</span><span class="s1">&#39;example&#39;</span><span class="p">]);</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>                              <li id="section-9">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>                           <p>three.js bundles a polyfill, so this will work fine in all browsers</p>             </div>                          <div class="content"><div class="highlight"><pre>undefined</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

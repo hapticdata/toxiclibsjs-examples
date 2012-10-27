@@ -1,21 +1,19 @@
-  <div class="annotated-source">
+<div class="docco annotated-source">
     <div class="background"></div>
-    <table cellpadding="0" cellspacing="0">
-      <tbody>
+    <ul class="sections">  
         <% for (var i=0, l=sections.length; i<l; i++) { %>
-          <% var section = sections[i]; %>
-          <tr id="section-<%= i + 1 %>">
-            <td class="docs">
+        <% var section = sections[i]; %>   
+        <li id="section-<%= i + 1 %>">
+            <div class="annotation">
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-<%= i + 1 %>">&#182;</a>
-              </div>
+              </div>            
               <%= section.docsHtml %>
-            </td>
-            <td class="code">
-              <%= section.codeHtml %>
-            </td>
-          </tr>
+            </div>
+            <% if (section.codeText.replace(/\s/gm, '') != '') { %>
+            <div class="content"><%= section.codeHtml %></div>
+            <% } %>
+        </li>
         <% } %>
-      </tbody>
-    </table>
-  </div>
+    </ul> 
+</div>

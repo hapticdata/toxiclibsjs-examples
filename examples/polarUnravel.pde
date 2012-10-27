@@ -33,11 +33,11 @@ InterpolateStrategy is=new SigmoidInterpolation(3);
 
 
 void setup() {
-  size(550,550);
+  size(600,500);
 }
 
 void draw() {
-  background(220);
+  background(240);
   float w2=width * 0.5;
   float h2=height * 0.5;
   translate(w2, h2);

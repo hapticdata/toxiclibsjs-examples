@@ -2,31 +2,55 @@
 <html>
   <head>
     <title>Super-Ellipsoid - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
   </head>
   <body>
     <div id="example-container" class="pjs">
-      <canvas id="myCanvas"></canvas>
+      <canvas id="myCanvas" data-processing-sources="javascripts/examples/superEllipsoid.pde"></canvas>
     </div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
     <script src="javascripts/vendor/processing.js"></script>
-    <script type="application/processing" data-processing-target="myCanvas">/* 
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script type="application/processing" data-processing-target="myCanvas">
+//#Super Ellipsoid Mesh Builder
+//original example by [Karsten Schmidt](http://postspectacular.com),
+//Toxiclibs ported to js by [Kyle Phillips](http://workofkylephillips.com)
+//
+//**Usage:**
+//
+//- **w:** toggle wireframe on/off
+//- **n:** toggle normal vector display on/off
+//
+//SuperEllipsoidMeshBuilder demonstrates how to use the [SurfaceMeshBuilder](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/SurfaceMeshBuilder.js)
+//class in conjunction with a SuperEllipsoid function to dynamically create a
+//variety of useful geometric forms. It also demonstrates using
+//[toxi.processing.ToxiclibsSupport](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/processing/ToxiclibsSupport.js)
+//for crossmode support between Processing and Processing.js.
+//The super ellipsoid is described in detail on Paul Bourke's website.
+//In this demo 2 out-of-sync sine waves are used to animate
+//the ellipsoid parameters. Included is also a re-usable function for displaying
+//a generic TriangleMesh instance, incl. the display of surface normals useful for
+//debug purposes.
+
+/*
  * Copyright (c) 2010 Karsten Schmidt
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * http://creativecommons.org/licenses/LGPL/2.1/
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -111,27 +135,47 @@ void keyPressed() {
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Super-Ellipsoid</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/* </span>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="c1">//#Super Ellipsoid Mesh Builder</span>
+<span class="c1">//original example by [Karsten Schmidt](http://postspectacular.com),</span>
+<span class="c1">//Toxiclibs ported to js by [Kyle Phillips](http://workofkylephillips.com)</span>
+<span class="c1">//</span>
+<span class="c1">//**Usage:**</span>
+<span class="c1">//</span>
+<span class="c1">//- **w:** toggle wireframe on/off</span>
+<span class="c1">//- **n:** toggle normal vector display on/off</span>
+<span class="c1">//</span>
+<span class="c1">//SuperEllipsoidMeshBuilder demonstrates how to use the [SurfaceMeshBuilder](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/SurfaceMeshBuilder.js)</span>
+<span class="c1">//class in conjunction with a SuperEllipsoid function to dynamically create a</span>
+<span class="c1">//variety of useful geometric forms. It also demonstrates using</span>
+<span class="c1">//[toxi.processing.ToxiclibsSupport](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/processing/ToxiclibsSupport.js)</span>
+<span class="c1">//for crossmode support between Processing and Processing.js.</span>
+<span class="c1">//The super ellipsoid is described in detail on Paul Bourke&#39;s website.</span>
+<span class="c1">//In this demo 2 out-of-sync sine waves are used to animate</span>
+<span class="c1">//the ellipsoid parameters. Included is also a re-usable function for displaying</span>
+<span class="c1">//a generic TriangleMesh instance, incl. the display of surface normals useful for</span>
+<span class="c1">//debug purposes.</span>
+
+<span class="cm">/*</span>
 <span class="cm"> * Copyright (c) 2010 Karsten Schmidt</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * This library is free software; you can redistribute it and/or</span>
 <span class="cm"> * modify it under the terms of the GNU Lesser General Public</span>
 <span class="cm"> * License as published by the Free Software Foundation; either</span>
 <span class="cm"> * version 2.1 of the License, or (at your option) any later version.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * http://creativecommons.org/licenses/LGPL/2.1/</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * This library is distributed in the hope that it will be useful,</span>
 <span class="cm"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
 <span class="cm"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span>
 <span class="cm"> * Lesser General Public License for more details.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * You should have received a copy of the GNU Lesser General Public</span>
 <span class="cm"> * License along with this library; if not, write to the Free Software</span>
 <span class="cm"> * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</span>
@@ -195,7 +239,9 @@ void keyPressed() {
   <span class="k">else</span> <span class="p">{</span>
     <span class="nx">fill</span><span class="p">(</span><span class="mi">255</span><span class="p">);</span>
     <span class="nx">noStroke</span><span class="p">();</span>
-  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>scale(2);</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">gfx</span><span class="p">.</span><span class="nx">mesh</span><span class="p">(</span><span class="nx">mesh</span><span class="p">,</span> <span class="o">!</span><span class="nx">isWireFrame</span><span class="p">,</span> <span class="nx">showNormals</span> <span class="o">?</span> <span class="mi">10</span> <span class="o">:</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="c1">//scale(2);</span>
+  <span class="nx">gfx</span><span class="p">.</span><span class="nx">mesh</span><span class="p">(</span><span class="nx">mesh</span><span class="p">,</span> <span class="o">!</span><span class="nx">isWireFrame</span><span class="p">,</span> <span class="nx">showNormals</span> <span class="o">?</span> <span class="mi">10</span> <span class="o">:</span> <span class="mi">0</span><span class="p">);</span>
 
 <span class="p">}</span>
 
@@ -212,7 +258,7 @@ void keyPressed() {
 <span class="cm">  }*/</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

@@ -2,18 +2,22 @@
 <html>
   <head>
     <title>Smooth Doodle - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
     <script src="javascripts/vendor/dat.gui.min.js"></script>
   </head>
   <body>
     <div id="example-container" class="canvas">
       <canvas id="example"></canvas>
     </div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
-    <script>window.onload = init;
-var gui = new DAT.GUI();
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script>
+window.onload = init;
+var gui = new dat.GUI();
 var canvas, ctx,spline;
 var points, lastSplineVertices;
 var sampleDistance = 50;
@@ -128,14 +132,14 @@ document.ontouchmove = function(e){
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Smooth Doodle</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="nx">init</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DAT</span><span class="p">.</span><span class="nx">GUI</span><span class="p">();</span>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="nx">init</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">dat</span><span class="p">.</span><span class="nx">GUI</span><span class="p">();</span>
 <span class="kd">var</span> <span class="nx">canvas</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">,</span><span class="nx">spline</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">points</span><span class="p">,</span> <span class="nx">lastSplineVertices</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">sampleDistance</span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span>
@@ -154,7 +158,7 @@ document.ontouchmove = function(e){
   <span class="nx">spline</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Spline2D</span><span class="p">();</span>
   <span class="nx">points</span> <span class="o">=</span> <span class="p">[];</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>controls</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">params</span><span class="p">,</span> <span class="s1">&#39;distance&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">200</span> <span class="p">);</span>
+  </pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>controls</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">params</span><span class="p">,</span> <span class="s1">&#39;distance&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">200</span> <span class="p">);</span>
   <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">params</span><span class="p">,</span> <span class="s1">&#39;tightness&#39;</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">).</span><span class="nx">step</span><span class="p">(</span><span class="mf">0.025</span><span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
     <span class="nx">spline</span><span class="p">.</span><span class="nx">setTightness</span><span class="p">(</span> <span class="nx">params</span><span class="p">.</span><span class="nx">tightness</span> <span class="p">);</span>
   <span class="p">});</span>
@@ -163,7 +167,7 @@ document.ontouchmove = function(e){
     <span class="nx">clear</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">clearRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span> <span class="p">}</span>
   <span class="p">},</span> <span class="s1">&#39;clear&#39;</span><span class="p">);</span>
 
-  </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre>  
+  </pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre>  
   <span class="nb">window</span><span class="p">.</span><span class="nx">onmousemove</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
     <span class="nx">update</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">pageX</span><span class="p">,</span><span class="nx">e</span><span class="p">.</span><span class="nx">pageY</span><span class="p">);</span>
   <span class="p">};</span>
@@ -193,9 +197,9 @@ document.ontouchmove = function(e){
           <span class="nx">ctx</span><span class="p">.</span><span class="nx">strokeStyle</span> <span class="o">=</span> <span class="s2">&quot;rgba(0,0,0,0.5)&quot;</span><span class="p">;</span>
           <span class="nx">ctx</span><span class="p">.</span><span class="nx">arc</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="o">*</span><span class="mi">2</span><span class="p">);</span>
         <span class="p">}</span>
-        </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>need at least 4 vertices for a spline</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">numP</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
-          <span class="nx">ctx</span><span class="p">.</span><span class="nx">strokeStyle</span> <span class="o">=</span> <span class="s2">&quot;rgba(0,0,0,.125)&quot;</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>sample the curve at a higher resolution
-so that we get extra 8 points between each original pair of points</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="kd">var</span> <span class="nx">vertices</span><span class="o">=</span><span class="nx">spline</span><span class="p">.</span><span class="nx">computeVertices</span><span class="p">(</span><span class="mi">8</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>draw the smoothened curve</p>             </td>             <td class="code">               <div class="highlight"><pre>          <span class="nx">ctx</span><span class="p">.</span><span class="nx">beginPath</span><span class="p">();</span>
+        </pre></div></div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           <p>need at least 4 vertices for a spline</p>             </div>                          <div class="content"><div class="highlight"><pre>        <span class="k">if</span> <span class="p">(</span><span class="nx">numP</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">ctx</span><span class="p">.</span><span class="nx">strokeStyle</span> <span class="o">=</span> <span class="s2">&quot;rgba(0,0,0,.125)&quot;</span><span class="p">;</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           <p>sample the curve at a higher resolution
+so that we get extra 8 points between each original pair of points</p>             </div>                          <div class="content"><div class="highlight"><pre>          <span class="kd">var</span> <span class="nx">vertices</span><span class="o">=</span><span class="nx">spline</span><span class="p">.</span><span class="nx">computeVertices</span><span class="p">(</span><span class="mi">8</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-6">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>                           <p>draw the smoothened curve</p>             </div>                          <div class="content"><div class="highlight"><pre>          <span class="nx">ctx</span><span class="p">.</span><span class="nx">beginPath</span><span class="p">();</span>
           <span class="kd">var</span> <span class="nx">numRecent</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">64</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
           <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="nx">numRecent</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
             <span class="kd">var</span> <span class="nx">v</span> <span class="o">=</span> <span class="nx">vertices</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
@@ -238,7 +242,7 @@ so that we get extra 8 points between each original pair of points</p>          
   <span class="p">}</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Open-Source Library for Computational Design - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
+    <script src="javascripts/config.js"></script>
+    <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
+  </head>
+  <body>
+    <h1>Toxiclibs.js</h1>
+    <div id="example-container"></div><p>Toxiclibs.js is an open-source computational design library ported to 
+javascript by <a href="http://hapticdata.com">Kyle Phillips</a> originally written by 
+<a href="http://postspectacular.com">Karsten Schmidt</a> for Java and
+<a href="http://processing.org">Processing</a>. Examples of the original library can be
+found and more information can be found at <a href="http://toxiclibs.org">toxiclibs.org</a></p>
+
+<p>Toxiclibs.js works great with Canvas, with SVG or any ordinary DOM element.
+Examples below pair with such fine libraries as: 
+<a href="http://processingjs.org">Processing.js</a>, <a href="http://threejs.org">Three.js</a>,
+or <a href="http://raphaeljs.com">Raphael.js</a> for SVG.</p>
+    <ul class="twitter">
+      <li><a href="http://twitter.com/hapticdata">@hapticdata</a></li>
+      <li class="button"><a href="https://twitter.com/hapticdata" data-show-count="false" data-show-screen-name="false" data-dnt="true" class="twitter-follow-button">Follow @hapticdata</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+      </li>
+      <li class="button"><a href="https://twitter.com/share" data-via="hapticdata" class="twitter-share-button"></a>
+        <Tweet></Tweet>
+        <script>
+          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+          
+        </script>
+      </li>
+    </ul>
+    <pre class="prettyprint linenums">var Vec2D = toxi.geom.Vec2D;
+var o = new Vec2D(0,0).addSelf(x,y,z);
+if ( o.equals( new Vec2D() ) || o.x &lt; 0 ) {
+  hey();
+}</pre><h1>Getting Started with Toxiclibs.js</h1>
+
+<p>Toxiclibs.js can be used in the following ways:</p>
+
+<ul>
+<li>As a single javascript file loaded into a webpage, with the contents of the entire library within a global <em>toxi</em> object.</li>
+<li>As <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">AMD</a> modules that can be loaded independently or in packages, via <a href="http://requirejs.org">RequireJS</a></li>
+<li>In <a href="http://nodejs.org">Node.js</a> applications, as AMD modules that require the &#39;requirejs&#39; library for Node.js.</li>
+</ul>
+
+<p>To use as a single javascript file:</p>
+
+<pre><code>//copy the file build/toxiclibs.js into your javascript folder
+&lt;script type="text/javascript" src="js/toxiclibs.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+  var myVector = new toxi.geom.Vec2D(window.innerWidth,window.innerHeight).scaleSelf(0.5);
+  var myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);
+&lt;/script&gt;
+</code></pre>
+
+<p>To use with <a href="http://requirejs.org">RequireJS</a>:</p>
+
+<pre><code>//copy the lib/ contents into your projects folder for loading modules
+require([&#39;toxi/geom/Vec2D&#39;, toxi/color/TColor], function(Vec2D, TColor){
+  var myVector = new Vec2D(window.innerWidth,window.innerHeight).scaleSelf(0.5);
+  var myColor = TColor.newRGB(128/255,64/255,32/255);
+});
+</code></pre>
+
+<p>To use with <a href="http://nodejs.org">Node.js</a>:</p>
+
+<p>npm install toxiclibsjs
+then:</p>
+
+<pre><code>var toxi = require(&#39;toxiclibsjs&#39;),
+myVector = new toxi.geom.Ve2D(0.5,0.5),
+myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);
+</code></pre>
+
+<p>There are many different ways to use toxiclibs.js. Most of the <a href="http://haptic-data.com/toxiclibsjs/#examples">examples</a> currently use <a href="http://processingjs.org">Processing.js</a> and are created using the java-syntax style of the original <a href="http://processing.org">Processing</a>. This can be helpful to those that are making the transition from Java, but can be confusing to others. I will explain the basics of using toxiclibs.js and the few differences between it and <a href="http://toxiclibs.org">the original toxiclibs</a>. </p>
+
+<p>For comprehensive documentation, read the original libraries <a href="http://toxiclibs.org/javadocs/">javadocs</a>. As the library is still growing, you can compare that documentation to this list of implemented classes.</p>
+
+<h2>Toxiclibs.js follows the original package structure</h2>
+
+<p>The following objects are returned when loading the entire library</p>
+
+<ul>
+<li><strong>color</strong> - the color utils package</li>
+<li><strong>geom</strong> - the geometry utils package</li>
+<li><em>internals</em> - functionality used within the library</li>
+<li><strong>math</strong> - the math utils package</li>
+<li><strong>physics2d</strong> - the Verlet Physics 2D package</li>
+<li><strong>processing</strong> - the processing package, eases use with <a href="http://processingjs.org">Processing.js</a></li>
+<li><strong>THREE</strong> - features to ease use with <a href="http://github.com/mrdoob/three.js">Three.js</a></li>
+<li><strong>utils</strong> - the utils package</li>
+</ul>
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <section id="waist">
+      <nav id="navigation">
+        <ul>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
+          <li class="examples"><a href="#">Examples</a></li>
+        </ul>
+      </nav>
+    </section>
+    <footer></footer>
+  </body>
+</html>

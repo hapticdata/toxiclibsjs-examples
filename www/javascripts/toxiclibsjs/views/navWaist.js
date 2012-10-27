@@ -16,8 +16,15 @@ define([
 		},
 		clickExamples: function( e ){
 			e.preventDefault();
-			this.$('li').not('.examples').removeClass('selected');
-			examples.$el.slideToggle('slow');
+			if( examples.$el.is(':visible') ){
+				//close it
+				this.$('li').removeClass('selected').removeClass('blur');
+			} else {
+				//open it
+				this.$('li').not('.examples').removeClass('selected');
+				this.$('li.home').addClass('blur');
+			}
+			console.log('slideToggle: ', examples.$el.slideToggle('slow') );
 
 		},
 		clickSource: function( e ){
@@ -28,9 +35,19 @@ define([
 		},
 		initialize: function(){
 			console.log('init navWaist ', this.$el );
+			var self = this;
+			$(window).scroll(function(){
+				var height = $('#example-container').height();
+				console.log( $(window).scrollTop(), '>', height);
+				if( $(window).scrollTop() > height ){
+					self.$el.addClass('fixed');
+				} else {
+					self.$el.removeClass('fixed');
+				}
+			});
 		},
 		render: function(){
-			this.$el.parent().append( examples.render().$el.hide() );
+			this.$el.append( examples.render().$el.hide() );
 			return this;
 		}
 	});

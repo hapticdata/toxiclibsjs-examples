@@ -2,17 +2,21 @@
 <html>
   <head>
     <title>Line2D Intersection - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
   </head>
   <body>
     <div id="example-container" class="pjs">
-      <canvas id="myCanvas"></canvas>
+      <canvas id="myCanvas" data-processing-sources="javascripts/examples/line2dIntersection.pde"></canvas>
     </div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
     <script src="javascripts/vendor/processing.js"></script>
-    <script type="application/processing" data-processing-target="myCanvas">//#Line2D Intersection
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script type="application/processing" data-processing-target="myCanvas">
+//#Line2D Intersection
 //ported to javascript by [Kyle Phillips](http://haptic-data.com)
 //original example by [Karsten Schmidt](http://postspectacular.com)
 //
@@ -71,19 +75,20 @@ void draw() {
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Line2D Intersection</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Line2D Intersection</h1>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="c1">//#Line2D Intersection</span>
+<span class="c1">//ported to javascript by [Kyle Phillips](http://haptic-data.com)</span>
+<span class="c1">//original example by [Karsten Schmidt](http://postspectacular.com)</span>
+<span class="c1">//</span>
+<span class="c1">//In this example we calculate the intersection point of two lines, one of which</span>
+<span class="c1">//can be moved by user interactively.</span>
 
-<p>ported to javascript by <a href="http://haptic-data.com">Kyle Phillips</a>
-original example by <a href="http://postspectacular.com">Karsten Schmidt</a></p>
-
-<p>In this example we calculate the intersection point of two lines, one of which
-can be moved by user interactively.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm">/*</span>
 <span class="cm"> * Copyright (c) 2010 Karsten Schmidt</span>
 <span class="cm"> *</span>
 <span class="cm"> * This library is free software; you can redistribute it and/or</span>
@@ -133,7 +138,7 @@ can be moved by user interactively.</p>             </td>             <td class=
   <span class="nx">line</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">a</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">m</span><span class="p">.</span><span class="nx">a</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span><span class="nx">m</span><span class="p">.</span><span class="nx">b</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">m</span><span class="p">.</span><span class="nx">b</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

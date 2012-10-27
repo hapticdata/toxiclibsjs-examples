@@ -1,5 +1,5 @@
 window.onload = init;
-var gui = new DAT.GUI();
+var gui = new dat.GUI();
 var canvas, ctx,spline;
 var points, lastSplineVertices;
 var sampleDistance = 50;

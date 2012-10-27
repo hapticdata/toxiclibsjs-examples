@@ -65,7 +65,7 @@ import processing.opengl.*;
 AbstractWave waveX,waveY;
 
 int STEP = 25;
-int DIM = 800;
+int DIM = 900;//800;
 int D2 = DIM/2;
 int AMP = 50;
 

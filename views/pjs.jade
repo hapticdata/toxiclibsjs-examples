@@ -2,7 +2,7 @@ extends layout
 
 block content
   div.pjs#example-container
-    canvas#myCanvas
-  script(src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js")
+    canvas#myCanvas(data-processing-sources="javascripts/examples/#{src}")
   script(src='javascripts/vendor/processing.js')
-  script(type="application/processing", data-processing-target="myCanvas")!{script}
+  include toxi.min.jade
+  script(type="application/processing", data-processing-target="myCanvas") !{script}

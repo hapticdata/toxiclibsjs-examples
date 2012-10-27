@@ -2,281 +2,247 @@
 <html>
   <head>
     <title>Spherical Harmonics - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
     <script src="javascripts/vendor/dat.gui.min.js"></script>
     <script src="javascripts/vendor/three.js"></script>
     <script src="javascripts/vendor/jquery.js"></script>
   </head>
   <body>
-    <div id="example-container"></div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
+    <div id="example-container" class="canvas">
+      <canvas id="example"></canvas>
+    </div>
+    <script src="../../working_dir/build/toxiclibs.js"></script>
     <script>
-
+/*global $, toxi, THREE, requestAnimationFrame*/
+//I like this one [4, 2, 4, 6, 4, 0, 1, 1]
 var container = document.getElementById('example-container'),
-	$m = $("#m"),
-	mouse = new toxi.geom.Vec2D(),
-	cameraSensitivity = 1.2,
-	stage = new toxi.geom.Vec2D(window.innerWidth,window.innerHeight),
-	canRotateWorld = true,
+	$m = $("<div>"),
+	stage = new toxi.geom.Vec2D(window.innerWidth,window.innerHeight - 60),
 	camera = new THREE.PerspectiveCamera( 45, stage.x / stage.y, 1, 2000),
-		/*{
-		fov: 45, 
-		aspect: stage.x / stage.y,
-		near: 1,
-		far: 2000,
-		rotateSpeed: 1.0,
-		noPan: true,
-		noZoom: false,
-		staticMoving: false,
-		dynamicDampingFactor: 0.05
-	}),*/
 	scene = new THREE.Scene(),
-	renderer = new THREE.WebGLRenderer({antiaalised: true}),
-	//stats = new Stats(),
-	objectRadius = 65,
-	meshResolution = 100,
-	m = [],
-	changeHarmonics = true,
-	toxiToThreeSupport = new toxi.THREE.ToxiclibsSupport(scene),
-	threeMesh = undefined; //<--we'll put the converted mesh here
+	renderer = new THREE.WebGLRenderer({antialiased: true}),
+	opts,
+	material,
+	threeMesh; //<--we'll put the converted mesh here
 
+//set the scene
+container.style.backgroundColor = "black";
 camera.position.z = 800;
-
 scene.add( camera );
-var controls = new THREE.TrackballControls( camera );
+renderer.setSize(stage.x,stage.y);
+container.appendChild(renderer.domElement);
+//add the rotation controls
+var controls = new THREE.TrackballControls( camera, renderer.domElement );
 controls.rotateSpeed = 1.0;
 controls.zoomSpeed = 1.2;
 controls.panSpeed = 0.2;
-
 controls.noZoom = false;
 controls.noPan = false;
-
 controls.staticMoving = false;
 controls.dynamicDampingFactor = 0.1;
 
-renderer.setSize(stage.x,stage.y);
-container.appendChild(renderer.domElement);
+material = new THREE.MeshNormalMaterial({color: 0xBAE8E6, opacity: 1.0});
+material.side = THREE.DoubleSide;
 
-/*stats.domElement.style.position = 'absolute';
-stats.domElement.style.top = '0px';
-container.appendChild( stats.domElement );*/
 
-///the stuff more unique to this sketch
-var material = new THREE.MeshNormalMaterial({color: 0xBAE8E6, opacity: 1.0});
-//randomizeHarmonics();
-m = [5,8,3,1,7,3,3,7];
-//GUI
-var gui = new DAT.GUI();
-$("#guidat").find(".guidat").prepend('<div id="guiAbout">'+$("#about").html()+"</div>")
-
-gui.add(this,"objectRadius").name("Mesh Scale").min(10).max(300).onChange(function(){
-	threeMesh.scale = new THREE.Vector3(objectRadius,objectRadius,objectRadius);
-});
-gui.add(material,"wireframe");
-gui.add(this,"meshResolution").name("Mesh Resolution").min(10).max(250).step(1);
-gui.add(this,"changeHarmonics").name("New Random Parameters");
-gui.add(this,"changeMesh").name("Generate New Mesh!");
-
-function animate() { 
-	requestAnimationFrame( animate );
-	render();
-	//stats.update();
-}
-
-function render() {
-	/*if(canRotateWorld){
-		camera.position.x += ( (mouse.x*cameraSensitivity) - camera.position.x ) * 0.05;
-		camera.position.y += ( - ( mouse.y * cameraSensitivity) - camera.position.y ) * 0.05;
-	}*/
-	controls.update();
-	renderer.render( scene, camera );
-}
-
-animate();
-
-function randomizeHarmonics(){
-	m = [];
-	for(var i=0; i<8; i++) {
-	  m.push(parseInt(Math.random()*9));
+opts = {
+	objectRadius: 81,
+	meshResolution: 100,
+	changeHarmonics: true,
+	m: [5,8,3,1,7,3,3,7],
+	randomizeHarmonics: function(){
+		opts.m = [];
+		for(var i=0; i<8; i++) {
+			opts.m.push( parseInt(Math.random()*9, 10) );
+		}
+		$m.remove();
+		$m = $("<div id=\"m\">m: ["+opts.m+"]"+"</div>");
+		$("#guiAbout").append($m);
+	},
+	updateMesh: function(res){
+		var sh, builder, toxiMesh, threeGeometry;
+		if(res === undefined){
+			res = opts.meshResolution;
+		}
+		if(threeMesh !== undefined) {
+			scene.remove(threeMesh);
+		}
+		if(opts.changeHarmonics) {
+			opts.randomizeHarmonics();
+		}
+		//get the model
+		sh = new toxi.geom.mesh.SphericalHarmonics( opts.m );
+		//build the surface
+		builder = new toxi.geom.mesh.SurfaceMeshBuilder( sh );
+		//make it into a toxiclibs TriangleMesh
+		toxiMesh = builder.createMesh(new toxi.geom.mesh.TriangleMesh(),res,1,true);
+		//turn the mesh into THREE.Geometry
+		threeGeometry = toxi.THREE.ToxiclibsSupport.createMeshGeometry( toxiMesh );
+		threeMesh = new THREE.Mesh( threeGeometry, material );
+		threeMesh.scale.set(opts.objectRadius,opts.objectRadius,opts.objectRadius);
+		scene.add(threeMesh);
 	}
-	$m.remove();
-	$m = $('<div id="m">m: ['+m+']'+'</div>');
-	$("#guiAbout").append($m)
-}
-
-
-
-function changeMesh(res){
-	if(res === undefined){
-		res = meshResolution;
-	}
-	if(threeMesh !== undefined) {
-		scene.remove(threeMesh);
-	}
-	if(changeHarmonics) {
-		randomizeHarmonics();
-	}
-	var sh = new toxi.geom.mesh.SphericalHarmonics(m);
-	var mesh = new toxi.geom.mesh.SurfaceMeshBuilder( sh ); 
-	var toxiMesh = mesh.createMesh(new toxi.geom.mesh.TriangleMesh(),res,1,true);
-	threeMesh = toxiToThreeSupport.addMesh(toxiMesh,material);
-	//threeMesh = new THREE.Mesh(toxiToThreeSupport.createGeometry(toxiMesh),material);
-	threeMesh.scale = new THREE.Vector3(objectRadius,objectRadius,objectRadius);
-	threeMesh.doubleSided = true;
-	//console.log(threeMesh);
-	scene.add(threeMesh);
 };
 
 
-document.onmousemove = (function(){
-	var halfWindow = stage.scale(0.5);
-	return 	function (event) {
-		mouse.x = ( event.clientX - halfWindow.x );
-		mouse.y = ( event.clientY - halfWindow.y );
+//GUI
+var gui = new dat.GUI();
+$("#guidat")
+	.find(".guidat")
+	.prepend("<div id=\"guiAbout\">"+$("#about").html()+"</div>");
+
+gui.add(opts,"objectRadius")
+	.name("Mesh Scale").min(10).max(300)
+	.onChange(function(){
+		threeMesh.scale.set(opts.objectRadius,opts.objectRadius,opts.objectRadius);
+	});
+gui.add(material,"wireframe");
+gui.add(opts,"meshResolution")
+	.name("Mesh Resolution").min(10).max(250).step(1);
+gui.add(opts,"changeHarmonics")
+	.name("New Random Parameters");
+gui.add(opts,"updateMesh")
+	.name("Generate New Mesh!");
+
+
+(function addParticles(){
+	var positions = [];
+	for(var k=0;k<500;k++){
+		positions.push(toxi.geom.Vec3D.randomVector().scale(200+Math.random()*300));
 	}
-})();
+	var particleMaterial = new THREE.ParticleBasicMaterial({
+		color: 0xffff00,
+		transparent: true,
+		blending: THREE.AdditiveBlending
+	});
+	//if you construct a new toxi.THREE.ToxiclibsSupport
+	//and pass it the THREE.Scene it can add things for you
+	new toxi.THREE.ToxiclibsSupport( scene ).addParticles(positions, particleMaterial );
+}());
 
 //create first mesh
-changeMesh(meshResolution);
-var positions = [];
-for(var k=0;k<500;k++){
-	var p = positions.push(toxi.geom.Vec3D.randomVector().scale(200+Math.random()*300));
+opts.updateMesh();
+//start the animation loop
+animate();
+function animate() {
+	requestAnimationFrame( animate );
+	render();
 }
-toxiToThreeSupport.addParticles(positions, new THREE.ParticleBasicMaterial({
-	color: 0xffff00,
-	transparent: true,
-	blending: THREE.AdditiveBlending
-}));</script>
+
+function render() {
+	controls.update();
+	renderer.render( scene, camera );
+}</script>
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Spherical Harmonics</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;example-container&#39;</span><span class="p">),</span>
-  <span class="nx">$m</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#m&quot;</span><span class="p">),</span>
-  <span class="nx">mouse</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">(),</span>
-  <span class="nx">cameraSensitivity</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">,</span>
-  <span class="nx">stage</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span><span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span><span class="p">),</span>
-  <span class="nx">canRotateWorld</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="cm">/*global $, toxi, THREE, requestAnimationFrame*/</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>I like this one [4, 2, 4, 6, 4, 0, 1, 1]</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;example-container&#39;</span><span class="p">),</span>
+  <span class="nx">$m</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;div&gt;&quot;</span><span class="p">),</span>
+  <span class="nx">stage</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span><span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span> <span class="o">-</span> <span class="mi">60</span><span class="p">),</span>
   <span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span> <span class="mi">45</span><span class="p">,</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">x</span> <span class="o">/</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2000</span><span class="p">),</span>
-    <span class="cm">/*{</span>
-<span class="cm">    fov: 45, </span>
-<span class="cm">    aspect: stage.x / stage.y,</span>
-<span class="cm">    near: 1,</span>
-<span class="cm">    far: 2000,</span>
-<span class="cm">    rotateSpeed: 1.0,</span>
-<span class="cm">    noPan: true,</span>
-<span class="cm">    noZoom: false,</span>
-<span class="cm">    staticMoving: false,</span>
-<span class="cm">    dynamicDampingFactor: 0.05</span>
-<span class="cm">  }),*/</span>
   <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">(),</span>
-  <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">({</span><span class="nx">antiaalised</span><span class="o">:</span> <span class="kc">true</span><span class="p">}),</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>stats = new Stats(),</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">objectRadius</span> <span class="o">=</span> <span class="mi">65</span><span class="p">,</span>
-  <span class="nx">meshResolution</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-  <span class="nx">m</span> <span class="o">=</span> <span class="p">[],</span>
-  <span class="nx">changeHarmonics</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="nx">toxiToThreeSupport</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">THREE</span><span class="p">.</span><span class="nx">ToxiclibsSupport</span><span class="p">(</span><span class="nx">scene</span><span class="p">),</span>
-  <span class="nx">threeMesh</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span> <span class="c1">//&lt;--we&#39;ll put the converted mesh here</span>
-
+  <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">({</span><span class="nx">antialiased</span><span class="o">:</span> <span class="kc">true</span><span class="p">}),</span>
+  <span class="nx">opts</span><span class="p">,</span>
+  <span class="nx">material</span><span class="p">,</span>
+  <span class="nx">threeMesh</span><span class="p">;</span> <span class="c1">//&lt;--we&#39;ll put the converted mesh here</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           <p>set the scene</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="nx">container</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">backgroundColor</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span><span class="p">;</span>
 <span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">z</span> <span class="o">=</span> <span class="mi">800</span><span class="p">;</span>
-
 <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">camera</span> <span class="p">);</span>
-<span class="kd">var</span> <span class="nx">controls</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">TrackballControls</span><span class="p">(</span> <span class="nx">camera</span> <span class="p">);</span>
+<span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span><span class="nx">stage</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">stage</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
+<span class="nx">container</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           <p>add the rotation controls</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">controls</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">TrackballControls</span><span class="p">(</span> <span class="nx">camera</span><span class="p">,</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span> <span class="p">);</span>
 <span class="nx">controls</span><span class="p">.</span><span class="nx">rotateSpeed</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
 <span class="nx">controls</span><span class="p">.</span><span class="nx">zoomSpeed</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">;</span>
 <span class="nx">controls</span><span class="p">.</span><span class="nx">panSpeed</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">;</span>
-
 <span class="nx">controls</span><span class="p">.</span><span class="nx">noZoom</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 <span class="nx">controls</span><span class="p">.</span><span class="nx">noPan</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-
 <span class="nx">controls</span><span class="p">.</span><span class="nx">staticMoving</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 <span class="nx">controls</span><span class="p">.</span><span class="nx">dynamicDampingFactor</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">;</span>
 
-<span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span><span class="nx">stage</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">stage</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
-<span class="nx">container</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span><span class="p">);</span>
+<span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshNormalMaterial</span><span class="p">({</span><span class="nx">color</span><span class="o">:</span> <span class="mh">0xBAE8E6</span><span class="p">,</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mf">1.0</span><span class="p">});</span>
+<span class="nx">material</span><span class="p">.</span><span class="nx">side</span> <span class="o">=</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">DoubleSide</span><span class="p">;</span>
 
-<span class="cm">/*stats.domElement.style.position = &#39;absolute&#39;;</span>
-<span class="cm">stats.domElement.style.top = &#39;0px&#39;;</span>
-<span class="cm">container.appendChild( stats.domElement );*/</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>/the stuff more unique to this sketch</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">material</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshNormalMaterial</span><span class="p">({</span><span class="nx">color</span><span class="o">:</span> <span class="mh">0xBAE8E6</span><span class="p">,</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mf">1.0</span><span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>randomizeHarmonics();</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">m</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">];</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>GUI</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DAT</span><span class="p">.</span><span class="nx">GUI</span><span class="p">();</span>
-<span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#guidat&quot;</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;.guidat&quot;</span><span class="p">).</span><span class="nx">prepend</span><span class="p">(</span><span class="s1">&#39;&lt;div id=&quot;guiAbout&quot;&gt;&#39;</span><span class="o">+</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#about&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">)</span>
 
-<span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="s2">&quot;objectRadius&quot;</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Mesh Scale&quot;</span><span class="p">).</span><span class="nx">min</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mi">300</span><span class="p">).</span><span class="nx">onChange</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-  <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">scale</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">(</span><span class="nx">objectRadius</span><span class="p">,</span><span class="nx">objectRadius</span><span class="p">,</span><span class="nx">objectRadius</span><span class="p">);</span>
-<span class="p">});</span>
+<span class="nx">opts</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">objectRadius</span><span class="o">:</span> <span class="mi">81</span><span class="p">,</span>
+  <span class="nx">meshResolution</span><span class="o">:</span> <span class="mi">100</span><span class="p">,</span>
+  <span class="nx">changeHarmonics</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="nx">m</span><span class="o">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+  <span class="nx">randomizeHarmonics</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">opts</span><span class="p">.</span><span class="nx">m</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="mi">8</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">opts</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">$m</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
+    <span class="nx">$m</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;div id=\&quot;m\&quot;&gt;m: [&quot;</span><span class="o">+</span><span class="nx">opts</span><span class="p">.</span><span class="nx">m</span><span class="o">+</span><span class="s2">&quot;]&quot;</span><span class="o">+</span><span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#guiAbout&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">$m</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">updateMesh</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">res</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">sh</span><span class="p">,</span> <span class="nx">builder</span><span class="p">,</span> <span class="nx">toxiMesh</span><span class="p">,</span> <span class="nx">threeGeometry</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">res</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">){</span>
+      <span class="nx">res</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">meshResolution</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">threeMesh</span> <span class="o">!==</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">scene</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">threeMesh</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">changeHarmonics</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">opts</span><span class="p">.</span><span class="nx">randomizeHarmonics</span><span class="p">();</span>
+    <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           <p>get the model</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">sh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">SphericalHarmonics</span><span class="p">(</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">m</span> <span class="p">);</span></pre></div></div>                      </li>                              <li id="section-6">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>                           <p>build the surface</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">SurfaceMeshBuilder</span><span class="p">(</span> <span class="nx">sh</span> <span class="p">);</span></pre></div></div>                      </li>                              <li id="section-7">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>                           <p>make it into a toxiclibs TriangleMesh</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">toxiMesh</span> <span class="o">=</span> <span class="nx">builder</span><span class="p">.</span><span class="nx">createMesh</span><span class="p">(</span><span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">TriangleMesh</span><span class="p">(),</span><span class="nx">res</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-8">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>                           <p>turn the mesh into THREE.Geometry</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">threeGeometry</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">THREE</span><span class="p">.</span><span class="nx">ToxiclibsSupport</span><span class="p">.</span><span class="nx">createMeshGeometry</span><span class="p">(</span> <span class="nx">toxiMesh</span> <span class="p">);</span>
+    <span class="nx">threeMesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span> <span class="nx">threeGeometry</span><span class="p">,</span> <span class="nx">material</span> <span class="p">);</span>
+    <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">objectRadius</span><span class="p">,</span><span class="nx">opts</span><span class="p">.</span><span class="nx">objectRadius</span><span class="p">,</span><span class="nx">opts</span><span class="p">.</span><span class="nx">objectRadius</span><span class="p">);</span>
+    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">threeMesh</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span></pre></div></div>                      </li>                              <li id="section-9">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>                           <p>GUI</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">dat</span><span class="p">.</span><span class="nx">GUI</span><span class="p">();</span>
+<span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#guidat&quot;</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;.guidat&quot;</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="s2">&quot;&lt;div id=\&quot;guiAbout\&quot;&gt;&quot;</span><span class="o">+</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#about&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">);</span>
+
+<span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span><span class="s2">&quot;objectRadius&quot;</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Mesh Scale&quot;</span><span class="p">).</span><span class="nx">min</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">onChange</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+    <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">objectRadius</span><span class="p">,</span><span class="nx">opts</span><span class="p">.</span><span class="nx">objectRadius</span><span class="p">,</span><span class="nx">opts</span><span class="p">.</span><span class="nx">objectRadius</span><span class="p">);</span>
+  <span class="p">});</span>
 <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">material</span><span class="p">,</span><span class="s2">&quot;wireframe&quot;</span><span class="p">);</span>
-<span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="s2">&quot;meshResolution&quot;</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Mesh Resolution&quot;</span><span class="p">).</span><span class="nx">min</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mi">250</span><span class="p">).</span><span class="nx">step</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="s2">&quot;changeHarmonics&quot;</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;New Random Parameters&quot;</span><span class="p">);</span>
-<span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="s2">&quot;changeMesh&quot;</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Generate New Mesh!&quot;</span><span class="p">);</span>
+<span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span><span class="s2">&quot;meshResolution&quot;</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Mesh Resolution&quot;</span><span class="p">).</span><span class="nx">min</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mi">250</span><span class="p">).</span><span class="nx">step</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span><span class="s2">&quot;changeHarmonics&quot;</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;New Random Parameters&quot;</span><span class="p">);</span>
+<span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span><span class="s2">&quot;updateMesh&quot;</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">name</span><span class="p">(</span><span class="s2">&quot;Generate New Mesh!&quot;</span><span class="p">);</span>
 
-<span class="kd">function</span> <span class="nx">animate</span><span class="p">()</span> <span class="p">{</span> 
+
+<span class="p">(</span><span class="kd">function</span> <span class="nx">addParticles</span><span class="p">(){</span>
+  <span class="kd">var</span> <span class="nx">positions</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">k</span><span class="o">&lt;</span><span class="mi">500</span><span class="p">;</span><span class="nx">k</span><span class="o">++</span><span class="p">){</span>
+    <span class="nx">positions</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">.</span><span class="nx">randomVector</span><span class="p">().</span><span class="nx">scale</span><span class="p">(</span><span class="mi">200</span><span class="o">+</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="mi">300</span><span class="p">));</span>
+  <span class="p">}</span>
+  <span class="kd">var</span> <span class="nx">particleMaterial</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">ParticleBasicMaterial</span><span class="p">({</span>
+    <span class="nx">color</span><span class="o">:</span> <span class="mh">0xffff00</span><span class="p">,</span>
+    <span class="nx">transparent</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">blending</span><span class="o">:</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">AdditiveBlending</span>
+  <span class="p">});</span></pre></div></div>                      </li>                              <li id="section-10">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>                           <p>if you construct a new toxi.THREE.ToxiclibsSupport
+and pass it the THREE.Scene it can add things for you</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">THREE</span><span class="p">.</span><span class="nx">ToxiclibsSupport</span><span class="p">(</span> <span class="nx">scene</span> <span class="p">).</span><span class="nx">addParticles</span><span class="p">(</span><span class="nx">positions</span><span class="p">,</span> <span class="nx">particleMaterial</span> <span class="p">);</span>
+<span class="p">}());</span></pre></div></div>                      </li>                              <li id="section-11">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>                           <p>create first mesh</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="nx">opts</span><span class="p">.</span><span class="nx">updateMesh</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-12">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>                           <p>start the animation loop</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="nx">animate</span><span class="p">();</span>
+<span class="kd">function</span> <span class="nx">animate</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">requestAnimationFrame</span><span class="p">(</span> <span class="nx">animate</span> <span class="p">);</span>
-  <span class="nx">render</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>stats.update();</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">}</span>
+  <span class="nx">render</span><span class="p">();</span>
+<span class="p">}</span>
 
 <span class="kd">function</span> <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
-  <span class="cm">/*if(canRotateWorld){</span>
-<span class="cm">    camera.position.x += ( (mouse.x*cameraSensitivity) - camera.position.x ) * 0.05;</span>
-<span class="cm">    camera.position.y += ( - ( mouse.y * cameraSensitivity) - camera.position.y ) * 0.05;</span>
-<span class="cm">  }*/</span>
   <span class="nx">controls</span><span class="p">.</span><span class="nx">update</span><span class="p">();</span>
   <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span> <span class="p">);</span>
 <span class="p">}</span>
 
-<span class="nx">animate</span><span class="p">();</span>
-
-<span class="kd">function</span> <span class="nx">randomizeHarmonics</span><span class="p">(){</span>
-  <span class="nx">m</span> <span class="o">=</span> <span class="p">[];</span>
-  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="mi">8</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">m</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="mi">9</span><span class="p">));</span>
-  <span class="p">}</span>
-  <span class="nx">$m</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
-  <span class="nx">$m</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;div id=&quot;m&quot;&gt;m: [&#39;</span><span class="o">+</span><span class="nx">m</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="o">+</span><span class="s1">&#39;&lt;/div&gt;&#39;</span><span class="p">);</span>
-  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#guiAbout&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">$m</span><span class="p">)</span>
-<span class="p">}</span>
-
-
-
-<span class="kd">function</span> <span class="nx">changeMesh</span><span class="p">(</span><span class="nx">res</span><span class="p">){</span>
-  <span class="k">if</span><span class="p">(</span><span class="nx">res</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">){</span>
-    <span class="nx">res</span> <span class="o">=</span> <span class="nx">meshResolution</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="k">if</span><span class="p">(</span><span class="nx">threeMesh</span> <span class="o">!==</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">scene</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">threeMesh</span><span class="p">);</span>
-  <span class="p">}</span>
-  <span class="k">if</span><span class="p">(</span><span class="nx">changeHarmonics</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">randomizeHarmonics</span><span class="p">();</span>
-  <span class="p">}</span>
-  <span class="kd">var</span> <span class="nx">sh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">SphericalHarmonics</span><span class="p">(</span><span class="nx">m</span><span class="p">);</span>
-  <span class="kd">var</span> <span class="nx">mesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">SurfaceMeshBuilder</span><span class="p">(</span> <span class="nx">sh</span> <span class="p">);</span> 
-  <span class="kd">var</span> <span class="nx">toxiMesh</span> <span class="o">=</span> <span class="nx">mesh</span><span class="p">.</span><span class="nx">createMesh</span><span class="p">(</span><span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">TriangleMesh</span><span class="p">(),</span><span class="nx">res</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
-  <span class="nx">threeMesh</span> <span class="o">=</span> <span class="nx">toxiToThreeSupport</span><span class="p">.</span><span class="nx">addMesh</span><span class="p">(</span><span class="nx">toxiMesh</span><span class="p">,</span><span class="nx">material</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>threeMesh = new THREE.Mesh(toxiToThreeSupport.createGeometry(toxiMesh),material);</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">scale</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">(</span><span class="nx">objectRadius</span><span class="p">,</span><span class="nx">objectRadius</span><span class="p">,</span><span class="nx">objectRadius</span><span class="p">);</span>
-  <span class="nx">threeMesh</span><span class="p">.</span><span class="nx">doubleSided</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>console.log(threeMesh);</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">threeMesh</span><span class="p">);</span>
-<span class="p">};</span>
-
-
-<span class="nb">document</span><span class="p">.</span><span class="nx">onmousemove</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-  <span class="kd">var</span> <span class="nx">halfWindow</span> <span class="o">=</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">scale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">);</span>
-  <span class="k">return</span>  <span class="kd">function</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">mouse</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="p">(</span> <span class="nx">event</span><span class="p">.</span><span class="nx">clientX</span> <span class="o">-</span> <span class="nx">halfWindow</span><span class="p">.</span><span class="nx">x</span> <span class="p">);</span>
-    <span class="nx">mouse</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="p">(</span> <span class="nx">event</span><span class="p">.</span><span class="nx">clientY</span> <span class="o">-</span> <span class="nx">halfWindow</span><span class="p">.</span><span class="nx">y</span> <span class="p">);</span>
-  <span class="p">}</span>
-<span class="p">})();</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>create first mesh</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">changeMesh</span><span class="p">(</span><span class="nx">meshResolution</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">positions</span> <span class="o">=</span> <span class="p">[];</span>
-<span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">k</span><span class="o">&lt;</span><span class="mi">500</span><span class="p">;</span><span class="nx">k</span><span class="o">++</span><span class="p">){</span>
-  <span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="nx">positions</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">.</span><span class="nx">randomVector</span><span class="p">().</span><span class="nx">scale</span><span class="p">(</span><span class="mi">200</span><span class="o">+</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="mi">300</span><span class="p">));</span>
-<span class="p">}</span>
-<span class="nx">toxiToThreeSupport</span><span class="p">.</span><span class="nx">addParticles</span><span class="p">(</span><span class="nx">positions</span><span class="p">,</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">ParticleBasicMaterial</span><span class="p">({</span>
-  <span class="nx">color</span><span class="o">:</span> <span class="mh">0xffff00</span><span class="p">,</span>
-  <span class="nx">transparent</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="nx">blending</span><span class="o">:</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">AdditiveBlending</span>
-<span class="p">}));</span>
-
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

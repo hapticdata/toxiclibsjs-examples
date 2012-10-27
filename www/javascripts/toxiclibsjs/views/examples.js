@@ -15,7 +15,8 @@ define([
 		template: _.template( template ),
 		events: {
 			'change #topics': 'changeTopics',
-			'change #apis': 'changeApis'
+			'change #apis': 'changeApis',
+			'click .example-link': 'clickExample'
 		},
 		changeTopics: function( e ){
 			this.trigger( 'change:topic', this.$("#topics").val() );
@@ -24,6 +25,14 @@ define([
 		changeApis: function(){
 			this.trigger( 'change:api', this.$("#libs").val() );
 			this.model.set({ selectedApi: this.$("#apis").val() });
+		},
+		clickExample: function( e ){
+			var href = $( e.target ).find('a').attr('href');
+			if( href === undefined ){
+				href = $( e.target ).parent().find('a').attr('href');
+			}
+			//console.log('href: ', href);
+			window.location.href = href;
 		},
 		initialize: function(){
 			_.bindAll(this,'render');

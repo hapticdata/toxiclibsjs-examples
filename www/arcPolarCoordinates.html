@@ -2,17 +2,21 @@
 <html>
   <head>
     <title>Arc-Polar Coordinates - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
   </head>
   <body>
     <div id="example-container" class="pjs">
-      <canvas id="myCanvas"></canvas>
+      <canvas id="myCanvas" data-processing-sources="javascripts/examples/arcPolarCoordinates.pde"></canvas>
     </div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
     <script src="javascripts/vendor/processing.js"></script>
-    <script type="application/processing" data-processing-target="myCanvas">//#Arc-Polar Coordinates
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script type="application/processing" data-processing-target="myCanvas">
+//#Arc-Polar Coordinates
 //- original example by [Karsten Schmidt](http://postspectacular.com)
 //- toxiclibs.js by [Kyle Phillips](http://haptic-data.com)
 //
@@ -39,6 +43,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+//scope the Vec2D object locally so that you can refer to it the way
+//you naturally would in java/processing
 var Vec2D = toxi.geom.Vec2D;
 
 float theta=0;
@@ -47,7 +53,7 @@ float outerRadius=180;
 int numSteps=10;
 
 void setup() {
-  size(940,380);
+  size(640,380);
 }
 
 void draw() {
@@ -96,21 +102,20 @@ void draw() {
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Arc-Polar Coordinates</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Arc-Polar Coordinates</h1>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="c1">//#Arc-Polar Coordinates</span>
+<span class="c1">//- original example by [Karsten Schmidt](http://postspectacular.com)</span>
+<span class="c1">//- toxiclibs.js by [Kyle Phillips](http://haptic-data.com)</span>
+<span class="c1">//</span>
+<span class="c1">//Quick demo &amp; test for working with 2D polar coordinates, interpolation and</span>
+<span class="c1">//circle segments. Might be useful for some...</span>
 
-<ul>
-<li>original example by <a href="http://postspectacular.com">Karsten Schmidt</a></li>
-<li>toxiclibs.js by <a href="http://haptic-data.com">Kyle Phillips</a></li>
-</ul>
-
-<p>Quick demo &amp; test for working with 2D polar coordinates, interpolation and
-circle segments. Might be useful for some...</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm">/*</span>
 <span class="cm"> * Copyright (c) 2006-2009 Karsten Schmidt</span>
 <span class="cm"> *</span>
 <span class="cm"> * This library is free software; you can redistribute it and/or</span>
@@ -130,6 +135,8 @@ circle segments. Might be useful for some...</p>             </td>             <
 <span class="cm"> * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</span>
 <span class="cm"> */</span>
 
+<span class="c1">//scope the Vec2D object locally so that you can refer to it the way</span>
+<span class="c1">//you naturally would in java/processing</span>
 <span class="kd">var</span> <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">;</span>
 
 <span class="kr">float</span> <span class="nx">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
@@ -138,30 +145,46 @@ circle segments. Might be useful for some...</p>             </td>             <
 <span class="kr">int</span> <span class="nx">numSteps</span><span class="o">=</span><span class="mi">10</span><span class="p">;</span>
 
 <span class="k">void</span> <span class="nx">setup</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nx">size</span><span class="p">(</span><span class="mi">940</span><span class="p">,</span><span class="mi">380</span><span class="p">);</span>
+  <span class="nx">size</span><span class="p">(</span><span class="mi">640</span><span class="p">,</span><span class="mi">380</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="k">void</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">background</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
-  <span class="nx">translate</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>translate mouse position into polar coordinates
-in the polar space the vector components are interpreted as:
-x = radius
-y = angle</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Vec2D</span> <span class="nx">mousePos</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span><span class="nx">mouseY</span><span class="p">).</span><span class="nx">sub</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">).</span><span class="nx">toPolar</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>ensure we always interpolate the angle over the smaller difference</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">if</span> <span class="p">(</span><span class="nx">abs</span><span class="p">(</span><span class="nx">theta</span><span class="o">-</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">&gt;</span><span class="nx">PI</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">translate</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+  <span class="c1">// translate mouse position into polar coordinates</span>
+  <span class="c1">// in the polar space the vector components are interpreted as:</span>
+  <span class="c1">// x = radius</span>
+  <span class="c1">// y = angle</span>
+  <span class="nx">Vec2D</span> <span class="nx">mousePos</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span><span class="nx">mouseY</span><span class="p">).</span><span class="nx">sub</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">).</span><span class="nx">toPolar</span><span class="p">();</span>
+  <span class="c1">// ensure we always interpolate the angle over the smaller difference</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">abs</span><span class="p">(</span><span class="nx">theta</span><span class="o">-</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">&gt;</span><span class="nx">PI</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">theta</span><span class="o">&gt;</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">theta</span><span class="o">-=</span><span class="nx">TWO_PI</span><span class="p">;</span>
     <span class="p">}</span> 
     <span class="k">else</span> <span class="p">{</span>
       <span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-=</span><span class="nx">TWO_PI</span><span class="p">;</span>
     <span class="p">}</span>
-  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>interpolate to the new angle, adaptive speed based on current velocity</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">theta</span><span class="o">+=</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-</span><span class="nx">theta</span><span class="p">)</span><span class="o">*</span><span class="nx">abs</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-</span><span class="nx">theta</span><span class="p">)</span><span class="o">*</span><span class="mf">0.2</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>avoid "over-spinning"</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">theta</span><span class="o">%=</span><span class="nx">TWO_PI</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>create the arc as tri strip</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">noStroke</span><span class="p">();</span>
+  <span class="p">}</span>
+  <span class="c1">// interpolate to the new angle, adaptive speed based on current velocity</span>
+  <span class="nx">theta</span><span class="o">+=</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-</span><span class="nx">theta</span><span class="p">)</span><span class="o">*</span><span class="nx">abs</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-</span><span class="nx">theta</span><span class="p">)</span><span class="o">*</span><span class="mf">0.2</span><span class="p">;</span>
+  <span class="c1">// avoid &quot;over-spinning&quot;</span>
+  <span class="nx">theta</span><span class="o">%=</span><span class="nx">TWO_PI</span><span class="p">;</span>
+  <span class="c1">// create the arc as tri strip</span>
+  <span class="nx">noStroke</span><span class="p">();</span>
   <span class="nx">beginShape</span><span class="p">(</span><span class="nx">TRIANGLE_STRIP</span><span class="p">);</span>
   <span class="nx">Vec2D</span> <span class="nx">p</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">();</span>
-  <span class="k">for</span><span class="p">(</span><span class="kr">float</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nx">t</span><span class="o">=</span><span class="nx">theta</span><span class="o">-</span><span class="nx">PI</span><span class="o">*</span><span class="mf">0.25</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">numSteps</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>convert theta back into cartesian coordinate space
-the radius of 1 means the resulting vector will be normalized</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nx">t</span><span class="p">).</span><span class="nx">toCartesian</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>scale point to inner/outer radius</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">vertex</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span><span class="o">*</span><span class="nx">innerRadius</span><span class="p">,</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span><span class="o">*</span><span class="nx">innerRadius</span><span class="p">);</span>
+  <span class="k">for</span><span class="p">(</span><span class="kr">float</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nx">t</span><span class="o">=</span><span class="nx">theta</span><span class="o">-</span><span class="nx">PI</span><span class="o">*</span><span class="mf">0.25</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">numSteps</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// convert theta back into cartesian coordinate space</span>
+    <span class="c1">// the radius of 1 means the resulting vector will be normalized</span>
+    <span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nx">t</span><span class="p">).</span><span class="nx">toCartesian</span><span class="p">();</span>
+    <span class="c1">// scale point to inner/outer radius</span>
+    <span class="nx">vertex</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span><span class="o">*</span><span class="nx">innerRadius</span><span class="p">,</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span><span class="o">*</span><span class="nx">innerRadius</span><span class="p">);</span>
     <span class="nx">vertex</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span><span class="o">*</span><span class="nx">outerRadius</span><span class="p">,</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span><span class="o">*</span><span class="nx">outerRadius</span><span class="p">);</span>
     <span class="nx">t</span><span class="o">+=</span><span class="nx">HALF_PI</span><span class="o">/</span><span class="nx">numSteps</span><span class="p">;</span>
   <span class="p">}</span>
-  <span class="nx">endShape</span><span class="p">();</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>draw comparison vector to mouse vs. arc positions</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">mousePos</span><span class="p">.</span><span class="nx">toCartesian</span><span class="p">();</span>
+  <span class="nx">endShape</span><span class="p">();</span>
+  <span class="c1">// draw comparison vector to mouse vs. arc positions</span>
+  <span class="nx">mousePos</span><span class="p">.</span><span class="nx">toCartesian</span><span class="p">();</span>
   <span class="nx">stroke</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
   <span class="nx">line</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
   <span class="nx">Vec2D</span> <span class="nx">arcPos</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">innerRadius</span><span class="p">,</span><span class="nx">theta</span><span class="p">).</span><span class="nx">toCartesian</span><span class="p">();</span>
@@ -169,7 +192,7 @@ the radius of 1 means the resulting vector will be normalized</p>             </
   <span class="nx">line</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nx">arcPos</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">arcPos</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

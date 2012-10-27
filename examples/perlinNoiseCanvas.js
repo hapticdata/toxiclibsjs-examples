@@ -31,7 +31,7 @@
       streams = [];
   
   setCanvasSize();
-  var gui = new DAT.GUI();
+  var gui = new dat.GUI();
   gui.add(options,'numStreams', 1, 4000, 1.0).name("# Streams");
   gui.add(options,'step',0.25,10,0.25).name("Speed");
   //var noiseFolder = gui.addFolder("Noise Space Progression");

@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
+ 
 var VerletPhysics2D = toxi.physics2d.VerletPhysics2D,
     GravityBehavior = toxi.physics2d.behaviors.GravityBehavior,
     VerletParticle2D = toxi.physics2d.VerletParticle2D,

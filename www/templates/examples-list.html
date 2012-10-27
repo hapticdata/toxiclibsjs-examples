@@ -2,12 +2,12 @@
 	<% var ex = data.examples[i]; %>
 	<% var thumbnail = ex.thumbnail; %>
 	<% if( thumbnail === undefined ) { %>
-		<% thumbnail = ex.src + ".gif"; %>
+		<% thumbnail = ex.src.split('.')[0] + ".gif"; %>
 	<% } %>
 	<% thumbnail = "images/" + thumbnail; %>
-	<div data-tags="<%= ex.tags %>" class="example-link">
-		<a href="<%= (ex.src + '.html') %>">
-			<img src="<%= thumbnail %>" title="<% ex.title %>"><br>
-		</a>
+	<% if ( i % 8 === 0 ) { %><div class="row-fluid"> <% } %>
+	<div data-tags="<%= ex.tags %>" class="example-link" style="background-image: url(<%= thumbnail %>)">
+		<div class="inner"><span class="title"><a href="<%= (ex.src.split('.')[0] + '.html') %>" title="<%= ex.title %>"><%= ex.title %></a></span><br><span class="tags"><%= ex.tags %></span></div>
 	</div>
+	<% if ( i % 8 === 7 ) { %></div><% } %>
 <% } %>

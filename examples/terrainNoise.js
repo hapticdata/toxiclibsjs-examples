@@ -5,23 +5,20 @@
 //Demonstrates [toxi.geom.mesh.TriangleMesh](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/TriangleMesh.js) and [toxi.math.noise.PerlineNoise]
 //and using [toxi.THREE.ToxiclibsSupport](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/THREE/ToxiclibsSupport.js) for generating a [three.js] mesh.
 
-require.config({
+/*require.config({
 	shim: {
 		//[shim](http://requirejs.org/docs/api.html#config-shim) makes non-AMD libs like THREE work within Require
 		'three': { exports: 'THREE' }
 	}
-});
+});*/
 //array of dependencies
-require([
-	'three',
-	'dat/gui/GUI',
-	'toxi/THREE/ToxiclibsSupport',
-	'toxi/geom/mesh/Terrain',
-	'toxi/geom/Vec3D',
-	'toxi/geom/mesh/TriangleMesh',
-	'toxi/math/mathUtils',
-	'toxi/math/noise/PerlinNoise'
-], function(THREE, datGUI, ToxiclibsSupport, Terrain, Vec3D, TriangleMesh, mathUtils, PerlinNoise ){
+define('example',function( require ){
+
+	var THREE = require('three'),
+		datGUI = require('dat/gui/GUI'),
+		ToxiclibsSupport = require('toxi/THREE/ToxiclibsSupport'),
+		Terrain = require('toxi/geom/mesh/Terrain'),
+		PerlinNoise = require('toxi/math/noise/PerlinNoise');
 
 	var gui = new datGUI();
 	var container = document.getElementById('example-container'),
@@ -30,7 +27,7 @@ require([
 		scene = new THREE.Scene(),
 		camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 10000 ),
 		renderer = new THREE.WebGLRenderer({ antialias: true }),
-		WDIM = 40,
+		WDIM = 25,
 		HDIM = 30,
 		terrain = new Terrain( WDIM, HDIM, 50 ),
 		perlin = new PerlinNoise(),
@@ -121,3 +118,4 @@ require([
 	}
 	draw();
 });
+require(['example']);

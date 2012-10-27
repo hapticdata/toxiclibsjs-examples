@@ -1,5 +1,15 @@
 extends layout
 
+block config
+  script
+    - if (src)
+      - src = src.split('.')[0]
+      requirejs.config({
+        config: {
+          'main': { example: 'examples/#{src}' }
+        }
+      });
+
 block content
   script !{script}
-  div.grad#example-container
+  div#example-container

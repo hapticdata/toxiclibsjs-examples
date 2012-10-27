@@ -2,17 +2,21 @@
 <html>
   <head>
     <title>Attraction 2D - Toxiclibs.js</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendor/prettify.js"></script>
     <script src="javascripts/config.js"></script>
     <script data-main="../main" src="javascripts/vendor/require.js"></script>
+    <script src="javascripts/vendor/xrayquire.js"></script>
   </head>
   <body>
     <div id="example-container" class="pjs">
-      <canvas id="myCanvas"></canvas>
+      <canvas id="myCanvas" data-processing-sources="javascripts/examples/attraction2d.pde"></canvas>
     </div>
-    <script src="https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js"></script>
     <script src="javascripts/vendor/processing.js"></script>
-    <script type="application/processing" data-processing-target="myCanvas">//#Attraction2D
+    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script type="application/processing" data-processing-target="myCanvas">
+//#Attraction2D
 //- original example by [Karsten Schmidt](http://postspectacular.com)
 //- toxiclibs.js by [Kyle Phillips](http://haptic-data.com)
 
@@ -121,26 +125,28 @@ void mouseReleased() {
     <section id="waist">
       <nav id="navigation">
         <ul>
-          <li class="source selected"><a href="#">Source</a></li>
-          <li><a href="#">Toxiclibs.js</a></li>
+          <li class="home"><a href="./">Toxiclibs.js</a></li>
           <li class="examples"><a href="#">Examples</a></li>
+          <li class="name">Attraction 2D</li>
         </ul>
       </nav>
     </section>
-    <section id="pagelet">  <div class="annotated-source">     <div class="background"></div>     <table cellpadding="0" cellspacing="0">       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>Attraction2D</h1>
+    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="c1">//#Attraction2D</span>
+<span class="c1">//- original example by [Karsten Schmidt](http://postspectacular.com)</span>
+<span class="c1">//- toxiclibs.js by [Kyle Phillips](http://haptic-data.com)</span>
 
-<ul>
-<li>original example by <a href="http://postspectacular.com">Karsten Schmidt</a></li>
-<li>toxiclibs.js by <a href="http://haptic-data.com">Kyle Phillips</a></li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>This example demonstrates how to use the behavior handling and specifically
-the attraction behavior to create forces around the current locations of
-particles in order to attract (or deflect) other particles nearby.</p>
+<span class="c1">//This example demonstrates how to use the behavior handling and specifically</span>
+<span class="c1">//the attraction behavior to create forces around the current locations of</span>
+<span class="c1">//particles in order to attract (or deflect) other particles nearby.</span>
+<span class="c1">//</span>
+<span class="c1">//Behaviors can be added and removed dynamically on both a</span>
+<span class="c1">//global level (for the entire physics simulation) as well as for</span>
+<span class="c1">//individual particles only.</span>
+<span class="c1">//</span>
+<span class="c1">//**Usage:** Click and drag mouse to attract particles</span>
 
-<p>Behaviors can be added and removed dynamically on both a
-global level (for the entire physics simulation) as well as for
-individual particles only.</p>
 
-<p><strong>Usage:</strong> Click and drag mouse to attract particles</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/* </span>
+<span class="cm">/* </span>
 <span class="cm"> * Copyright (c) 2010 Karsten Schmidt</span>
 <span class="cm"> * </span>
 <span class="cm"> * This demo &amp; library is free software; you can redistribute it and/or</span>
@@ -165,7 +171,11 @@ individual particles only.</p>
       <span class="nx">AttractionBehavior</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">physics2d</span><span class="p">.</span><span class="nx">behaviors</span><span class="p">.</span><span class="nx">AttractionBehavior</span><span class="p">,</span>
       <span class="nx">GravityBehavior</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">physics2d</span><span class="p">.</span><span class="nx">behaviors</span><span class="p">.</span><span class="nx">GravityBehavior</span><span class="p">,</span>
       <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">,</span>
-      <span class="nx">Rect</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Rect</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p><strong>Everything below here will still work in Processing</strong></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kr">import</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="o">*</span><span class="p">;</span>
+      <span class="nx">Rect</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Rect</span><span class="p">;</span>
+
+
+<span class="c1">//**Everything below here will still work in Processing**</span>
+<span class="kr">import</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="o">*</span><span class="p">;</span>
 <span class="kr">import</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">physics2d</span><span class="p">.</span><span class="o">*</span><span class="p">;</span>
 <span class="kr">import</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">physics2d</span><span class="p">.</span><span class="nx">behaviors</span><span class="p">.</span><span class="o">*</span><span class="p">;</span>
 
@@ -177,15 +187,21 @@ individual particles only.</p>
 <span class="nx">Vec2D</span> <span class="nx">mousePos</span><span class="p">;</span>
 
 <span class="k">void</span> <span class="nx">setup</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nx">size</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">382</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>setup physics with 5% drag</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">physics</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">VerletPhysics2D</span><span class="p">();</span>
+  <span class="nx">size</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">382</span><span class="p">);</span>
+  <span class="c1">// setup physics with 5% drag</span>
+  <span class="nx">physics</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">VerletPhysics2D</span><span class="p">();</span>
   <span class="nx">physics</span><span class="p">.</span><span class="nx">setDrag</span><span class="p">(</span><span class="mf">0.05</span><span class="p">);</span>
-  <span class="nx">physics</span><span class="p">.</span><span class="nx">setWorldBounds</span><span class="p">(</span><span class="k">new</span> <span class="nx">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">));</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>the NEW way to add gravity to the simulation, using behaviors</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">physics</span><span class="p">.</span><span class="nx">addBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">GravityBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)));</span>
+  <span class="nx">physics</span><span class="p">.</span><span class="nx">setWorldBounds</span><span class="p">(</span><span class="k">new</span> <span class="nx">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">));</span>
+  <span class="c1">// the NEW way to add gravity to the simulation, using behaviors</span>
+  <span class="nx">physics</span><span class="p">.</span><span class="nx">addBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">GravityBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)));</span>
 <span class="p">}</span>
 
 <span class="k">void</span> <span class="nx">addParticle</span><span class="p">()</span> <span class="p">{</span>
  <span class="nx">Vec2D</span> <span class="nx">randLoc</span> <span class="o">=</span> <span class="nx">Vec2D</span><span class="p">.</span><span class="nx">randomVector</span><span class="p">().</span><span class="nx">scale</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
   <span class="nx">VerletParticle2D</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">VerletParticle2D</span><span class="p">(</span><span class="nx">randLoc</span><span class="p">);</span>
-  <span class="nx">physics</span><span class="p">.</span><span class="nx">addParticle</span><span class="p">(</span><span class="nx">p</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>add a negative attraction force field around the new particle</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">physics</span><span class="p">.</span><span class="nx">addBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">AttractionBehavior</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">));</span>
+  <span class="nx">physics</span><span class="p">.</span><span class="nx">addParticle</span><span class="p">(</span><span class="nx">p</span><span class="p">);</span>
+  <span class="c1">// add a negative attraction force field around the new particle</span>
+  <span class="nx">physics</span><span class="p">.</span><span class="nx">addBehavior</span><span class="p">(</span><span class="k">new</span> <span class="nx">AttractionBehavior</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">));</span>
 <span class="p">}</span>
 
 <span class="k">void</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
@@ -206,17 +222,23 @@ individual particles only.</p>
 
 <span class="k">void</span> <span class="nx">mousePressed</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">addParticle</span><span class="p">();</span>
-  <span class="nx">mousePos</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span> <span class="nx">mouseY</span><span class="p">);</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>create a new positive attraction force field around the mouse position (radius=250px)</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">mouseAttractor</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AttractionBehavior</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">);</span>
+  <span class="nx">mousePos</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span> <span class="nx">mouseY</span><span class="p">);</span>
+  <span class="c1">// create a new positive attraction force field around the mouse position (radius=250px)</span>
+  <span class="nx">mouseAttractor</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AttractionBehavior</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">);</span>
   <span class="nx">physics</span><span class="p">.</span><span class="nx">addBehavior</span><span class="p">(</span><span class="nx">mouseAttractor</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="k">void</span> <span class="nx">mouseDragged</span><span class="p">()</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>update mouse attraction focal point</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">mousePos</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span> <span class="nx">mouseY</span><span class="p">);</span>
+<span class="k">void</span> <span class="nx">mouseDragged</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// update mouse attraction focal point</span>
+  <span class="nx">mousePos</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span> <span class="nx">mouseY</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="k">void</span> <span class="nx">mouseReleased</span><span class="p">()</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>remove the mouse attraction when button has been released</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">physics</span><span class="p">.</span><span class="nx">removeBehavior</span><span class="p">(</span><span class="nx">mouseAttractor</span><span class="p">);</span>
+<span class="k">void</span> <span class="nx">mouseReleased</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// remove the mouse attraction when button has been released</span>
+  <span class="nx">physics</span><span class="p">.</span><span class="nx">removeBehavior</span><span class="p">(</span><span class="nx">mouseAttractor</span><span class="p">);</span>
 <span class="p">}</span>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div></section>
+</pre></div></div>                      </li>              </ul>  </div> </section>
     <footer></footer>
   </body>
 </html>

@@ -1,18 +1,18 @@
-console.log('subdiv');
 //#Subdivision Basics
 require([
 	'jquery',
 	'three',
 	'dat/gui/GUI',
 	'toxi/THREE/ToxiclibsSupport',
+	'toxi/geom/mesh/Terrain',
 	'toxi/geom/AABB',
 	'toxi/geom/Sphere',
 	'toxi/geom/Vec3D',
 	'toxi/geom/mesh/subdiv',
-	'toxi/geom/mesh/OBJWriter'
-	//'toxi/geom/mesh/LaplacianSmooth'
-], function( $, THREE, datGui, ToxiclibsSupport, AABB, Sphere, Vec3D, subdiv, OBJWriter, LaplacianSmooth ){
-	console.log('three', THREE );
+	'toxi/geom/mesh/OBJWriter',
+	'toxi/geom/mesh/LaplacianSmooth'
+], function( $, THREE, datGui, ToxiclibsSupport, Terrain, AABB, Sphere, Vec3D, subdiv, OBJWriter, LaplacianSmooth ){
+	
 	var $container = $('#example-container'), gui = new datGui();
 	var scene, camera, renderer, controls, meshes = {};
 	$container.width( window.innerWidth );
@@ -121,10 +121,8 @@ require([
 	lights.push( spot );
 	$container.append( renderer.domElement );
 
-	new AABB( new Vec3D(), 2 ).toMesh().toWEMesh(function( wemesh ){
-		meshes.toxi = wemesh;
-		makeTHREEMesh();
-	});
+	meshes.toxi = new AABB( new Vec3D(), 2 ).toMesh().toWEMesh();
+	makeTHREEMesh();
 
 	draw();
 	window.lights = lights;
