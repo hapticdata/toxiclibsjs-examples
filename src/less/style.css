@@ -1344,6 +1344,40 @@ address {
   font-style: normal;
   line-height: 22px;
 }
+.about {
+  margin: 0;
+  list-style-type: none;
+}
+.about li {
+  list-style-type: none;
+}
+ul.quick-links {
+  font-weight: bold;
+  display: inline-block;
+  margin: 0;
+  list-style-type: none;
+}
+ul.quick-links * {
+  display: inline-block;
+  margin: 0;
+}
+ul.quick-links li {
+  list-style-type: none;
+  display: inline-block;
+}
+ul.quick-links li:after {
+  content: " /";
+}
+ul.quick-links li:last-child:after {
+  content: "";
+}
+footer {
+  padding-bottom: 25px;
+  font-size: 80%;
+}
+footer p {
+  padding-bottom: 4px;
+}
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -1544,10 +1578,11 @@ canvas:focus {
 }
 .examples-list .example-link {
   background-position: center;
+  margin-right: 0.5%;
+  margin-bottom: 0.5%;
   font-size: 11px;
   width: 11.11111111111111%;
   height: 125px;
-  margin-bottom: 4px;
   overflow: hidden;
   display: inline-block;
   -webkit-transition: all 1s;
