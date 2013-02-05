@@ -1,0 +1,10 @@
+extends layout
+
+block config
+  - if (src)
+    - src = src.split('.')[0]
+    
+
+block content
+  script !{script}
+  div.above#example-container

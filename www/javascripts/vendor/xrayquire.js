@@ -13,7 +13,7 @@
 
 var xrayquire;
 (function () {
-    'use strict';
+    
 
     var contexts = {},
         config = typeof xrayquire === 'undefined' ? {} : xrayquire,

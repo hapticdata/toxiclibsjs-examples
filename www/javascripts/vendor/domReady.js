@@ -9,8 +9,8 @@
   self: false, setInterval: false */
 
 
-define(function () {
-    'use strict';
+define([],function () {
+    
 
     var isTop, testDiv, scrollIntervalId,
         isBrowser = typeof window !== "undefined" && window.document,

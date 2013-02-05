@@ -2,19 +2,20 @@
 <html>
   <head>
     <title>Arc-Polar Coordinates - Toxiclibs.js</title>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400">
     <link rel="stylesheet" href="stylesheets/style.css">
-    <script src="javascripts/vendor/prettify.js"></script>
+    <script data-main="javascripts/main" src="javascripts/vendor/require.js"></script>
     <script src="javascripts/config.js"></script>
-    <script data-main="../main" src="javascripts/vendor/require.js"></script>
-    <script src="javascripts/vendor/xrayquire.js"></script>
+    <!--script(src="javascripts/vendor/xrayquire.js")-->
   </head>
   <body>
-    <div id="example-container" class="pjs">
-      <canvas id="myCanvas" data-processing-sources="javascripts/examples/arcPolarCoordinates.pde"></canvas>
+    <div id="example-container" class="above pjs">
+      <canvas id="myCanvas"></canvas>
+      <!--(data-processing-sources="javascripts/examples/#{src}")-->
     </div>
     <script src="javascripts/vendor/processing.js"></script>
-    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script src="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js"></script>
+    <!--https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js")-->
     <script type="application/processing" data-processing-target="myCanvas">
 //#Arc-Polar Coordinates
 //- original example by [Karsten Schmidt](http://postspectacular.com)
@@ -108,14 +109,15 @@ void draw() {
         </ul>
       </nav>
     </section>
-    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="c1">//#Arc-Polar Coordinates</span>
-<span class="c1">//- original example by [Karsten Schmidt](http://postspectacular.com)</span>
-<span class="c1">//- toxiclibs.js by [Kyle Phillips](http://haptic-data.com)</span>
-<span class="c1">//</span>
-<span class="c1">//Quick demo &amp; test for working with 2D polar coordinates, interpolation and</span>
-<span class="c1">//circle segments. Might be useful for some...</span>
+    <section id="pagelet" class="below"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>Arc-Polar Coordinates</h1>
 
-<span class="cm">/*</span>
+<ul>
+<li>original example by <a href="http://postspectacular.com">Karsten Schmidt</a></li>
+<li>toxiclibs.js by <a href="http://haptic-data.com">Kyle Phillips</a></li>
+</ul>
+
+<p>Quick demo &amp; test for working with 2D polar coordinates, interpolation and
+circle segments. Might be useful for some...</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="cm">/*</span>
 <span class="cm"> * Copyright (c) 2006-2009 Karsten Schmidt</span>
 <span class="cm"> *</span>
 <span class="cm"> * This library is free software; you can redistribute it and/or</span>
@@ -133,11 +135,8 @@ void draw() {
 <span class="cm"> * You should have received a copy of the GNU Lesser General Public</span>
 <span class="cm"> * License along with this library; if not, write to the Free Software</span>
 <span class="cm"> * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</span>
-<span class="cm"> */</span>
-
-<span class="c1">//scope the Vec2D object locally so that you can refer to it the way</span>
-<span class="c1">//you naturally would in java/processing</span>
-<span class="kd">var</span> <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">;</span>
+<span class="cm"> */</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>scope the Vec2D object locally so that you can refer to it the way
+you naturally would in java/processing</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">;</span>
 
 <span class="kr">float</span> <span class="nx">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
 <span class="kr">float</span> <span class="nx">innerRadius</span><span class="o">=</span><span class="mi">150</span><span class="p">;</span>
@@ -150,41 +149,25 @@ void draw() {
 
 <span class="k">void</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">background</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
-  <span class="nx">translate</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
-  <span class="c1">// translate mouse position into polar coordinates</span>
-  <span class="c1">// in the polar space the vector components are interpreted as:</span>
-  <span class="c1">// x = radius</span>
-  <span class="c1">// y = angle</span>
-  <span class="nx">Vec2D</span> <span class="nx">mousePos</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span><span class="nx">mouseY</span><span class="p">).</span><span class="nx">sub</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">).</span><span class="nx">toPolar</span><span class="p">();</span>
-  <span class="c1">// ensure we always interpolate the angle over the smaller difference</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">abs</span><span class="p">(</span><span class="nx">theta</span><span class="o">-</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">&gt;</span><span class="nx">PI</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">translate</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           <p>translate mouse position into polar coordinates
+in the polar space the vector components are interpreted as:
+x = radius
+y = angle</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">Vec2D</span> <span class="nx">mousePos</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span><span class="nx">mouseY</span><span class="p">).</span><span class="nx">sub</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">).</span><span class="nx">toPolar</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           <p>ensure we always interpolate the angle over the smaller difference</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="k">if</span> <span class="p">(</span><span class="nx">abs</span><span class="p">(</span><span class="nx">theta</span><span class="o">-</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="o">&gt;</span><span class="nx">PI</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">theta</span><span class="o">&gt;</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">theta</span><span class="o">-=</span><span class="nx">TWO_PI</span><span class="p">;</span>
     <span class="p">}</span> 
     <span class="k">else</span> <span class="p">{</span>
       <span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-=</span><span class="nx">TWO_PI</span><span class="p">;</span>
     <span class="p">}</span>
-  <span class="p">}</span>
-  <span class="c1">// interpolate to the new angle, adaptive speed based on current velocity</span>
-  <span class="nx">theta</span><span class="o">+=</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-</span><span class="nx">theta</span><span class="p">)</span><span class="o">*</span><span class="nx">abs</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-</span><span class="nx">theta</span><span class="p">)</span><span class="o">*</span><span class="mf">0.2</span><span class="p">;</span>
-  <span class="c1">// avoid &quot;over-spinning&quot;</span>
-  <span class="nx">theta</span><span class="o">%=</span><span class="nx">TWO_PI</span><span class="p">;</span>
-  <span class="c1">// create the arc as tri strip</span>
-  <span class="nx">noStroke</span><span class="p">();</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           <p>interpolate to the new angle, adaptive speed based on current velocity</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">theta</span><span class="o">+=</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-</span><span class="nx">theta</span><span class="p">)</span><span class="o">*</span><span class="nx">abs</span><span class="p">(</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="o">-</span><span class="nx">theta</span><span class="p">)</span><span class="o">*</span><span class="mf">0.2</span><span class="p">;</span></pre></div></div>                      </li>                              <li id="section-6">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>                           <p>avoid "over-spinning"</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">theta</span><span class="o">%=</span><span class="nx">TWO_PI</span><span class="p">;</span></pre></div></div>                      </li>                              <li id="section-7">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>                           <p>create the arc as tri strip</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">noStroke</span><span class="p">();</span>
   <span class="nx">beginShape</span><span class="p">(</span><span class="nx">TRIANGLE_STRIP</span><span class="p">);</span>
   <span class="nx">Vec2D</span> <span class="nx">p</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">();</span>
-  <span class="k">for</span><span class="p">(</span><span class="kr">float</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nx">t</span><span class="o">=</span><span class="nx">theta</span><span class="o">-</span><span class="nx">PI</span><span class="o">*</span><span class="mf">0.25</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">numSteps</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// convert theta back into cartesian coordinate space</span>
-    <span class="c1">// the radius of 1 means the resulting vector will be normalized</span>
-    <span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nx">t</span><span class="p">).</span><span class="nx">toCartesian</span><span class="p">();</span>
-    <span class="c1">// scale point to inner/outer radius</span>
-    <span class="nx">vertex</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span><span class="o">*</span><span class="nx">innerRadius</span><span class="p">,</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span><span class="o">*</span><span class="nx">innerRadius</span><span class="p">);</span>
+  <span class="k">for</span><span class="p">(</span><span class="kr">float</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nx">t</span><span class="o">=</span><span class="nx">theta</span><span class="o">-</span><span class="nx">PI</span><span class="o">*</span><span class="mf">0.25</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">numSteps</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-8">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>                           <p>convert theta back into cartesian coordinate space
+the radius of 1 means the resulting vector will be normalized</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">p</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nx">t</span><span class="p">).</span><span class="nx">toCartesian</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-9">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>                           <p>scale point to inner/outer radius</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">vertex</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span><span class="o">*</span><span class="nx">innerRadius</span><span class="p">,</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span><span class="o">*</span><span class="nx">innerRadius</span><span class="p">);</span>
     <span class="nx">vertex</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span><span class="o">*</span><span class="nx">outerRadius</span><span class="p">,</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span><span class="o">*</span><span class="nx">outerRadius</span><span class="p">);</span>
     <span class="nx">t</span><span class="o">+=</span><span class="nx">HALF_PI</span><span class="o">/</span><span class="nx">numSteps</span><span class="p">;</span>
   <span class="p">}</span>
-  <span class="nx">endShape</span><span class="p">();</span>
-  <span class="c1">// draw comparison vector to mouse vs. arc positions</span>
-  <span class="nx">mousePos</span><span class="p">.</span><span class="nx">toCartesian</span><span class="p">();</span>
+  <span class="nx">endShape</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-10">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>                           <p>draw comparison vector to mouse vs. arc positions</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">mousePos</span><span class="p">.</span><span class="nx">toCartesian</span><span class="p">();</span>
   <span class="nx">stroke</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
   <span class="nx">line</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">mousePos</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
   <span class="nx">Vec2D</span> <span class="nx">arcPos</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">innerRadius</span><span class="p">,</span><span class="nx">theta</span><span class="p">).</span><span class="nx">toCartesian</span><span class="p">();</span>
@@ -193,6 +176,30 @@ void draw() {
 <span class="p">}</span>
 
 </pre></div></div>                      </li>              </ul>  </div> </section>
-    <footer></footer>
+    <footer class="container-fluid">
+      <div class="row-fluid">
+        <div class="span6 about"><ul>
+<li><strong><em><a href="http://hapticdata.com/toxiclibjs">Toxiclibs.js</a></em> is created and maintained by <a href="http://hapticdata.com">Kyle Phillips</a></strong></li>
+<li><strong>The original <em><a href="http://toxiclibs.org">Toxiclibs</a></em> is created and maintained by <a href="http://postspectacular.com">Karsten Schmidt</a></strong></li>
+<li><em>Toxiclibs.js</em>, <em>Toxiclibs</em> and the <em>toxiclibs.js website</em> are all free open-source software released under 
+<a href="https://github.com/hapticdata/toxiclibsjs/blob/develop/LICENSE.txt">GNU Lesser General Public License</a></li>
+</ul>
+        </div>
+        <div class="span6">
+          <ul class="quick-links">
+            <li><a href="https://github.com/hapticdata/toxiclibsjs">View on Github</a></li>
+            <li><a href="https://github.com/hapticdata/toxiclibsjs/graphs/contributors">Contributors</a></li>
+            <li>Download:
+              <ul class="quick-links">
+                <li><a href="https://github.com/hapticdata/toxiclibsjs/archive/master.zip">Repository</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js">build</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.min.js">minified build</a></li>
+              </ul></li>
+          </ul><p><em>This site and examples are 
+<a href="https://github.com/hapticdata/toxiclibsjs-examples">separately available on Github</a>
+and were created by <a href="http://hapticdata.com">Kyle Phillips</a> unless otherwise noted.</em></p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

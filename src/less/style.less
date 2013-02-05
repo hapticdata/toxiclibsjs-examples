@@ -1,0 +1,311 @@
+@dark_gray: #272822;
+@focal_blue: #00C6FF;
+@off_white: #FAFAFA; //#F8F8E6;
+@selection: #383830;
+@yellow: #E6DB74;
+@green: #6B9901;
+@code_bg: #faf9f5;
+//syntax highlighting colors
+@keyword: #0076AF;
+@literal_number: #990257;
+@magenta: #FF1960;
+@lightGray: #F5F8FA;
+//@import "bootstrap/bootstrap.less";
+@import "mixins.less";
+@import "variables.less";
+@import "reset.less";
+@import "prefixer.less";
+@import "syntax.less";
+@import "docco.less";
+@import "code.less";
+@import "small.less";
+@import "medium.less";
+@import "large.less";
+@import "grid.less";
+@import "type.less";
+@import "footer.less";
+
+* {
+  .box-sizing( border-box );
+}
+body {
+  background-color: @lightGray;
+  padding: 0;
+  margin: 0;
+  font: 16px "Droid Serif", "Lucida Grande", Helvetica, Arial, sans-serif;
+  line-height: @baseLineHeight;
+}
+
+a {
+  color: @magenta;//#00B7FF;
+}
+
+.header {
+  padding-bottom: 100px;
+  padding-top: 50px;
+}
+
+footer {
+  border-top: 1px solid #cccccc;
+  width: 100%;
+  background-color: white;
+  padding-top: 50px;
+}
+
+
+
+//
+// Hero unit
+// --------------------------------------------------
+
+
+.hero-unit {
+  padding: 60px;
+  margin-bottom: 30px;
+  background-color: @heroUnitBackground;
+  .border-radius(6px);
+  h1 {
+    margin-bottom: 0;
+    font-size: 60px;
+    line-height: 1;
+    color: @heroUnitHeadingColor;
+    letter-spacing: -1px;
+  }
+  p {
+    font-size: 18px;
+    font-weight: 200;
+    line-height: @baseLineHeight * 1.5;
+    color: @heroUnitLeadColor;
+  }
+}
+
+.container-fluid {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+.monospace {
+  font-family: 'Menlo', 'Monaco', 'Consolas', "Lucida Console", monospace;
+}
+
+/* dat-gui */
+.dg.ac {
+  position: absolute !important;
+}
+canvas:focus {
+  outline: none;
+}
+
+.index {
+  .below {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+}
+
+#info {
+  background-color: #f5f2f0;
+  padding: 50px;
+}
+
+#navigation.light{
+  background-color: #ffffff;
+  border-top: 1px solid #cccccc;
+  .home {
+    background-color: #eeeeee;
+    border-right: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+    a {
+      color: @focal_blue;
+    }
+    &.blur {
+      background-color: #efefef !important;
+    }
+  }
+  .examples-nav {
+    background-color: #ffffff;
+    border-bottom: 1px solid #cccccc;
+  }
+}
+
+#navigation {
+  &.fixed {
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+  border-top: 1px solid #222222;
+  background-color: black;
+  min-height: 50px;
+  .selected:not(.examples) {
+    .transition( all 1s easeIn );
+    background-color: @off_white;
+    color: black;
+    a {
+      font-weight: bold;
+      color: black;
+      text-decoration: none;
+    }
+  }
+  ul {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    min-height: 50px;
+    li {
+      .transition( all 1s linear );
+      &:last-child {
+        border: none;
+      }
+      min-height: 50px;
+      margin: 0;
+      padding-top: 15px;
+      padding-right: 20px;
+      padding-left: 10px;
+      padding-bottom: 0;
+      display: inline-block;
+      list-style-type: none;
+      &.blur {
+        background-color: #111111 !important;
+      }
+      &.home {
+        //type
+        font-family: 'Droid Serif';
+        letter-spacing: 1px;
+        padding-left: 40px;
+        border-bottom: 1px solid #222222;
+        background-color: black;
+        border-right: 1px solid #222222;
+        
+        a {
+          color: white;
+          text-decoration: none;
+        }
+      }
+      &.name {
+        color: @yellow;
+      }
+    }
+  }
+}
+
+.examples-nav {
+  text-align: center;
+  padding: 2.5%;
+  /*padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;*/
+  background-color: black;
+  border-bottom: 3px solid #444444;
+  width: 100%;
+  overflow: auto;
+  form {
+    text-align: left;
+    padding: 15px;
+  }
+  select {
+    font-size: 18px;
+  }
+}
+.row-fluid {
+  padding-left: 10px;
+}
+.examples-list {
+  margin: auto;
+  text-align: left;
+  .example-link {
+    background-position: center;
+    margin-right: 0.5%;
+    margin-bottom: 0.5%;
+    font-size: 11px;
+    width: 100%/9;
+    height: 125px;//165px;
+    overflow: hidden;
+    display: inline-block;
+    .transition( all 1s );
+    //border: 1px solid rgba(64,64,64,0.0);
+    .inner {
+      padding-top: 30px;
+      white-space: nowrap;
+      .transition( background-color 1s );
+      position: relative;
+      width: 500px;
+      height: 100%;
+      cursor: pointer;
+      & > * {
+        //.transition( all 1s );
+        opacity: 0;
+      }
+      &:hover {
+        & > * {
+          opacity: 1.0;
+        }
+        background-color: rgba(0,0,0,0.75);
+        & a {
+          opacity: 1;
+        }
+      }
+    }
+    .title {}
+    .tags { color: @yellow; }
+    a {
+      font-size: 14px;
+      color: white;
+      text-decoration: none;
+    }
+    &:hover {
+      opacity: 1;
+      width: 100%/5.75;
+      //border: 1px solid rgba(64,64,64,1.0);
+    }
+  }
+}
+
+#example-container {
+  background-color: #222222;
+}
+.zoomed2x {
+  .transform( scale(2.0,2.0) );
+}
+.centered {
+  padding: 50px;
+  text-align: center;
+  & canvas{
+    margin: auto;
+    .box-shadow( 0px 2px 4px 4px rgba(0,0,0,0.25) );
+    .transition( all 1sec easeIn );
+  }
+}
+.pjs {
+  .centered();
+}
+
+.grad {
+  margin: 0;
+  background-color: #333333;
+  background-image: linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+  background-image: -o-linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+  background-image: -moz-linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+  background-image: -webkit-linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+  background-image: -ms-linear-gradient(bottom, rgb(24,24,24) 94%, rgb(51,51,51) 71%);
+
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0.94, rgb(24,24,24)),
+    color-stop(0.71, rgb(51,51,51))
+  );
+}
+
+#code-container {
+  position: absolute;
+  top: 0;
+  overflow: scroll;
+}
+code {
+  font-size: 14px;
+}

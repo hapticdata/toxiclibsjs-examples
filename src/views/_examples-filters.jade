@@ -1,0 +1,14 @@
+form.row-fluid
+	select.span2#topics
+		option(value="")= "Any Topic…"
+		each topic in topics
+			- var selected = 
+			option(
+				value="#{topic.tag}", selected=(selectedTopic===topic.tag))= topic.id
+	select.span2#apis
+		option(value="")= "Any API…"
+		each api in apis
+			option(
+				value="#{api.tag}",
+				selected=(selectedApi===api.tag))= api.id
+div.examples-list

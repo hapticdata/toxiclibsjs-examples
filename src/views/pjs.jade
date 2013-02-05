@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  div.above.pjs#example-container
+    canvas#myCanvas
+    //(data-processing-sources="javascripts/examples/#{src}")
+  script(src='javascripts/vendor/processing.js')
+  include toxi.min.jade
+  script(type="application/processing", data-processing-target="myCanvas") !{script}

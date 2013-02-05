@@ -2,101 +2,84 @@
 <html>
   <head>
     <title>Color Waves - Toxiclibs.js</title>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400">
     <link rel="stylesheet" href="stylesheets/style.css">
-    <script src="javascripts/vendor/prettify.js"></script>
+    <script data-main="javascripts/main" src="javascripts/vendor/require.js"></script>
     <script src="javascripts/config.js"></script>
-    <script data-main="../main" src="javascripts/vendor/require.js"></script>
-    <script src="javascripts/vendor/xrayquire.js"></script>
+    <!--script(src="javascripts/vendor/xrayquire.js")-->
     <script src="javascripts/vendor/raphael-min.js"></script>
   </head>
   <body>
-    <h1>Toxiclibs.js</h1>
-    <div id="example-container"></div><p>Toxiclibs.js is an open-source computational design library ported to 
-javascript by <a href="http://hapticdata.com">Kyle Phillips</a> originally written by 
-<a href="http://postspectacular.com">Karsten Schmidt</a> for Java and
-<a href="http://processing.org">Processing</a>. Examples of the original library can be
-found and more information can be found at <a href="http://toxiclibs.org">toxiclibs.org</a></p>
+    <div id="example-container" class="above"></div>
+    <script src="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js"></script>
+    <!--https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js")-->
+    <script>
+//#Color Waves
+//Demonstrates using `toxi.color.TColor` as well as `toxi.geom.Vec2D` and `toxi.geom.Rect`. Distance between
+//the circles and mouse position determines color and size.
+window.onload = function(){
+	var container = document.getElementById("example-container"),
+		columns = 6, rows = 4,
+		bounds,
+		notepad,
+		pos = new toxi.geom.Vec2D(),
+		circles = [];
 
-<p>Toxiclibs.js works great with Canvas, with SVG or any ordinary DOM element.
-Examples below pair with such fine libraries as: 
-<a href="http://processingjs.org">Processing.js</a>, <a href="http://threejs.org">Three.js</a>,
-or <a href="http://raphaeljs.com">Raphael.js</a> for SVG.</p>
-    <ul class="twitter">
-      <li><a href="http://twitter.com/hapticdata">@hapticdata</a></li>
-      <li class="button"><a href="https://twitter.com/hapticdata" data-show-count="false" data-show-screen-name="false" data-dnt="true" class="twitter-follow-button">Follow @hapticdata</a>
-        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-      </li>
-      <li class="button"><a href="https://twitter.com/share" data-via="hapticdata" class="twitter-share-button"></a>
-        <Tweet></Tweet>
-        <script>
-          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-          
-        </script>
-      </li>
-    </ul>
-    <pre class="prettyprint linenums">var Vec2D = toxi.geom.Vec2D;
-var o = new Vec2D(0,0).addSelf(x,y,z);
-if ( o.equals( new Vec2D() ) || o.x &lt; 0 ) {
-  hey();
-}</pre><h1>Getting Started with Toxiclibs.js</h1>
+	bounds = new toxi.geom.Rect({
+		x: container.offsetLeft,
+		y: container.offsetTop,
+		width: window.innerWidth,
+		height: 600
+	});
+	//notepad is the raphael instance
+	notepad = Raphael( container, bounds.width, bounds.height );
+	//create all of the circles in a grid and set their attributes
+	(function createCircles(){
+		var loc, circle, r, c;
+		var cellDim = new toxi.geom.Vec2D( bounds.width, bounds.height );
+		cellDim.scaleSelf( 1/(columns-1), 1/(rows-1) );
+		for( r=0; r<rows; r++ ){
+			for( c=0; c<columns; c++ ){
+				loc = cellDim.scale( c, r );
+				circle = notepad.circle( loc.x, loc.y, 1, 1 );
+				circle.attr({
+					fill: "#dddddd", stroke: "#dddddd",
+					opacity: 0.5,
+					scale: 4.0
+				});
+				circles.push(circle);
+			}
+		}
+	}());
+	//track the mouse position
+	document.addEventListener( "mousemove", function(event){
+		pos.set( event.pageX, event.pageY );
+		update();
+	},false);
+	//track the first finger on any touch-device
+	document.addEventListener( "touchmove", function(event){
+		pos.set( event.touches[0].pageX, event.touches[0].pageY );
+		//stop the page from scrolling if the touch was within the bounds
+		if( pos.isInRectangle(bounds) ){
+			event.preventDefault();
+		}
+		update();
+	},false);
 
-<p>Toxiclibs.js can be used in the following ways:</p>
-
-<ul>
-<li>As a single javascript file loaded into a webpage, with the contents of the entire library within a global <em>toxi</em> object.</li>
-<li>As <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">AMD</a> modules that can be loaded independently or in packages, via <a href="http://requirejs.org">RequireJS</a></li>
-<li>In <a href="http://nodejs.org">Node.js</a> applications, as AMD modules that require the &#39;requirejs&#39; library for Node.js.</li>
-</ul>
-
-<p>To use as a single javascript file:</p>
-
-<pre><code>//copy the file build/toxiclibs.js into your javascript folder
-&lt;script type="text/javascript" src="js/toxiclibs.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript"&gt;
-  var myVector = new toxi.geom.Vec2D(window.innerWidth,window.innerHeight).scaleSelf(0.5);
-  var myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);
-&lt;/script&gt;
-</code></pre>
-
-<p>To use with <a href="http://requirejs.org">RequireJS</a>:</p>
-
-<pre><code>//copy the lib/ contents into your projects folder for loading modules
-require([&#39;toxi/geom/Vec2D&#39;, toxi/color/TColor], function(Vec2D, TColor){
-  var myVector = new Vec2D(window.innerWidth,window.innerHeight).scaleSelf(0.5);
-  var myColor = TColor.newRGB(128/255,64/255,32/255);
-});
-</code></pre>
-
-<p>To use with <a href="http://nodejs.org">Node.js</a>:</p>
-
-<p>npm install toxiclibsjs
-then:</p>
-
-<pre><code>var toxi = require(&#39;toxiclibsjs&#39;),
-myVector = new toxi.geom.Ve2D(0.5,0.5),
-myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);
-</code></pre>
-
-<p>There are many different ways to use toxiclibs.js. Most of the <a href="http://haptic-data.com/toxiclibsjs/#examples">examples</a> currently use <a href="http://processingjs.org">Processing.js</a> and are created using the java-syntax style of the original <a href="http://processing.org">Processing</a>. This can be helpful to those that are making the transition from Java, but can be confusing to others. I will explain the basics of using toxiclibs.js and the few differences between it and <a href="http://toxiclibs.org">the original toxiclibs</a>. </p>
-
-<p>For comprehensive documentation, read the original libraries <a href="http://toxiclibs.org/javadocs/">javadocs</a>. As the library is still growing, you can compare that documentation to this list of implemented classes.</p>
-
-<h2>Toxiclibs.js follows the original package structure</h2>
-
-<p>The following objects are returned when loading the entire library</p>
-
-<ul>
-<li><strong>color</strong> - the color utils package</li>
-<li><strong>geom</strong> - the geometry utils package</li>
-<li><em>internals</em> - functionality used within the library</li>
-<li><strong>math</strong> - the math utils package</li>
-<li><strong>physics2d</strong> - the Verlet Physics 2D package</li>
-<li><strong>processing</strong> - the processing package, eases use with <a href="http://processingjs.org">Processing.js</a></li>
-<li><strong>THREE</strong> - features to ease use with <a href="http://github.com/mrdoob/three.js">Three.js</a></li>
-<li><strong>utils</strong> - the utils package</li>
-</ul>
-    <script src="../../working_dir/build/toxiclibs.js"></script>
+	function update(){
+		var i = 0, l = circles.length;
+		for( i=0; i<l; i++ ){
+			var circle = circles[i];
+			//get the bounding box from raphael
+			var box = circle.getBBox();
+			//raphael's box has `x` and `y` properties, we can use it directly with toxiclibs.js
+			var distance = pos.distanceTo( box );
+			var color = toxi.color.TColor.newHSV(distance/bounds.width,0.5,1.0);
+			//`TColor#toRGBACSS()` will output the color as a css "rgba()" string
+			circle.attr({ fill: color.toRGBACSS(), scale: distance*0.25 });
+		}
+	}
+};</script>
     <section id="waist">
       <nav id="navigation">
         <ul>
@@ -106,60 +89,82 @@ myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);
         </ul>
       </nav>
     </section>
-    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
-    
-    
-  <span class="kd">var</span> <span class="nx">columns</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="nx">rows</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
-  <span class="kd">var</span> <span class="nx">columnWidth</span><span class="p">,</span> <span class="nx">rowHeight</span><span class="p">;</span>
-  <span class="kd">var</span> <span class="nx">circles</span> <span class="o">=</span> <span class="p">[];</span>
-  <span class="kd">var</span> <span class="nx">translateX</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="nx">translateY</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
-  <span class="kd">var</span> <span class="nx">width</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">;</span>
-  <span class="kd">var</span> <span class="nx">height</span> <span class="o">=</span> <span class="mi">600</span><span class="p">;</span>
-  <span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;example-container&quot;</span><span class="p">);</span>
+    <section id="pagelet" class="below"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>Color Waves</h1>
 
-  <span class="kd">var</span> <span class="nx">notepad</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">(</span><span class="nx">container</span><span class="p">,</span><span class="nx">width</span><span class="p">,</span><span class="nx">height</span><span class="p">);</span>
+<p>Demonstrates using <code>toxi.color.TColor</code> as well as <code>toxi.geom.Vec2D</code> and <code>toxi.geom.Rect</code>. Distance between
+the circles and mouse position determines color and size.</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;example-container&quot;</span><span class="p">),</span>
+    <span class="nx">columns</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="nx">rows</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="nx">bounds</span><span class="p">,</span>
+    <span class="nx">notepad</span><span class="p">,</span>
+    <span class="nx">pos</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">(),</span>
+    <span class="nx">circles</span> <span class="o">=</span> <span class="p">[];</span>
 
-
-  <span class="nx">columnWidth</span> <span class="o">=</span> <span class="nx">width</span> <span class="o">/</span> <span class="p">(</span><span class="nx">columns</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
-  <span class="nx">rowHeight</span> <span class="o">=</span> <span class="nx">height</span> <span class="o">/</span> <span class="p">(</span><span class="nx">rows</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
-
-  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">r</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">r</span><span class="o">&lt;</span><span class="nx">rows</span><span class="p">;</span><span class="nx">r</span><span class="o">++</span><span class="p">){</span> 
-    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">c</span><span class="o">&lt;</span><span class="nx">columns</span><span class="p">;</span><span class="nx">c</span><span class="o">++</span><span class="p">){</span>
-      <span class="kd">var</span> <span class="nx">circle</span> <span class="o">=</span> <span class="nx">notepad</span><span class="p">.</span><span class="nx">circle</span><span class="p">(</span><span class="nx">c</span><span class="o">*</span><span class="nx">columnWidth</span><span class="o">+</span><span class="nx">translateX</span><span class="p">,</span><span class="nx">r</span><span class="o">*</span><span class="nx">rowHeight</span><span class="o">+</span><span class="nx">translateY</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
-      <span class="nx">circle</span><span class="p">.</span><span class="nx">attr</span><span class="p">({</span><span class="nx">fill</span><span class="o">:</span> <span class="s2">&quot;#dddddd&quot;</span><span class="p">,</span> <span class="s2">&quot;stroke&quot;</span><span class="o">:</span> <span class="s2">&quot;#dddddd&quot;</span><span class="p">,</span> <span class="s2">&quot;opacity&quot;</span><span class="o">:</span><span class="mf">0.5</span><span class="p">,</span><span class="s2">&quot;scale&quot;</span><span class="o">:</span> <span class="mf">4.0</span><span class="p">});</span>
-      <span class="nx">circles</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">circle</span><span class="p">);</span> 
+  <span class="nx">bounds</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Rect</span><span class="p">({</span>
+    <span class="nx">x</span><span class="o">:</span> <span class="nx">container</span><span class="p">.</span><span class="nx">offsetLeft</span><span class="p">,</span>
+    <span class="nx">y</span><span class="o">:</span> <span class="nx">container</span><span class="p">.</span><span class="nx">offsetTop</span><span class="p">,</span>
+    <span class="nx">width</span><span class="o">:</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span>
+    <span class="nx">height</span><span class="o">:</span> <span class="mi">600</span>
+  <span class="p">});</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>notepad is the raphael instance</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">notepad</span> <span class="o">=</span> <span class="nx">Raphael</span><span class="p">(</span> <span class="nx">container</span><span class="p">,</span> <span class="nx">bounds</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">bounds</span><span class="p">.</span><span class="nx">height</span> <span class="p">);</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           <p>create all of the circles in a grid and set their attributes</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="p">(</span><span class="kd">function</span> <span class="nx">createCircles</span><span class="p">(){</span>
+    <span class="kd">var</span> <span class="nx">loc</span><span class="p">,</span> <span class="nx">circle</span><span class="p">,</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">c</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">cellDim</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">(</span> <span class="nx">bounds</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">bounds</span><span class="p">.</span><span class="nx">height</span> <span class="p">);</span>
+    <span class="nx">cellDim</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="nx">columns</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="nx">rows</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nx">r</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">r</span><span class="o">&lt;</span><span class="nx">rows</span><span class="p">;</span> <span class="nx">r</span><span class="o">++</span> <span class="p">){</span>
+      <span class="k">for</span><span class="p">(</span> <span class="nx">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">c</span><span class="o">&lt;</span><span class="nx">columns</span><span class="p">;</span> <span class="nx">c</span><span class="o">++</span> <span class="p">){</span>
+        <span class="nx">loc</span> <span class="o">=</span> <span class="nx">cellDim</span><span class="p">.</span><span class="nx">scale</span><span class="p">(</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">r</span> <span class="p">);</span>
+        <span class="nx">circle</span> <span class="o">=</span> <span class="nx">notepad</span><span class="p">.</span><span class="nx">circle</span><span class="p">(</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="p">);</span>
+        <span class="nx">circle</span><span class="p">.</span><span class="nx">attr</span><span class="p">({</span>
+          <span class="nx">fill</span><span class="o">:</span> <span class="s2">&quot;#dddddd&quot;</span><span class="p">,</span> <span class="nx">stroke</span><span class="o">:</span> <span class="s2">&quot;#dddddd&quot;</span><span class="p">,</span>
+          <span class="nx">opacity</span><span class="o">:</span> <span class="mf">0.5</span><span class="p">,</span>
+          <span class="nx">scale</span><span class="o">:</span> <span class="mf">4.0</span>
+        <span class="p">});</span>
+        <span class="nx">circles</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">circle</span><span class="p">);</span>
+      <span class="p">}</span>
     <span class="p">}</span>
-  <span class="p">}</span>
-
-  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;mousemove&quot;</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){</span>
-    <span class="nx">updateFor</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">pageX</span><span class="p">,</span><span class="nx">event</span><span class="p">.</span><span class="nx">pageY</span><span class="p">);</span>
+  <span class="p">}());</span></pre></div></div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           <p>track the mouse position</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span> <span class="s2">&quot;mousemove&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){</span>
+    <span class="nx">pos</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pageX</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pageY</span> <span class="p">);</span>
+    <span class="nx">update</span><span class="p">();</span>
+  <span class="p">},</span><span class="kc">false</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           <p>track the first finger on any touch-device</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span> <span class="s2">&quot;touchmove&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){</span>
+    <span class="nx">pos</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="nx">event</span><span class="p">.</span><span class="nx">touches</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">pageX</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">touches</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">pageY</span> <span class="p">);</span></pre></div></div>                      </li>                              <li id="section-6">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>                           <p>stop the page from scrolling if the touch was within the bounds</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="k">if</span><span class="p">(</span> <span class="nx">pos</span><span class="p">.</span><span class="nx">isInRectangle</span><span class="p">(</span><span class="nx">bounds</span><span class="p">)</span> <span class="p">){</span>
+      <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="nx">update</span><span class="p">();</span>
   <span class="p">},</span><span class="kc">false</span><span class="p">);</span>
 
-  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;touchmove&quot;</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){</span>
-    <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
-    <span class="nx">updateFor</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">touches</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">pageX</span><span class="p">,</span><span class="nx">event</span><span class="p">.</span><span class="nx">touches</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">pageY</span><span class="p">);</span>
-  <span class="p">},</span><span class="kc">false</span><span class="p">);</span>
-
-  <span class="kd">function</span> <span class="nx">updateFor</span><span class="p">(</span><span class="nx">activeX</span><span class="p">,</span><span class="nx">activeY</span><span class="p">){</span>
-    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">activeX</span> <span class="o">-</span> <span class="nx">container</span><span class="p">.</span><span class="nx">offsetLeft</span><span class="p">;</span>
-    <span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">activeY</span> <span class="o">-</span> <span class="nx">container</span><span class="p">.</span><span class="nx">offsetTop</span><span class="p">;</span>
-
-    <span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">circles</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="nx">l</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
-      <span class="kd">var</span> <span class="nx">circle</span> <span class="o">=</span> <span class="nx">circles</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-      <span class="kd">var</span> <span class="nx">box</span> <span class="o">=</span> <span class="nx">circle</span><span class="p">.</span><span class="nx">getBBox</span><span class="p">();</span>
-      <span class="kd">var</span> <span class="nx">dx</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">-</span> <span class="nx">box</span><span class="p">.</span><span class="nx">x</span><span class="p">;</span>
-      <span class="kd">var</span> <span class="nx">dy</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">-</span> <span class="nx">box</span><span class="p">.</span><span class="nx">y</span><span class="p">;</span>
-      <span class="kd">var</span> <span class="nx">distance</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">((</span><span class="nx">dx</span> <span class="o">*</span> <span class="nx">dx</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nx">dy</span> <span class="o">*</span> <span class="nx">dy</span><span class="p">));</span>
-      <span class="kd">var</span> <span class="nx">color</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">TColor</span><span class="p">.</span><span class="nx">newHSV</span><span class="p">(</span><span class="nx">distance</span><span class="o">/</span><span class="nx">width</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">);</span>
-
-      <span class="kd">var</span> <span class="nx">rgba</span> <span class="o">=</span> <span class="s2">&quot;rgba(&quot;</span><span class="o">+</span><span class="p">(</span><span class="nx">color</span><span class="p">.</span><span class="nx">red</span><span class="p">()</span><span class="o">*</span><span class="mi">255</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;,&quot;</span><span class="o">+</span><span class="p">(</span><span class="nx">color</span><span class="p">.</span><span class="nx">green</span><span class="p">()</span><span class="o">*</span><span class="mi">255</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;,&quot;</span><span class="o">+</span><span class="p">(</span><span class="nx">color</span><span class="p">.</span><span class="nx">blue</span><span class="p">()</span><span class="o">*</span><span class="mi">255</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;,&quot;</span><span class="o">+</span><span class="nx">color</span><span class="p">.</span><span class="nx">alpha</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;)&quot;</span><span class="p">;</span>
-      <span class="nx">circle</span><span class="p">.</span><span class="nx">attr</span><span class="p">({</span><span class="s2">&quot;fill&quot;</span><span class="o">:</span> <span class="nx">rgba</span><span class="p">,</span> <span class="s2">&quot;scale&quot;</span><span class="o">:</span><span class="nx">distance</span><span class="o">*</span><span class="mf">0.25</span><span class="p">});</span>
+  <span class="kd">function</span> <span class="nx">update</span><span class="p">(){</span>
+    <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">circles</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">){</span>
+      <span class="kd">var</span> <span class="nx">circle</span> <span class="o">=</span> <span class="nx">circles</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span></pre></div></div>                      </li>                              <li id="section-7">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>                           <p>get the bounding box from raphael</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="kd">var</span> <span class="nx">box</span> <span class="o">=</span> <span class="nx">circle</span><span class="p">.</span><span class="nx">getBBox</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-8">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>                           <p>raphael's box has <code>x</code> and <code>y</code> properties, we can use it directly with toxiclibs.js</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="kd">var</span> <span class="nx">distance</span> <span class="o">=</span> <span class="nx">pos</span><span class="p">.</span><span class="nx">distanceTo</span><span class="p">(</span> <span class="nx">box</span> <span class="p">);</span>
+      <span class="kd">var</span> <span class="nx">color</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">TColor</span><span class="p">.</span><span class="nx">newHSV</span><span class="p">(</span><span class="nx">distance</span><span class="o">/</span><span class="nx">bounds</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">1.0</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-9">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>                           <p><code>TColor#toRGBACSS()</code> will output the color as a css "rgba()" string</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="nx">circle</span><span class="p">.</span><span class="nx">attr</span><span class="p">({</span> <span class="nx">fill</span><span class="o">:</span> <span class="nx">color</span><span class="p">.</span><span class="nx">toRGBACSS</span><span class="p">(),</span> <span class="nx">scale</span><span class="o">:</span> <span class="nx">distance</span><span class="o">*</span><span class="mf">0.25</span> <span class="p">});</span>
     <span class="p">}</span>
   <span class="p">}</span>
-<span class="p">}</span>
+<span class="p">};</span>
 
 </pre></div></div>                      </li>              </ul>  </div> </section>
-    <footer></footer>
+    <footer class="container-fluid">
+      <div class="row-fluid">
+        <div class="span6 about"><ul>
+<li><strong><em><a href="http://hapticdata.com/toxiclibjs">Toxiclibs.js</a></em> is created and maintained by <a href="http://hapticdata.com">Kyle Phillips</a></strong></li>
+<li><strong>The original <em><a href="http://toxiclibs.org">Toxiclibs</a></em> is created and maintained by <a href="http://postspectacular.com">Karsten Schmidt</a></strong></li>
+<li><em>Toxiclibs.js</em>, <em>Toxiclibs</em> and the <em>toxiclibs.js website</em> are all free open-source software released under 
+<a href="https://github.com/hapticdata/toxiclibsjs/blob/develop/LICENSE.txt">GNU Lesser General Public License</a></li>
+</ul>
+        </div>
+        <div class="span6">
+          <ul class="quick-links">
+            <li><a href="https://github.com/hapticdata/toxiclibsjs">View on Github</a></li>
+            <li><a href="https://github.com/hapticdata/toxiclibsjs/graphs/contributors">Contributors</a></li>
+            <li>Download:
+              <ul class="quick-links">
+                <li><a href="https://github.com/hapticdata/toxiclibsjs/archive/master.zip">Repository</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js">build</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.min.js">minified build</a></li>
+              </ul></li>
+          </ul><p><em>This site and examples are 
+<a href="https://github.com/hapticdata/toxiclibsjs-examples">separately available on Github</a>
+and were created by <a href="http://hapticdata.com">Kyle Phillips</a> unless otherwise noted.</em></p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

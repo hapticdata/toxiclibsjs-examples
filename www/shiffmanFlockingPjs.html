@@ -2,19 +2,20 @@
 <html>
   <head>
     <title>Shiffman Flocking - Toxiclibs.js</title>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400">
     <link rel="stylesheet" href="stylesheets/style.css">
-    <script src="javascripts/vendor/prettify.js"></script>
+    <script data-main="javascripts/main" src="javascripts/vendor/require.js"></script>
     <script src="javascripts/config.js"></script>
-    <script data-main="../main" src="javascripts/vendor/require.js"></script>
-    <script src="javascripts/vendor/xrayquire.js"></script>
+    <!--script(src="javascripts/vendor/xrayquire.js")-->
   </head>
   <body>
-    <div id="example-container" class="pjs">
-      <canvas id="myCanvas" data-processing-sources="javascripts/examples/shiffmanFlockingPjs.pde"></canvas>
+    <div id="example-container" class="above pjs">
+      <canvas id="myCanvas"></canvas>
+      <!--(data-processing-sources="javascripts/examples/#{src}")-->
     </div>
     <script src="javascripts/vendor/processing.js"></script>
-    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script src="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js"></script>
+    <!--https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js")-->
     <script type="application/processing" data-processing-target="myCanvas">
 //#Flocking
 //by [Daniel Shiffman](http://www.shiffman.net)
@@ -45,6 +46,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
  
+
+var Vec2D = toxi.geom.Vec2D;
+
 import toxi.geom.*;
 import toxi.math.*;
 
@@ -74,10 +78,6 @@ void mousePressed() {
 
 // Boid class
 // Methods for Separation, Cohesion, Alignment added
-
-
-var Vec2D = toxi.geom.Vec2D;
-
 class Boid {
 
   Vec2D loc;
@@ -304,16 +304,15 @@ class Flock {
         </ul>
       </nav>
     </section>
-    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="c1">//#Flocking</span>
-<span class="c1">//by [Daniel Shiffman](http://www.shiffman.net)</span>
-<span class="c1">//created for The Nature of Code class, ITP, Spring 2009.</span>
-<span class="c1">//Ported to toxiclibs by Karsten Schmidt&lt;/p&gt;</span>
-<span class="c1">//Demonstration of &lt;a href=&quot;http://www.red3d.com/cwr/&quot;&gt;Craig Reynolds&#39; &quot;Flocking&quot; behavior&lt;/a&gt;&lt;br/&gt;</span>
-<span class="c1">//**Rules:** Cohesion, Separation, Alignment</span>
-<span class="c1">//</span>
-<span class="c1">//**Usage:** Click mouse to add boids into the system</span>
+    <section id="pagelet" class="below"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>Flocking</h1>
 
-<span class="cm">/*</span>
+<p>by <a href="http://www.shiffman.net">Daniel Shiffman</a>
+created for The Nature of Code class, ITP, Spring 2009.
+Ported to toxiclibs by Karsten Schmidt</p>
+Demonstration of <a href="http://www.red3d.com/cwr/">Craig Reynolds' "Flocking" behavior</a><br/>
+<strong>Rules:</strong> Cohesion, Separation, Alignment</p>
+
+<p><strong>Usage:</strong> Click mouse to add boids into the system</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="cm">/*</span>
 <span class="cm"> * Copyright (c) 2009 Daniel Shiffman</span>
 <span class="cm"> *</span>
 <span class="cm"> * This library is free software; you can redistribute it and/or</span>
@@ -333,6 +332,9 @@ class Flock {
 <span class="cm"> * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</span>
 <span class="cm"> */</span>
  
+
+<span class="kd">var</span> <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">;</span>
+
 <span class="kr">import</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="o">*</span><span class="p">;</span>
 <span class="kr">import</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="o">*</span><span class="p">;</span>
 
@@ -340,9 +342,7 @@ class Flock {
 
 <span class="k">void</span> <span class="nx">setup</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">size</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span><span class="mi">300</span><span class="p">);</span>
-  <span class="nx">flock</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Flock</span><span class="p">();</span>
-  <span class="c1">// Add an initial set of boids into the system</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kr">int</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">70</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">flock</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Flock</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>Add an initial set of boids into the system</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="k">for</span> <span class="p">(</span><span class="kr">int</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">70</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">flock</span><span class="p">.</span><span class="nx">addBoid</span><span class="p">(</span><span class="k">new</span> <span class="nx">Boid</span><span class="p">(</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="mf">3.0</span><span class="p">,</span><span class="mf">0.05</span><span class="p">));</span>
   <span class="p">}</span>
   <span class="nx">smooth</span><span class="p">();</span>
@@ -351,22 +351,10 @@ class Flock {
 <span class="k">void</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">background</span><span class="p">(</span><span class="mi">250</span><span class="p">);</span>
   <span class="nx">flock</span><span class="p">.</span><span class="nx">run</span><span class="p">();</span>
-<span class="p">}</span>
-
-<span class="c1">// Add a new boid into the System</span>
-<span class="k">void</span> <span class="nx">mousePressed</span><span class="p">()</span> <span class="p">{</span>
+<span class="p">}</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           <p>Add a new boid into the System</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="k">void</span> <span class="nx">mousePressed</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">flock</span><span class="p">.</span><span class="nx">addBoid</span><span class="p">(</span><span class="k">new</span> <span class="nx">Boid</span><span class="p">(</span><span class="k">new</span> <span class="nx">Vec2D</span><span class="p">(</span><span class="nx">mouseX</span><span class="p">,</span><span class="nx">mouseY</span><span class="p">),</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">0.05f</span><span class="p">));</span>
-<span class="p">}</span>
-
-
-
-<span class="c1">// Boid class</span>
-<span class="c1">// Methods for Separation, Cohesion, Alignment added</span>
-
-
-<span class="kd">var</span> <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">;</span>
-
-<span class="kr">class</span> <span class="nx">Boid</span> <span class="p">{</span>
+<span class="p">}</span></pre></div></div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           <p>Boid class
+Methods for Separation, Cohesion, Alignment added</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="kr">class</span> <span class="nx">Boid</span> <span class="p">{</span>
 
   <span class="nx">Vec2D</span> <span class="nx">loc</span><span class="p">;</span>
   <span class="nx">Vec2D</span> <span class="nx">vel</span><span class="p">;</span>
@@ -389,32 +377,16 @@ class Flock {
     <span class="nx">update</span><span class="p">();</span>
     <span class="nx">borders</span><span class="p">();</span>
     <span class="nx">render</span><span class="p">();</span>
-  <span class="p">}</span>
-
-  <span class="c1">// We accumulate a new acceleration each time based on three rules</span>
-  <span class="k">void</span> <span class="nx">flock</span><span class="p">(</span><span class="nx">ArrayList</span> <span class="nx">boids</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           <p>We accumulate a new acceleration each time based on three rules</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="k">void</span> <span class="nx">flock</span><span class="p">(</span><span class="nx">ArrayList</span> <span class="nx">boids</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">Vec2D</span> <span class="nx">sep</span> <span class="o">=</span> <span class="nx">separate</span><span class="p">(</span><span class="nx">boids</span><span class="p">);</span>   <span class="c1">// Separation</span>
     <span class="nx">Vec2D</span> <span class="nx">ali</span> <span class="o">=</span> <span class="nx">align</span><span class="p">(</span><span class="nx">boids</span><span class="p">);</span>      <span class="c1">// Alignment</span>
-    <span class="nx">Vec2D</span> <span class="nx">coh</span> <span class="o">=</span> <span class="nx">cohesion</span><span class="p">(</span><span class="nx">boids</span><span class="p">);</span>   <span class="c1">// Cohesion</span>
-    <span class="c1">// Arbitrarily weight these forces</span>
-    <span class="nx">sep</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="mf">1.5</span><span class="p">);</span>
+    <span class="nx">Vec2D</span> <span class="nx">coh</span> <span class="o">=</span> <span class="nx">cohesion</span><span class="p">(</span><span class="nx">boids</span><span class="p">);</span>   <span class="c1">// Cohesion</span></pre></div></div>                      </li>                              <li id="section-6">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>                           <p>Arbitrarily weight these forces</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">sep</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="mf">1.5</span><span class="p">);</span>
     <span class="nx">ali</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="mf">1.0</span><span class="p">);</span>
-    <span class="nx">coh</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="mf">1.0</span><span class="p">);</span>
-    <span class="c1">// Add the force vectors to acceleration</span>
-    <span class="nx">acc</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">sep</span><span class="p">);</span>
+    <span class="nx">coh</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="mf">1.0</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-7">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>                           <p>Add the force vectors to acceleration</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">acc</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">sep</span><span class="p">);</span>
     <span class="nx">acc</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">ali</span><span class="p">);</span>
     <span class="nx">acc</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">coh</span><span class="p">);</span>
-  <span class="p">}</span>
-
-  <span class="c1">// Method to update location</span>
-  <span class="k">void</span> <span class="nx">update</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Update velocity</span>
-    <span class="nx">vel</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">acc</span><span class="p">);</span>
-    <span class="c1">// Limit speed</span>
-    <span class="nx">vel</span><span class="p">.</span><span class="nx">limit</span><span class="p">(</span><span class="nx">maxspeed</span><span class="p">);</span>
-    <span class="nx">loc</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">vel</span><span class="p">);</span>
-    <span class="c1">// Reset accelertion to 0 each cycle</span>
-    <span class="nx">acc</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-8">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>                           <p>Method to update location</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="k">void</span> <span class="nx">update</span><span class="p">()</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-9">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>                           <p>Update velocity</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">vel</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">acc</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-10">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>                           <p>Limit speed</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">vel</span><span class="p">.</span><span class="nx">limit</span><span class="p">(</span><span class="nx">maxspeed</span><span class="p">);</span>
+    <span class="nx">loc</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">vel</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-11">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>                           <p>Reset accelertion to 0 each cycle</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">acc</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
   <span class="p">}</span>
 
   <span class="k">void</span> <span class="nx">seek</span><span class="p">(</span><span class="nx">Vec2D</span> <span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
@@ -423,23 +395,12 @@ class Flock {
 
   <span class="k">void</span> <span class="nx">arrive</span><span class="p">(</span><span class="nx">Vec2D</span> <span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">acc</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">steer</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span><span class="kc">true</span><span class="p">));</span>
-  <span class="p">}</span>
-
-  <span class="c1">// A method that calculates a steering vector towards a target</span>
-  <span class="c1">// Takes a second argument, if true, it slows down as it approaches the target</span>
-  <span class="nx">Vec2D</span> <span class="nx">steer</span><span class="p">(</span><span class="nx">Vec2D</span> <span class="nx">target</span><span class="p">,</span> <span class="kr">boolean</span> <span class="nx">slowdown</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-12">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>                           <p>A method that calculates a steering vector towards a target
+Takes a second argument, if true, it slows down as it approaches the target</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">Vec2D</span> <span class="nx">steer</span><span class="p">(</span><span class="nx">Vec2D</span> <span class="nx">target</span><span class="p">,</span> <span class="kr">boolean</span> <span class="nx">slowdown</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">Vec2D</span> <span class="nx">steer</span><span class="p">;</span>  <span class="c1">// The steering vector</span>
     <span class="nx">Vec2D</span> <span class="nx">desired</span> <span class="o">=</span> <span class="nx">target</span><span class="p">.</span><span class="nx">sub</span><span class="p">(</span><span class="nx">loc</span><span class="p">);</span>  <span class="c1">// A vector pointing from the location to the target</span>
-    <span class="kr">float</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">desired</span><span class="p">.</span><span class="nx">magnitude</span><span class="p">();</span> <span class="c1">// Distance from the target is the magnitude of the vector</span>
-    <span class="c1">// If the distance is greater than 0, calc steering (otherwise return zero vector)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">// Normalize desired</span>
-      <span class="nx">desired</span><span class="p">.</span><span class="nx">normalize</span><span class="p">();</span>
-      <span class="c1">// Two options for desired vector magnitude (1 -- based on distance, 2 -- maxspeed)</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">slowdown</span> <span class="o">&amp;&amp;</span> <span class="nx">d</span> <span class="o">&lt;</span> <span class="mf">100.0f</span><span class="p">)</span> <span class="nx">desired</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="nx">maxspeed</span><span class="o">*</span><span class="nx">d</span><span class="o">/</span><span class="mf">100.0f</span><span class="p">);</span> <span class="c1">// This damping is somewhat arbitrary</span>
-      <span class="k">else</span> <span class="nx">desired</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="nx">maxspeed</span><span class="p">);</span>
-      <span class="c1">// Steering = Desired minus Velocity</span>
-      <span class="nx">steer</span> <span class="o">=</span> <span class="nx">desired</span><span class="p">.</span><span class="nx">sub</span><span class="p">(</span><span class="nx">vel</span><span class="p">).</span><span class="nx">limit</span><span class="p">(</span><span class="nx">maxforce</span><span class="p">);</span>  <span class="c1">// Limit to maximum steering force</span>
+    <span class="kr">float</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">desired</span><span class="p">.</span><span class="nx">magnitude</span><span class="p">();</span> <span class="c1">// Distance from the target is the magnitude of the vector</span></pre></div></div>                      </li>                              <li id="section-13">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>                           <p>If the distance is greater than 0, calc steering (otherwise return zero vector)</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-14">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>                           <p>Normalize desired</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="nx">desired</span><span class="p">.</span><span class="nx">normalize</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-15">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>                           <p>Two options for desired vector magnitude (1 -- based on distance, 2 -- maxspeed)</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="k">if</span> <span class="p">(</span><span class="nx">slowdown</span> <span class="o">&amp;&amp;</span> <span class="nx">d</span> <span class="o">&lt;</span> <span class="mf">100.0f</span><span class="p">)</span> <span class="nx">desired</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="nx">maxspeed</span><span class="o">*</span><span class="nx">d</span><span class="o">/</span><span class="mf">100.0f</span><span class="p">);</span> <span class="c1">// This damping is somewhat arbitrary</span>
+      <span class="k">else</span> <span class="nx">desired</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="nx">maxspeed</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-16">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>                           <p>Steering = Desired minus Velocity</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="nx">steer</span> <span class="o">=</span> <span class="nx">desired</span><span class="p">.</span><span class="nx">sub</span><span class="p">(</span><span class="nx">vel</span><span class="p">).</span><span class="nx">limit</span><span class="p">(</span><span class="nx">maxforce</span><span class="p">);</span>  <span class="c1">// Limit to maximum steering force</span>
     <span class="p">}</span> 
     <span class="k">else</span> <span class="p">{</span>
       <span class="nx">steer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">();</span>
@@ -447,9 +408,7 @@ class Flock {
     <span class="k">return</span> <span class="nx">steer</span><span class="p">;</span>
   <span class="p">}</span>
 
-  <span class="k">void</span> <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Draw a triangle rotated in the direction of velocity</span>
-    <span class="kr">float</span> <span class="nx">theta</span> <span class="o">=</span> <span class="nx">vel</span><span class="p">.</span><span class="nx">heading</span><span class="p">()</span> <span class="o">+</span> <span class="nx">radians</span><span class="p">(</span><span class="mi">90</span><span class="p">);</span>
+  <span class="k">void</span> <span class="nx">render</span><span class="p">()</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-17">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>                           <p>Draw a triangle rotated in the direction of velocity</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="kr">float</span> <span class="nx">theta</span> <span class="o">=</span> <span class="nx">vel</span><span class="p">.</span><span class="nx">heading</span><span class="p">()</span> <span class="o">+</span> <span class="nx">radians</span><span class="p">(</span><span class="mi">90</span><span class="p">);</span>
     <span class="nx">fill</span><span class="p">(</span><span class="mi">175</span><span class="p">);</span>
     <span class="nx">stroke</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
     <span class="nx">pushMatrix</span><span class="p">();</span>
@@ -461,53 +420,31 @@ class Flock {
     <span class="nx">vertex</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">r</span><span class="o">*</span><span class="mi">2</span><span class="p">);</span>
     <span class="nx">endShape</span><span class="p">();</span>
     <span class="nx">popMatrix</span><span class="p">();</span>
-  <span class="p">}</span>
-
-  <span class="c1">// Wraparound</span>
-  <span class="k">void</span> <span class="nx">borders</span><span class="p">()</span> <span class="p">{</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-18">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>                           <p>Wraparound</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="k">void</span> <span class="nx">borders</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">loc</span><span class="p">.</span><span class="nx">x</span> <span class="o">&lt;</span> <span class="o">-</span><span class="nx">r</span><span class="p">)</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nx">width</span><span class="o">+</span><span class="nx">r</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">loc</span><span class="p">.</span><span class="nx">y</span> <span class="o">&lt;</span> <span class="o">-</span><span class="nx">r</span><span class="p">)</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="nx">height</span><span class="o">+</span><span class="nx">r</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">loc</span><span class="p">.</span><span class="nx">x</span> <span class="o">&gt;</span> <span class="nx">width</span><span class="o">+</span><span class="nx">r</span><span class="p">)</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="o">-</span><span class="nx">r</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">loc</span><span class="p">.</span><span class="nx">y</span> <span class="o">&gt;</span> <span class="nx">height</span><span class="o">+</span><span class="nx">r</span><span class="p">)</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="o">-</span><span class="nx">r</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="c1">// Separation</span>
-  <span class="c1">// Method checks for nearby boids and steers away</span>
-  <span class="nx">Vec2D</span> <span class="nx">separate</span><span class="p">(</span><span class="nx">ArrayList</span> <span class="nx">boids</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-19">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>                           <p>Separation
+Method checks for nearby boids and steers away</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">Vec2D</span> <span class="nx">separate</span><span class="p">(</span><span class="nx">ArrayList</span> <span class="nx">boids</span><span class="p">)</span> <span class="p">{</span>
     <span class="kr">float</span> <span class="nx">desiredseparation</span> <span class="o">=</span> <span class="mf">25.0f</span><span class="p">;</span>
     <span class="nx">Vec2D</span> <span class="nx">steer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">();</span>
-    <span class="kr">int</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="c1">// For every boid in the system, check if it&#39;s too close</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kr">int</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">boids</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">int</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></pre></div></div>                      </li>                              <li id="section-20">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>                           <p>For every boid in the system, check if it's too close</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="k">for</span> <span class="p">(</span><span class="kr">int</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">boids</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">Boid</span> <span class="nx">other</span> <span class="o">=</span> <span class="p">(</span><span class="nx">Boid</span><span class="p">)</span> <span class="nx">boids</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
-      <span class="kr">float</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">distanceTo</span><span class="p">(</span><span class="nx">other</span><span class="p">.</span><span class="nx">loc</span><span class="p">);</span>
-      <span class="c1">// If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)</span>
-      <span class="k">if</span> <span class="p">((</span><span class="nx">d</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&lt;</span> <span class="nx">desiredseparation</span><span class="p">))</span> <span class="p">{</span>
-        <span class="c1">// Calculate vector pointing away from neighbor</span>
-        <span class="nx">Vec2D</span> <span class="nx">diff</span> <span class="o">=</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">sub</span><span class="p">(</span><span class="nx">other</span><span class="p">.</span><span class="nx">loc</span><span class="p">);</span>
+      <span class="kr">float</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">distanceTo</span><span class="p">(</span><span class="nx">other</span><span class="p">.</span><span class="nx">loc</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-21">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>                           <p>If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="k">if</span> <span class="p">((</span><span class="nx">d</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">d</span> <span class="o">&lt;</span> <span class="nx">desiredseparation</span><span class="p">))</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-22">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>                           <p>Calculate vector pointing away from neighbor</p>             </div>                          <div class="content"><div class="highlight"><pre>        <span class="nx">Vec2D</span> <span class="nx">diff</span> <span class="o">=</span> <span class="nx">loc</span><span class="p">.</span><span class="nx">sub</span><span class="p">(</span><span class="nx">other</span><span class="p">.</span><span class="nx">loc</span><span class="p">);</span>
         <span class="nx">diff</span><span class="p">.</span><span class="nx">normalizeTo</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="nx">d</span><span class="p">);</span>
         <span class="nx">steer</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="nx">diff</span><span class="p">);</span>
         <span class="nx">count</span><span class="o">++</span><span class="p">;</span>            <span class="c1">// Keep track of how many</span>
       <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="c1">// Average -- divide by how many</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-23">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>                           <p>Average -- divide by how many</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">steer</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="nx">count</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="c1">// As long as the vector is greater than 0</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">steer</span><span class="p">.</span><span class="nx">magnitude</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">// Implement Reynolds: Steering = Desired - Velocity</span>
-      <span class="nx">steer</span><span class="p">.</span><span class="nx">normalizeTo</span><span class="p">(</span><span class="nx">maxspeed</span><span class="p">);</span>
+    <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-24">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>                           <p>As long as the vector is greater than 0</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">steer</span><span class="p">.</span><span class="nx">magnitude</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-25">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>                           <p>Implement Reynolds: Steering = Desired - Velocity</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="nx">steer</span><span class="p">.</span><span class="nx">normalizeTo</span><span class="p">(</span><span class="nx">maxspeed</span><span class="p">);</span>
       <span class="nx">steer</span><span class="p">.</span><span class="nx">subSelf</span><span class="p">(</span><span class="nx">vel</span><span class="p">);</span>
       <span class="nx">steer</span><span class="p">.</span><span class="nx">limit</span><span class="p">(</span><span class="nx">maxforce</span><span class="p">);</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="nx">steer</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="c1">// Alignment</span>
-  <span class="c1">// For every nearby boid in the system, calculate the average velocity</span>
-  <span class="nx">Vec2D</span> <span class="nx">align</span> <span class="p">(</span><span class="nx">ArrayList</span> <span class="nx">boids</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-26">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>                           <p>Alignment
+For every nearby boid in the system, calculate the average velocity</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">Vec2D</span> <span class="nx">align</span> <span class="p">(</span><span class="nx">ArrayList</span> <span class="nx">boids</span><span class="p">)</span> <span class="p">{</span>
     <span class="kr">float</span> <span class="nx">neighbordist</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">;</span>
     <span class="nx">Vec2D</span> <span class="nx">steer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">();</span>
     <span class="kr">int</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -521,21 +458,13 @@ class Flock {
     <span class="p">}</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">steer</span><span class="p">.</span><span class="nx">scaleSelf</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="nx">count</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="c1">// As long as the vector is greater than 0</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">steer</span><span class="p">.</span><span class="nx">magnitude</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">// Implement Reynolds: Steering = Desired - Velocity</span>
-      <span class="nx">steer</span><span class="p">.</span><span class="nx">normalizeTo</span><span class="p">(</span><span class="nx">maxspeed</span><span class="p">);</span>
+    <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-27">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>                           <p>As long as the vector is greater than 0</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">steer</span><span class="p">.</span><span class="nx">magnitude</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-28">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>                           <p>Implement Reynolds: Steering = Desired - Velocity</p>             </div>                          <div class="content"><div class="highlight"><pre>      <span class="nx">steer</span><span class="p">.</span><span class="nx">normalizeTo</span><span class="p">(</span><span class="nx">maxspeed</span><span class="p">);</span>
       <span class="nx">steer</span><span class="p">.</span><span class="nx">subSelf</span><span class="p">(</span><span class="nx">vel</span><span class="p">);</span>
       <span class="nx">steer</span><span class="p">.</span><span class="nx">limit</span><span class="p">(</span><span class="nx">maxforce</span><span class="p">);</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="nx">steer</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="c1">// Cohesion</span>
-  <span class="c1">// For the average location (i.e. center) of all nearby boids, calculate steering vector towards that location</span>
-  <span class="nx">Vec2D</span> <span class="nx">cohesion</span> <span class="p">(</span><span class="nx">ArrayList</span> <span class="nx">boids</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-29">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>                           <p>Cohesion
+For the average location (i.e. center) of all nearby boids, calculate steering vector towards that location</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">Vec2D</span> <span class="nx">cohesion</span> <span class="p">(</span><span class="nx">ArrayList</span> <span class="nx">boids</span><span class="p">)</span> <span class="p">{</span>
     <span class="kr">float</span> <span class="nx">neighbordist</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">;</span>
     <span class="nx">Vec2D</span> <span class="nx">sum</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vec2D</span><span class="p">();</span>   <span class="c1">// Start with empty vector to accumulate all locations</span>
     <span class="kr">int</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -553,12 +482,8 @@ class Flock {
     <span class="p">}</span>
     <span class="k">return</span> <span class="nx">sum</span><span class="p">;</span>
   <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// Flock class</span>
-<span class="c1">// Does very little, simply manages the ArrayList of all the boids</span>
-
-<span class="kr">class</span> <span class="nx">Flock</span> <span class="p">{</span>
+<span class="p">}</span></pre></div></div>                      </li>                              <li id="section-30">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>                           <p>Flock class
+Does very little, simply manages the ArrayList of all the boids</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="kr">class</span> <span class="nx">Flock</span> <span class="p">{</span>
   <span class="nx">ArrayList</span> <span class="nx">boids</span><span class="p">;</span> <span class="c1">// An arraylist for all the boids</span>
 
     <span class="nx">Flock</span><span class="p">()</span> <span class="p">{</span>
@@ -578,6 +503,30 @@ class Flock {
 <span class="p">}</span>
 
 </pre></div></div>                      </li>              </ul>  </div> </section>
-    <footer></footer>
+    <footer class="container-fluid">
+      <div class="row-fluid">
+        <div class="span6 about"><ul>
+<li><strong><em><a href="http://hapticdata.com/toxiclibjs">Toxiclibs.js</a></em> is created and maintained by <a href="http://hapticdata.com">Kyle Phillips</a></strong></li>
+<li><strong>The original <em><a href="http://toxiclibs.org">Toxiclibs</a></em> is created and maintained by <a href="http://postspectacular.com">Karsten Schmidt</a></strong></li>
+<li><em>Toxiclibs.js</em>, <em>Toxiclibs</em> and the <em>toxiclibs.js website</em> are all free open-source software released under 
+<a href="https://github.com/hapticdata/toxiclibsjs/blob/develop/LICENSE.txt">GNU Lesser General Public License</a></li>
+</ul>
+        </div>
+        <div class="span6">
+          <ul class="quick-links">
+            <li><a href="https://github.com/hapticdata/toxiclibsjs">View on Github</a></li>
+            <li><a href="https://github.com/hapticdata/toxiclibsjs/graphs/contributors">Contributors</a></li>
+            <li>Download:
+              <ul class="quick-links">
+                <li><a href="https://github.com/hapticdata/toxiclibsjs/archive/master.zip">Repository</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js">build</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.min.js">minified build</a></li>
+              </ul></li>
+          </ul><p><em>This site and examples are 
+<a href="https://github.com/hapticdata/toxiclibsjs-examples">separately available on Github</a>
+and were created by <a href="http://hapticdata.com">Kyle Phillips</a> unless otherwise noted.</em></p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

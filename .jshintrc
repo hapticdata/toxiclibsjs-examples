@@ -1,0 +1,9 @@
+{
+	"predef": {
+		"requestAnimationFrame": false,
+		"toxi": false,
+		"dat": false,
+		"console": false,
+		"$": false
+	}
+}

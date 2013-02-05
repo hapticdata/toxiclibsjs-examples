@@ -2,19 +2,20 @@
 <html>
   <head>
     <title>Super-Ellipsoid - Toxiclibs.js</title>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400">
     <link rel="stylesheet" href="stylesheets/style.css">
-    <script src="javascripts/vendor/prettify.js"></script>
+    <script data-main="javascripts/main" src="javascripts/vendor/require.js"></script>
     <script src="javascripts/config.js"></script>
-    <script data-main="../main" src="javascripts/vendor/require.js"></script>
-    <script src="javascripts/vendor/xrayquire.js"></script>
+    <!--script(src="javascripts/vendor/xrayquire.js")-->
   </head>
   <body>
-    <div id="example-container" class="pjs">
-      <canvas id="myCanvas" data-processing-sources="javascripts/examples/superEllipsoid.pde"></canvas>
+    <div id="example-container" class="above pjs">
+      <canvas id="myCanvas"></canvas>
+      <!--(data-processing-sources="javascripts/examples/#{src}")-->
     </div>
     <script src="javascripts/vendor/processing.js"></script>
-    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script src="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js"></script>
+    <!--https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js")-->
     <script type="application/processing" data-processing-target="myCanvas">
 //#Super Ellipsoid Mesh Builder
 //original example by [Karsten Schmidt](http://postspectacular.com),
@@ -90,7 +91,6 @@ void draw() {
   background(0);
 
   lights();
-
   translate(width / 2, height / 2, 0);
   rotateX(mouseY * 0.01);
   rotateY(mouseX * 0.01);
@@ -141,27 +141,28 @@ void keyPressed() {
         </ul>
       </nav>
     </section>
-    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="c1">//#Super Ellipsoid Mesh Builder</span>
-<span class="c1">//original example by [Karsten Schmidt](http://postspectacular.com),</span>
-<span class="c1">//Toxiclibs ported to js by [Kyle Phillips](http://workofkylephillips.com)</span>
-<span class="c1">//</span>
-<span class="c1">//**Usage:**</span>
-<span class="c1">//</span>
-<span class="c1">//- **w:** toggle wireframe on/off</span>
-<span class="c1">//- **n:** toggle normal vector display on/off</span>
-<span class="c1">//</span>
-<span class="c1">//SuperEllipsoidMeshBuilder demonstrates how to use the [SurfaceMeshBuilder](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/SurfaceMeshBuilder.js)</span>
-<span class="c1">//class in conjunction with a SuperEllipsoid function to dynamically create a</span>
-<span class="c1">//variety of useful geometric forms. It also demonstrates using</span>
-<span class="c1">//[toxi.processing.ToxiclibsSupport](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/processing/ToxiclibsSupport.js)</span>
-<span class="c1">//for crossmode support between Processing and Processing.js.</span>
-<span class="c1">//The super ellipsoid is described in detail on Paul Bourke&#39;s website.</span>
-<span class="c1">//In this demo 2 out-of-sync sine waves are used to animate</span>
-<span class="c1">//the ellipsoid parameters. Included is also a re-usable function for displaying</span>
-<span class="c1">//a generic TriangleMesh instance, incl. the display of surface normals useful for</span>
-<span class="c1">//debug purposes.</span>
+    <section id="pagelet" class="below"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>Super Ellipsoid Mesh Builder</h1>
 
-<span class="cm">/*</span>
+<p>original example by <a href="http://postspectacular.com">Karsten Schmidt</a>,
+Toxiclibs ported to js by <a href="http://workofkylephillips.com">Kyle Phillips</a></p>
+
+<p><strong>Usage:</strong></p>
+
+<ul>
+<li><strong>w:</strong> toggle wireframe on/off</li>
+<li><strong>n:</strong> toggle normal vector display on/off</li>
+</ul>
+
+<p>SuperEllipsoidMeshBuilder demonstrates how to use the <a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/SurfaceMeshBuilder.js">SurfaceMeshBuilder</a>
+class in conjunction with a SuperEllipsoid function to dynamically create a
+variety of useful geometric forms. It also demonstrates using
+<a href="https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/processing/ToxiclibsSupport.js">toxi.processing.ToxiclibsSupport</a>
+for crossmode support between Processing and Processing.js.
+The super ellipsoid is described in detail on Paul Bourke's website.
+In this demo 2 out-of-sync sine waves are used to animate
+the ellipsoid parameters. Included is also a re-usable function for displaying
+a generic TriangleMesh instance, incl. the display of surface normals useful for
+debug purposes.</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="cm">/*</span>
 <span class="cm"> * Copyright (c) 2010 Karsten Schmidt</span>
 <span class="cm"> *</span>
 <span class="cm"> * This library is free software; you can redistribute it and/or</span>
@@ -215,7 +216,6 @@ void keyPressed() {
   <span class="nx">background</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 
   <span class="nx">lights</span><span class="p">();</span>
-
   <span class="nx">translate</span><span class="p">(</span><span class="nx">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
   <span class="nx">rotateX</span><span class="p">(</span><span class="nx">mouseY</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">);</span>
   <span class="nx">rotateY</span><span class="p">(</span><span class="nx">mouseX</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">);</span>
@@ -239,9 +239,7 @@ void keyPressed() {
   <span class="k">else</span> <span class="p">{</span>
     <span class="nx">fill</span><span class="p">(</span><span class="mi">255</span><span class="p">);</span>
     <span class="nx">noStroke</span><span class="p">();</span>
-  <span class="p">}</span>
-  <span class="c1">//scale(2);</span>
-  <span class="nx">gfx</span><span class="p">.</span><span class="nx">mesh</span><span class="p">(</span><span class="nx">mesh</span><span class="p">,</span> <span class="o">!</span><span class="nx">isWireFrame</span><span class="p">,</span> <span class="nx">showNormals</span> <span class="o">?</span> <span class="mi">10</span> <span class="o">:</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>scale(2);</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">gfx</span><span class="p">.</span><span class="nx">mesh</span><span class="p">(</span><span class="nx">mesh</span><span class="p">,</span> <span class="o">!</span><span class="nx">isWireFrame</span><span class="p">,</span> <span class="nx">showNormals</span> <span class="o">?</span> <span class="mi">10</span> <span class="o">:</span> <span class="mi">0</span><span class="p">);</span>
 
 <span class="p">}</span>
 
@@ -259,6 +257,30 @@ void keyPressed() {
 <span class="p">}</span>
 
 </pre></div></div>                      </li>              </ul>  </div> </section>
-    <footer></footer>
+    <footer class="container-fluid">
+      <div class="row-fluid">
+        <div class="span6 about"><ul>
+<li><strong><em><a href="http://hapticdata.com/toxiclibjs">Toxiclibs.js</a></em> is created and maintained by <a href="http://hapticdata.com">Kyle Phillips</a></strong></li>
+<li><strong>The original <em><a href="http://toxiclibs.org">Toxiclibs</a></em> is created and maintained by <a href="http://postspectacular.com">Karsten Schmidt</a></strong></li>
+<li><em>Toxiclibs.js</em>, <em>Toxiclibs</em> and the <em>toxiclibs.js website</em> are all free open-source software released under 
+<a href="https://github.com/hapticdata/toxiclibsjs/blob/develop/LICENSE.txt">GNU Lesser General Public License</a></li>
+</ul>
+        </div>
+        <div class="span6">
+          <ul class="quick-links">
+            <li><a href="https://github.com/hapticdata/toxiclibsjs">View on Github</a></li>
+            <li><a href="https://github.com/hapticdata/toxiclibsjs/graphs/contributors">Contributors</a></li>
+            <li>Download:
+              <ul class="quick-links">
+                <li><a href="https://github.com/hapticdata/toxiclibsjs/archive/master.zip">Repository</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js">build</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.min.js">minified build</a></li>
+              </ul></li>
+          </ul><p><em>This site and examples are 
+<a href="https://github.com/hapticdata/toxiclibsjs-examples">separately available on Github</a>
+and were created by <a href="http://hapticdata.com">Kyle Phillips</a> unless otherwise noted.</em></p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

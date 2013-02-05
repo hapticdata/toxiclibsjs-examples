@@ -2,19 +2,20 @@
 <html>
   <head>
     <title>Circle from 3 points - Toxiclibs.js</title>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400">
     <link rel="stylesheet" href="stylesheets/style.css">
-    <script src="javascripts/vendor/prettify.js"></script>
+    <script data-main="javascripts/main" src="javascripts/vendor/require.js"></script>
     <script src="javascripts/config.js"></script>
-    <script data-main="../main" src="javascripts/vendor/require.js"></script>
-    <script src="javascripts/vendor/xrayquire.js"></script>
+    <!--script(src="javascripts/vendor/xrayquire.js")-->
   </head>
   <body>
-    <div id="example-container" class="pjs">
-      <canvas id="myCanvas" data-processing-sources="javascripts/examples/circle3Points.pde"></canvas>
+    <div id="example-container" class="above pjs">
+      <canvas id="myCanvas"></canvas>
+      <!--(data-processing-sources="javascripts/examples/#{src}")-->
     </div>
     <script src="javascripts/vendor/processing.js"></script>
-    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script src="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js"></script>
+    <!--https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js")-->
     <script type="application/processing" data-processing-target="myCanvas">
 //#Circle from 3 Points
 //- original example by [Karsten Schmidt](http://postspectacular.com)
@@ -22,6 +23,7 @@
 //
 //given any 3 points find its circle
 
+//move toxiclibs.js objects locally for processing.js
 var SineWave = toxi.math.waves.SineWave,
 	Vec2D = toxi.geom.Vec2D,
 	Circle = toxi.geom.Circle;
@@ -34,7 +36,7 @@ void setup() {
   smooth();
   stroke(#330077);
   noFill();
-  //this changes ellipse() dimensions to radius instead of diameter
+  //this changes `ellipse()` dimensions to radius instead of diameter
   ellipseMode(RADIUS);
 }
 
@@ -60,13 +62,14 @@ void draw() {
         </ul>
       </nav>
     </section>
-    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="c1">//#Circle from 3 Points</span>
-<span class="c1">//- original example by [Karsten Schmidt](http://postspectacular.com)</span>
-<span class="c1">//- ported to javascript by [Kyle Phillips](http://haptic-data.com)</span>
-<span class="c1">//</span>
-<span class="c1">//given any 3 points find its circle</span>
+    <section id="pagelet" class="below"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>Circle from 3 Points</h1>
 
-<span class="kd">var</span> <span class="nx">SineWave</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">waves</span><span class="p">.</span><span class="nx">SineWave</span><span class="p">,</span>
+<ul>
+<li>original example by <a href="http://postspectacular.com">Karsten Schmidt</a></li>
+<li>ported to javascript by <a href="http://haptic-data.com">Kyle Phillips</a></li>
+</ul>
+
+<p>given any 3 points find its circle</p>             </div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>move toxiclibs.js objects locally for processing.js</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">SineWave</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">math</span><span class="p">.</span><span class="nx">waves</span><span class="p">.</span><span class="nx">SineWave</span><span class="p">,</span>
   <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">,</span>
   <span class="nx">Circle</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Circle</span><span class="p">;</span>
 
@@ -77,9 +80,7 @@ void draw() {
   <span class="nx">size</span><span class="p">(</span><span class="mi">940</span><span class="p">,</span> <span class="mi">382</span><span class="p">);</span>
   <span class="nx">smooth</span><span class="p">();</span>
   <span class="nx">stroke</span><span class="p">(</span><span class="err">#</span><span class="mi">330077</span><span class="p">);</span>
-  <span class="nx">noFill</span><span class="p">();</span>
-  <span class="c1">//this changes ellipse() dimensions to radius instead of diameter</span>
-  <span class="nx">ellipseMode</span><span class="p">(</span><span class="nx">RADIUS</span><span class="p">);</span>
+  <span class="nx">noFill</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           <p>this changes <code>ellipse()</code> dimensions to radius instead of diameter</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">ellipseMode</span><span class="p">(</span><span class="nx">RADIUS</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="k">void</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
@@ -97,6 +98,30 @@ void draw() {
 <span class="p">}</span>
 
 </pre></div></div>                      </li>              </ul>  </div> </section>
-    <footer></footer>
+    <footer class="container-fluid">
+      <div class="row-fluid">
+        <div class="span6 about"><ul>
+<li><strong><em><a href="http://hapticdata.com/toxiclibjs">Toxiclibs.js</a></em> is created and maintained by <a href="http://hapticdata.com">Kyle Phillips</a></strong></li>
+<li><strong>The original <em><a href="http://toxiclibs.org">Toxiclibs</a></em> is created and maintained by <a href="http://postspectacular.com">Karsten Schmidt</a></strong></li>
+<li><em>Toxiclibs.js</em>, <em>Toxiclibs</em> and the <em>toxiclibs.js website</em> are all free open-source software released under 
+<a href="https://github.com/hapticdata/toxiclibsjs/blob/develop/LICENSE.txt">GNU Lesser General Public License</a></li>
+</ul>
+        </div>
+        <div class="span6">
+          <ul class="quick-links">
+            <li><a href="https://github.com/hapticdata/toxiclibsjs">View on Github</a></li>
+            <li><a href="https://github.com/hapticdata/toxiclibsjs/graphs/contributors">Contributors</a></li>
+            <li>Download:
+              <ul class="quick-links">
+                <li><a href="https://github.com/hapticdata/toxiclibsjs/archive/master.zip">Repository</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js">build</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.min.js">minified build</a></li>
+              </ul></li>
+          </ul><p><em>This site and examples are 
+<a href="https://github.com/hapticdata/toxiclibsjs-examples">separately available on Github</a>
+and were created by <a href="http://hapticdata.com">Kyle Phillips</a> unless otherwise noted.</em></p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

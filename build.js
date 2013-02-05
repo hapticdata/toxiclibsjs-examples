@@ -8,6 +8,7 @@ require('colors');
 
 var jade = require('jade'),
 	less = require('less'),
+	requirejs = require('requirejs'),
 	wrench = require('wrench'),
 	docco = require('docco'),
 	async = require('async'),
@@ -17,14 +18,36 @@ var jade = require('jade'),
 var options = {
 	pretty: true,
 	compress: false,
+	baseUrl: '/src/',
 	css: __dirname + '/www/stylesheets/',
 	html: __dirname + '/www/'
 };
 
+requirejs.config({
+	nodeRequire: require
+});
 //docco needs to think .pde files are javascript
-docco.languages[".pde"] = {"name" : "javascript", "symbol" : "//"};
+docco.languages[".pde"] = docco.languages[".js"];//{"name" : "javascript", "symbol" : "//"};
 
 
+//utilities for looking up paths
+function config() { return requirejs('./src/site'); }
+function scripts( src ){ return __dirname+options.baseUrl+'javascripts/'+src; }
+function source( src ){ return __dirname +options.baseUrl+'javascripts/examples/'+src; }
+function styles( src ){ return __dirname +options.baseUrl+'less/'+src; }
+function view( tmpl ){
+	var pth = __dirname +options.baseUrl+'views/';
+	if( tmpl === undefined || tmpl === '' ){
+		return pth;
+	}
+	if (tmpl.split('.').length === 1 ) {
+		tmpl = tmpl + '.jade';
+	}
+	return pth+tmpl;
+}
+function html( out ){ return options.html+out.split('.')[0]+'.html'; }
+function layout(){  return __dirname+options.baseUrl+'views/layout.jade'; }
+function pagelet( src ){ return __dirname + '/docs/'+src.split('.')[0]+'.html'; }
 
 function time( ){
 	var dt = new Date();
@@ -37,44 +60,61 @@ function msg( args ){
 	console.log.apply( console.log, args );
 }
 
-
+console.log("scripts: "+ scripts('') );
 if (process.argv[2] === '--watch'){
-	watchThenDo( 'less', compileLess );
-	watchThenDo( 'views', compileTemplates );
-	watchThenDo( 'examples', compileTemplates );
+	watchThenDo( styles(''), compileLess );
+	watchThenDo( view(''), compileTemplates );
+	watchThenDo( source(''), compileTemplates );
+	watchThenDo([
+		scripts(''),
+		scripts('site/'),
+		scripts('site/models/'),
+		scripts('site/views/'),
+		scripts('site/collections/')
+	], compileScripts );
+
 } else {
 	compileLess('less/');
 	compileTemplates();
+	compileScripts();
 }
 
-function watchThenDo( watchDirectory, tasks ){
+function watchThenDo( directories, tasks, callback ){
+	if( !Array.isArray( directories ) ){
+		directories = [directories];
+	}
 	if( ! Array.isArray( tasks ) ){
 		tasks = [tasks];
 	}
-	var dir = [ __dirname, '/', watchDirectory, '/' ].join('');
-	msg('dir: ', dir );
-	fs.readdir( dir, function( err, files ){
-		if( err ) throw err;
-		files.forEach(function( file ){
-			var filepath = dir + file;
-			msg('watching file: ', filepath );
-			fs.watchFile( filepath, {persistent: true}, function(){
-				msg('file: ', file );
+	msg('directories: ', directories );
+	directories.forEach(function( dir ){
+		fs.readdir( dir, function( err, files ){
+			if( err ) {
+				if( callback ) callback( err );
+				else msg( err );
+				return;
+			}
+			files.forEach(function( file ){
+				var filepath = dir + file;
+				msg('watching file: ', filepath );
+				fs.watchFile( filepath, {persistent: true}, function(){
+					msg('file: ', file );
 
-				tasks.forEach(function( task ){
-					task( dir , file );
+					tasks.forEach(function( task ){
+						task( dir , file );
+					});
 				});
 			});
 		});
 	});
 }
-function compileLess( dir ){
-	fs.readFile( dir + 'style.less', {encoding: 'utf8'}, function( err, body ){
+function compileLess(){
+	fs.readFile( styles('style.less'), {encoding: 'utf8'}, function( err, body ){
 		if( err ) throw err;
 		body = String(body);
 		var parser = new(less.Parser)({
-			paths: ['./less'],
-			filename: './less/style.less'
+			paths: [ styles('') ],
+			filename: styles('style.less')
 		});
 
 		parser.parse( body, function( err, tree ){
@@ -82,16 +122,15 @@ function compileLess( dir ){
 				msg('LESS Error: ', err );
 				return;
 			}
+			var css;
 			try {
-				var css = tree.toCSS({ compress: options.compress });
+				css = tree.toCSS({ compress: options.compress });
 			} catch( e ){
 				msg('Less Error: ', e );
 				return;
 			}
 			fs.writeFile( options.css + 'style.css', css, function( err ){
 				if( err ) throw err;
-
-
 				msg('wrote style.css');
 			});
 		});
@@ -107,39 +146,39 @@ function compileLess( dir ){
 	});
 }
 
-//utilities for looking up paths
-function source( src ){ return __dirname + '/examples/'+src; }
-function view( tmpl ){  return __dirname + '/views/'+tmpl+'.jade'; }
-function html( out ){ return options.html+out.split('.')[0]+'.html'; }
-function layout(){  return __dirname + '/views/layout.jade'; }
-function pagelet( src ){ return __dirname + '/docs/'+src.split('.')[0]+'.html'; }
 
 //re-render all templates and docco
 function compileTemplates(){
-	var config = JSON.parse( fs.readFileSync('./config.json') );
+	var siteMap =  config();//JSON.parse( fs.readFileSync( config() ) );
 
 	//generate paths to the example sources
 	var sources = [];
-	config.examples.forEach(function( example ){
+	siteMap.examples.forEach(function( example ){
 		sources.push( source( example.src ) );
 	});
 	//pass to docco, then jade, then clean up
-	docco.document(sources, { language: "javascript", template: __dirname + "/views/docco-template.jst"}, function( err ){
+	docco.document(sources, { language: "javascript", template: view("docco-template.jst") }, function( err ){
 		if( err ) throw err;
-		async.forEach( config.examples, generateExample, function exit( err ) {
+		async.forEach( siteMap.examples, generateExample, function exit( err ) {
 			if( err ) throw err;
 			setTimeout(function(){
-				wrench.rmdirRecursive( __dirname + '/docs/', function(){
-					msg('docs deleted');
-				});
+				//clean();
 			}, 500);
 		});
 	});
 
 	//handle pages
-	config.pages.forEach(function( page ){
+	siteMap.pages.forEach(function( page ){
 		generatePage( page );
 	});
+
+
+	//remove the docs folder
+	function clean(){
+		wrench.rmdirRecursive( __dirname + '/docs/', function(){
+			msg('docs deleted');
+		});
+	}
 }
 
 
@@ -150,10 +189,11 @@ function generateExample( example, callback ){
 	if( example.template === undefined ){
 		example.template = "index";
 	}
+	console.log('about to load ');
 	var script = fs.readFileSync( source( example.src ) );
 	var doccoPagelet = pagelet( example.src );
 	var outputFile =  html( example.src );
-
+	console.log( doccoPagelet );
 
 	var locals = {
 		pretty: options.pretty,
@@ -162,6 +202,7 @@ function generateExample( example, callback ){
 		script: '\n'+script,
 		name: example.title,
 		src: example.src,
+		options: example.options || {},
 		dependencies: example.dependencies
 	};
 
@@ -191,6 +232,7 @@ function generatePage( page, callback ){
 		pretty: options.pretty,
 		layout: true,
 		title: page.title + ' - Toxiclibs.js',
+		options: page.options || {},
 		dependencies: page.dependencies
 	};
 
@@ -208,3 +250,34 @@ function generatePage( page, callback ){
 		});
 	});
 }
+
+
+function compileScripts( callback ){
+	var config = {
+		appDir: "src/javascripts/",
+		mainConfigFile: "./src/javascripts/config.js",
+		baseUrl: "./vendor",
+		dir: "www/javascripts/",
+		findNestedDependencies: true,
+		optimize: (options.compress ? 'uglify' : 'none'),
+		pragmasOnSave: {
+			excludeJade: true
+		},
+		paths: {
+			"site/map": "../../site"
+		},
+		modules: [{
+			name: "site/index",
+			include: [ "site/map" ],
+			exclude: [ 'toxi', 'jquery', 'underscore', 'backbone' ]
+		}]
+	};
+
+	var optimize = requirejs.optimize( config, function( buildResponse ){
+		msg( buildResponse );
+	});
+}
+
+exports.compileTemplates = compileTemplates;
+exports.compileLess = compileLess;
+exports.compileScripts = compileScripts;

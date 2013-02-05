@@ -2,27 +2,29 @@
 <html>
   <head>
     <title>Mesh Doodle - Toxiclibs.js</title>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Serif:400">
     <link rel="stylesheet" href="stylesheets/style.css">
-    <script src="javascripts/vendor/prettify.js"></script>
+    <script data-main="javascripts/main" src="javascripts/vendor/require.js"></script>
     <script src="javascripts/config.js"></script>
-    <script data-main="../main" src="javascripts/vendor/require.js"></script>
-    <script src="javascripts/vendor/xrayquire.js"></script>
+    <!--script(src="javascripts/vendor/xrayquire.js")-->
   </head>
   <body>
-    <div id="example-container" class="pjs">
-      <canvas id="myCanvas" data-processing-sources="javascripts/examples/meshDoodle.pde"></canvas>
+    <div id="example-container" class="above pjs">
+      <canvas id="myCanvas"></canvas>
+      <!--(data-processing-sources="javascripts/examples/#{src}")-->
     </div>
     <script src="javascripts/vendor/processing.js"></script>
-    <script src="../../working_dir/build/toxiclibs.js"></script>
+    <script src="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js"></script>
+    <!--https://raw.github.com/hapticdata/toxiclibsjs/develop/build/toxiclibs.min.js")-->
     <script type="application/processing" data-processing-target="myCanvas">
 //#MeshDoodle
 //- original example by [Karsten Schmidt](http://postspectacular.com)
 //- toxiclibs.js by [Kyle Phillips](http://haptic-data.com)
 
-//MeshDoodle shows how to use the new [TriangleMesh](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/TriangleMesh.js) class to dynamically
-//build a 3D mesh, render it using Processing
-
+//MeshDoodle shows how to use the `toxi.geom.mesh.TriangleMesh` class to dynamically
+//build a 3D mesh, render it using Processing.js
+//
+//**Usage:**
 //
 //- Move mouse to draw a ribbon in 3D space.
 //- Press any key to restart
@@ -48,7 +50,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
+//localize the toxiclibs.js objects
 var TriangleMesh = toxi.geom.mesh.TriangleMesh,
     Face = toxi.geom.mesh.Face,
     Vec3D = toxi.geom.Vec3D,
@@ -134,19 +136,20 @@ void keyPressed() {
         </ul>
       </nav>
     </section>
-    <section id="pagelet"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                                        </div>                          <div class="content"><div class="highlight"><pre><span class="c1">//#MeshDoodle</span>
-<span class="c1">//- original example by [Karsten Schmidt](http://postspectacular.com)</span>
-<span class="c1">//- toxiclibs.js by [Kyle Phillips](http://haptic-data.com)</span>
+    <section id="pagelet" class="below"><div class="docco annotated-source">     <div class="background"></div>     <ul class="sections">                                <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h1>MeshDoodle</h1>
 
-<span class="c1">//MeshDoodle shows how to use the new [TriangleMesh](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/geom/mesh/TriangleMesh.js) class to dynamically</span>
-<span class="c1">//build a 3D mesh, render it using Processing</span>
+<ul>
+<li>original example by <a href="http://postspectacular.com">Karsten Schmidt</a></li>
+<li>toxiclibs.js by <a href="http://haptic-data.com">Kyle Phillips</a></li>
+</ul>             </div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           <p>MeshDoodle shows how to use the <code>toxi.geom.mesh.TriangleMesh</code> class to dynamically
+build a 3D mesh, render it using Processing.js</p>
 
-<span class="c1">//</span>
-<span class="c1">//- Move mouse to draw a ribbon in 3D space.</span>
-<span class="c1">//- Press any key to restart</span>
-<span class="c1">//</span>
+<p><strong>Usage:</strong></p>
 
-<span class="cm">/* </span>
+<ul>
+<li>Move mouse to draw a ribbon in 3D space.</li>
+<li>Press any key to restart</li>
+</ul>             </div>                          <div class="content"><div class="highlight"><pre><span class="cm">/* </span>
 <span class="cm"> * Copyright (c) 2009 Karsten Schmidt</span>
 <span class="cm"> * </span>
 <span class="cm"> * This library is free software; you can redistribute it and/or</span>
@@ -164,10 +167,7 @@ void keyPressed() {
 <span class="cm"> * You should have received a copy of the GNU Lesser General Public</span>
 <span class="cm"> * License along with this library; if not, write to the Free Software</span>
 <span class="cm"> * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</span>
-<span class="cm"> */</span>
-
-
-<span class="kd">var</span> <span class="nx">TriangleMesh</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">TriangleMesh</span><span class="p">,</span>
+<span class="cm"> */</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           <p>localize the toxiclibs.js objects</p>             </div>                          <div class="content"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">TriangleMesh</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">TriangleMesh</span><span class="p">,</span>
     <span class="nx">Face</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">mesh</span><span class="p">.</span><span class="nx">Face</span><span class="p">,</span>
     <span class="nx">Vec3D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec3D</span><span class="p">,</span>
     <span class="nx">Vec2D</span> <span class="o">=</span> <span class="nx">toxi</span><span class="p">.</span><span class="nx">geom</span><span class="p">.</span><span class="nx">Vec2D</span><span class="p">;</span>
@@ -199,43 +199,25 @@ void keyPressed() {
   <span class="nx">rotateX</span><span class="p">(</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">x</span><span class="p">);</span>
   <span class="nx">rotateY</span><span class="p">(</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
   <span class="nx">noStroke</span><span class="p">();</span>
-  <span class="nx">beginShape</span><span class="p">(</span><span class="nx">TRIANGLES</span><span class="p">);</span>
-  <span class="c1">// iterate over all faces/triangles of the mesh</span>
-  <span class="nx">Face</span><span class="p">[]</span> <span class="nx">faces</span> <span class="o">=</span> <span class="nx">mesh</span><span class="p">.</span><span class="nx">getFaces</span><span class="p">();</span>
+  <span class="nx">beginShape</span><span class="p">(</span><span class="nx">TRIANGLES</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           <p>iterate over all faces/triangles of the mesh</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">Face</span><span class="p">[]</span> <span class="nx">faces</span> <span class="o">=</span> <span class="nx">mesh</span><span class="p">.</span><span class="nx">getFaces</span><span class="p">();</span>
   <span class="kr">int</span> <span class="nx">numFaces</span> <span class="o">=</span> <span class="nx">faces</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
   <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="nx">numFaces</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     
-    <span class="kd">var</span> <span class="nx">f</span><span class="o">=</span><span class="nx">faces</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-    <span class="c1">// create vertices for each corner point</span>
-    <span class="nx">_vertex</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">f</span><span class="o">=</span><span class="nx">faces</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           <p>create vertices for each corner point</p>             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">_vertex</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span>
     <span class="nx">_vertex</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">b</span><span class="p">);</span>
     <span class="nx">_vertex</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">c</span><span class="p">);</span>
   <span class="p">}</span>
-  <span class="nx">endShape</span><span class="p">();</span>
-  <span class="c1">// udpate rotation</span>
-  <span class="nx">rotation</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="mf">0.014</span><span class="p">,</span><span class="mf">0.0237</span><span class="p">);</span>
+  <span class="nx">endShape</span><span class="p">();</span></pre></div></div>                      </li>                              <li id="section-6">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>                           <p>udpate rotation</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">rotation</span><span class="p">.</span><span class="nx">addSelf</span><span class="p">(</span><span class="mf">0.014</span><span class="p">,</span><span class="mf">0.0237</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="k">void</span> <span class="nx">_vertex</span><span class="p">(</span><span class="nx">Vec3D</span> <span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">//console.log(v.toString());</span>
-  <span class="nx">vertex</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">v</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span><span class="nx">v</span><span class="p">.</span><span class="nx">z</span><span class="p">);</span>
+<span class="k">void</span> <span class="nx">_vertex</span><span class="p">(</span><span class="nx">Vec3D</span> <span class="nx">v</span><span class="p">)</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-7">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>                           <p>console.log(v.toString());</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">vertex</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="nx">v</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span><span class="nx">v</span><span class="p">.</span><span class="nx">z</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="k">void</span> <span class="nx">mouseMoved</span><span class="p">()</span> <span class="p">{</span>
-  <span class="c1">// get 3D rotated mouse position</span>
-  <span class="nx">Vec3D</span> <span class="nx">pos</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec3D</span><span class="p">(</span><span class="nx">mouseX</span><span class="o">-</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">mouseY</span><span class="o">-</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+<span class="k">void</span> <span class="nx">mouseMoved</span><span class="p">()</span> <span class="p">{</span></pre></div></div>                      </li>                              <li id="section-8">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>                           <p>get 3D rotated mouse position</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">Vec3D</span> <span class="nx">pos</span><span class="o">=</span><span class="k">new</span> <span class="nx">Vec3D</span><span class="p">(</span><span class="nx">mouseX</span><span class="o">-</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nx">mouseY</span><span class="o">-</span><span class="nx">height</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
   <span class="nx">pos</span><span class="p">.</span><span class="nx">rotateX</span><span class="p">(</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">x</span><span class="p">);</span>
-  <span class="nx">pos</span><span class="p">.</span><span class="nx">rotateY</span><span class="p">(</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
-  <span class="c1">// use distance to previous point as target stroke weight</span>
-  <span class="nx">weight</span><span class="o">+=</span><span class="p">(</span><span class="nx">sqrt</span><span class="p">(</span><span class="nx">pos</span><span class="p">.</span><span class="nx">distanceTo</span><span class="p">(</span><span class="nx">prev</span><span class="p">))</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="nx">weight</span><span class="p">)</span><span class="o">*</span><span class="mf">0.1</span><span class="p">;</span>
-  <span class="c1">// define offset points for the triangle strip</span>
-  <span class="nx">Vec3D</span> <span class="nx">a</span><span class="o">=</span><span class="nx">pos</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nx">weight</span><span class="p">);</span>
-  <span class="nx">Vec3D</span> <span class="nx">b</span><span class="o">=</span><span class="nx">pos</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="nx">weight</span><span class="p">);</span>
-  <span class="c1">// add 2 faces to the mesh</span>
-  <span class="nx">mesh</span><span class="p">.</span><span class="nx">addFace</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span><span class="nx">b</span><span class="p">,</span><span class="nx">q</span><span class="p">);</span>
-  <span class="nx">mesh</span><span class="p">.</span><span class="nx">addFace</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">);</span>
-  <span class="c1">// store current points for next iteration</span>
-  <span class="nx">prev</span><span class="o">=</span><span class="nx">pos</span><span class="p">;</span>
+  <span class="nx">pos</span><span class="p">.</span><span class="nx">rotateY</span><span class="p">(</span><span class="nx">rotation</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-9">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>                           <p>use distance to previous point as target stroke weight</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">weight</span><span class="o">+=</span><span class="p">(</span><span class="nx">sqrt</span><span class="p">(</span><span class="nx">pos</span><span class="p">.</span><span class="nx">distanceTo</span><span class="p">(</span><span class="nx">prev</span><span class="p">))</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="nx">weight</span><span class="p">)</span><span class="o">*</span><span class="mf">0.1</span><span class="p">;</span></pre></div></div>                      </li>                              <li id="section-10">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>                           <p>define offset points for the triangle strip</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">Vec3D</span> <span class="nx">a</span><span class="o">=</span><span class="nx">pos</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nx">weight</span><span class="p">);</span>
+  <span class="nx">Vec3D</span> <span class="nx">b</span><span class="o">=</span><span class="nx">pos</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="nx">weight</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-11">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>                           <p>add 2 faces to the mesh</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">mesh</span><span class="p">.</span><span class="nx">addFace</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span><span class="nx">b</span><span class="p">,</span><span class="nx">q</span><span class="p">);</span>
+  <span class="nx">mesh</span><span class="p">.</span><span class="nx">addFace</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">);</span></pre></div></div>                      </li>                              <li id="section-12">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>                           <p>store current points for next iteration</p>             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nx">prev</span><span class="o">=</span><span class="nx">pos</span><span class="p">;</span>
   <span class="nx">p</span><span class="o">=</span><span class="nx">a</span><span class="p">;</span>
   <span class="nx">q</span><span class="o">=</span><span class="nx">b</span><span class="p">;</span>
 <span class="p">}</span>
@@ -245,6 +227,30 @@ void keyPressed() {
 <span class="p">}</span>
 
 </pre></div></div>                      </li>              </ul>  </div> </section>
-    <footer></footer>
+    <footer class="container-fluid">
+      <div class="row-fluid">
+        <div class="span6 about"><ul>
+<li><strong><em><a href="http://hapticdata.com/toxiclibjs">Toxiclibs.js</a></em> is created and maintained by <a href="http://hapticdata.com">Kyle Phillips</a></strong></li>
+<li><strong>The original <em><a href="http://toxiclibs.org">Toxiclibs</a></em> is created and maintained by <a href="http://postspectacular.com">Karsten Schmidt</a></strong></li>
+<li><em>Toxiclibs.js</em>, <em>Toxiclibs</em> and the <em>toxiclibs.js website</em> are all free open-source software released under 
+<a href="https://github.com/hapticdata/toxiclibsjs/blob/develop/LICENSE.txt">GNU Lesser General Public License</a></li>
+</ul>
+        </div>
+        <div class="span6">
+          <ul class="quick-links">
+            <li><a href="https://github.com/hapticdata/toxiclibsjs">View on Github</a></li>
+            <li><a href="https://github.com/hapticdata/toxiclibsjs/graphs/contributors">Contributors</a></li>
+            <li>Download:
+              <ul class="quick-links">
+                <li><a href="https://github.com/hapticdata/toxiclibsjs/archive/master.zip">Repository</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.js">build</a></li>
+                <li><a href="https://raw.github.com/hapticdata/toxiclibsjs/master/build/toxiclibs.min.js">minified build</a></li>
+              </ul></li>
+          </ul><p><em>This site and examples are 
+<a href="https://github.com/hapticdata/toxiclibsjs-examples">separately available on Github</a>
+and were created by <a href="http://hapticdata.com">Kyle Phillips</a> unless otherwise noted.</em></p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

@@ -1,0 +1,15 @@
+- var columns = 8;
+- var rows = Math.ceil( examples.length / columns );
+- for ( var r=0; r<rows; r++) {
+  div.row-fluid
+    - var exampleRow = examples.slice(columns*r, (columns*r) + columns);
+    each ex, i in exampleRow
+      div.example-link(
+        data-tags= ex.tags.join(', '),
+        style="background-image: url(#{ex.thumbnail})")
+        div.inner
+          span.title
+            a(href="#{ex.href}",title="#{ex.title}")= ex.title
+          br
+          span.tags= ex.tags.join(', ')
+- }
