@@ -1,2 +1,0 @@
-build:
-	node app.js
