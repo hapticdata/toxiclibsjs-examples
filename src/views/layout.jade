@@ -3,10 +3,10 @@ html
   head
     title= title
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Droid+Serif:400')
-    link(rel='stylesheet', href='stylesheets/style.css')
+    link(rel='stylesheet', href='#{staticUrl}stylesheets/style.css')
     block config
-    script(data-main="javascripts/main",src="javascripts/vendor/require.js")
-    script(src="javascripts/config.js")
+    script(data-main="#{staticUrl}javascripts/main",src="#{staticUrl}javascripts/vendor/require.js")
+    script(src="#{staticUrl}javascripts/config.js")
     //script(src="javascripts/vendor/xrayquire.js")
     - if (typeof dependencies !== 'undefined')
       each include in dependencies
