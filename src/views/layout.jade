@@ -5,8 +5,12 @@ html
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Droid+Serif:400')
     link(rel='stylesheet', href='#{staticUrl}stylesheets/style.css')
     block config
-    script(data-main="#{staticUrl}javascripts/main",src="#{staticUrl}javascripts/vendor/require.js")
-    script(src="#{staticUrl}javascripts/config.js")
+    script(type="text/javascript")
+      window.staticUrl = '#{staticUrl}';
+      window.requirejs = {
+        baseUrl: '#{staticUrl}javascripts/vendor'
+      };
+    script(data-main="../main",src="#{staticUrl}javascripts/vendor/require.js")
     //script(src="javascripts/vendor/xrayquire.js")
     - if (typeof dependencies !== 'undefined')
       each include in dependencies

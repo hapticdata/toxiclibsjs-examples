@@ -1,6 +1,5 @@
 /*global requirejs: false*/
 requirejs.config({
-  baseUrl: 'javascripts/vendor',
   shim: {
     'underscore': { exports: '_' },
     'backbone': { deps: ['jquery', 'underscore'], exports: 'Backbone' },
