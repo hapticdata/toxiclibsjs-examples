@@ -10,6 +10,7 @@ html
       window.requirejs = {
         baseUrl: '#{staticUrl}javascripts/vendor'
       };
+    block post-config
     script(data-main="../main",src="#{staticUrl}javascripts/vendor/require.js")
     //script(src="javascripts/vendor/xrayquire.js")
     - if (typeof dependencies !== 'undefined')

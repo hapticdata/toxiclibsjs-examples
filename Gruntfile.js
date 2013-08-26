@@ -104,8 +104,7 @@ module.exports = function (grunt){
 				}
 			}
 		},
-		//regarde is watch but fancier
-		regarde: {
+		watch: {
 			less: {
 				files: [
 					'src/less/*.less'
@@ -172,8 +171,8 @@ module.exports = function (grunt){
 	grunt.loadNpmTasks('grunt-regarde');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 	//grunt.loadNpmTasks('grunt-contrib-connect');
-	grunt.registerTask('watch', ['regarde']);
 
 	/**
 	 * custom grunt task to build an example

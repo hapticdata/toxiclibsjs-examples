@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "grunt"
+    "start": "grunt",
+    "postinstall": "./node_modules/grunt/bin/grunt"
   },
   "dependencies": {
     "jade": "*",
@@ -22,6 +23,7 @@
     "pygments": "~0.2.0",
     "grunt-contrib-less": "~0.5.0",
     "grunt-s3": "~0.2.0-alpha",
-    "grunt-contrib-copy": "~0.4.1"
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-watch": "~0.5.2"
   }
 }

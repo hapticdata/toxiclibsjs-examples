@@ -1,12 +1,19 @@
 define([
+    'module',
 	'jquery',
 	'underscore',
 	'backbone',
 	'domReady',
 	'./views/Navigation',
 	'prettify'
-], function ( $, _, Backbone, domReady, Navigation, prettyPrint ){
-	console.log('main');
+], function ( module, $, _, Backbone, domReady, Navigation, prettyPrint ){
+    var config = module.config();
+    console.log( 'config: ', config );
+    require([config.example],function( example ){
+        if( typeof example === 'function' ){
+            example();
+        }
+    });
 	domReady(function(){
 		if( $('pre').length > 0 ){
 			/*$('pre').each(function(){
@@ -26,4 +33,4 @@ define([
 		}
 	});
 });
-    
+

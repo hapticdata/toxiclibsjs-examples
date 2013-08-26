@@ -29,6 +29,12 @@ define({
 	],
 
 	"examples": [{
+        "title": "Theme Discs",
+        "src": "themeDiscs.js",
+        "thumbnail": "subdivThree.png",
+        "tags": "color, dom, require",
+        "template": "require"
+    },{
 		"title": "Subdivision Basics",
 		"src": "subDivThree.js",
 		"thumbnail": "subdivThree.png",
