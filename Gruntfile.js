@@ -114,7 +114,11 @@ module.exports = function (grunt){
 			template: {
 				files: [ 'app/templates/*.html'],
 				tasks: ['template']
-			}
+			},
+            scripts: {
+                files: ['src/javascripts/*.js', 'src/javascripts/**/*.js'],
+                tasks: ['requirejs','example']
+            }
 		},
 		requirejs: {
 			compile: {
@@ -123,7 +127,7 @@ module.exports = function (grunt){
 					mainConfigFile: "./src/javascripts/config.js",
 					baseUrl: "./vendor",
 					dir: "www/javascripts/",
-					findNestedDependencies: true,
+					//findNestedDependencies: true,
 					optimize: (options.compress ? 'uglify' : 'none'),
 					pragmasOnSave: {
 						excludeJade: true

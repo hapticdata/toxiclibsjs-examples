@@ -7,140 +7,150 @@ define([
 ], function( d3, datGui, internals, Vec3D, color ){
 
     var each = internals.each,
-        gui = new datGui();
+        keys = internals.keys,
+        mixin = internals.mixin,
+        defaults,
+        buildGui,
+        create;
 
-    var paletteDescription = {
-        'soft ivory': 0.5,
-        'intense goldenrod': 0.25,
-        'warm saddlebrown': 0.15,
-        'fresh teal': 0.05,
-        'bright yellowgreen': 0.05
+    defaults = {
+        palette: {
+            'soft ivory': 0.5,
+            'intense goldenrod': 0.25,
+            'warm saddlebrown': 0.15,
+            'fresh teal': 0.05,
+            'bright yellowgreen': 0.05
+        },
+        padding: 100,
+        num: 200,
+        sort: false,
+        primaryCriteria: "HUE",
+        secondaryCriteria: "BRIGHTNESS"
     };
-    var createPalette = function( descriptors, numColors ){
-        var theme = new color.ColorTheme('discs');
-        each( descriptors, function( weight, descriptor ){
-            theme.addRange(descriptor, weight);
+
+    //Build the dat-gui interface with the instance of the application
+    buildGui = function( app ){
+        var gui = new datGui(),
+            criterias = keys(color.AccessCriteria),
+            sortingFolder = gui.addFolder('Sorting Criteria');
+
+        each([
+            sortingFolder
+                .add(app, 'primaryCriteria', criterias)
+                .name('Primary'),
+            sortingFolder
+                .add(app, 'secondaryCriteria', criterias)
+                .name('Secondary'),
+            gui.add(app,'sort')
+                .name('View sorted')
+        ],function(controller){
+            controller.onChange(app.updateSort);
         });
-        theme.addRange( color.ColorRange.BRIGHT, color.TColor.newRandom(), Math.random(0.02, 0.05) );
-        return theme.getColors(numColors);
+        gui.add(app,'num',50,500).name('#');
+        gui.add(app, 'reset').name('Generate New Theme');
+        sortingFolder.open();
+        return gui;
     };
+
 
     return function(){
+        var app = themeDiscs( defaults );
+        buildGui( app );
+        return app;
+    };
+
+    function themeDiscs( options ){
+
+        var app = {};
+        mixin(app, options||{});
 
         var w = window.innerWidth,
             h = window.innerHeight-50,
             maxScale = 100,
             minScale = 10;
 
-
-        var settings = {
-            num: 300,
-            sort: false,
-            primaryCriteria: "HUE",
-            secondaryCriteria: "BRIGHTNESS",
-            clusterSort: function( numClusters ){
-                numClusters = numClusters || 10;
-                if( !settings.list ){
-                    return;
-                }
-                settings.list.clusterSort(
-                    color.AccessCriteria[settings.primaryCriteria],
-                    color.AccessCriteria[settings.secondaryCriteria],
-                    numClusters
-                );
-                var clusterLength = settings.list.size() / numClusters;
-                var slices = [];
-                for( var i=0; i<numClusters; i++){
-                    var start = i*clusterLength;
-                    slices.push(settings.list.colors.slice(start,start+clusterLength));
-                }
-                var findInCluster = function( color ){
-                    var indices;
-                    slices.forEach(function(slice, i){
-                        slice.forEach(function(c, j){
-                            if( c.equals(color) ) {
-                                indices = [i,j];
-                            }
-                        });
-                    });
-                    return indices;
-                };
-                svg.selectAll('circle')
-                    .transition()
-                    .delay(function(d,i){ return i*10; })
-                    .duration(1000)
-                    .attr('cx', function(d){
-                        //find color
-                        var indices = findInCluster(d.color);
-                        return (w/numClusters) * indices[0];
-                    })
-                    .attr('cy', function(d){
-                        var indices = findInCluster(d.color);
-                        return (h/slices[0].length) * indices[1];
-                    })
-                    .each('end', function(){
-                        d3.select(this)
-                            .transition()
-                            .duration(1000)
-                            .attr('r', 12);
-                    });
-            },
-            unSort: function(){
-                console.log('unSort: ', svg.selectAll('circle') );
-                svg.selectAll('circle')
-                    .transition()
-                    .delay(function(d,i){ return i * 10; })
-                    .duration(1000)
-                    .ease('elastic')
-                    .attr('r', function(d){ return d.vec3.z; })
-                    .attr('cx', function(d){ return d.vec3.x; })
-                    .attr('cy', function(d){ return d.vec3.y; });
-            },
-            reset: function(){
-                var count = 0;
-                var circles = settings.remove();
-                circles
-                    .remove()
-                    .each(function(){ ++count; })
-                    .each("end", function(){
-                        if(!--count){
-                            settings.list = create(svg, settings.num);
-                            settings.updateSort();
+        app.clusterSort =  function( numClusters ){
+            numClusters = numClusters || 10;
+            if( !app.list ){
+                return;
+            }
+            app.list.clusterSort(
+                color.AccessCriteria[app.primaryCriteria],
+                color.AccessCriteria[app.secondaryCriteria],
+                numClusters
+            );
+            var clusterLength = app.list.size() / numClusters;
+            var slices = [];
+            for( var i=0; i<numClusters; i++){
+                var start = i*clusterLength;
+                slices.push(app.list.colors.slice(start,start+clusterLength));
+            }
+            var findInCluster = function( color ){
+                var indices;
+                slices.forEach(function(slice, i){
+                    slice.forEach(function(c, j){
+                        if( c.equals(color) ) {
+                            indices = [i,j];
                         }
                     });
-               /*circles.each('end',function(d,i){
-                    if( i === svg.selectAll('circle').size()-1 ){
-                        console.log( 'last one!');
-                        create( svg, settings.num );
-                    }
-                });*/
-            },
-            updateSort: function(){
-                settings[ settings.sort ? 'clusterSort' : 'unSort' ]();
-            },
-            remove: function(){
-               return svg.selectAll('circle')
-                    .transition()
-                    .delay(function(d,i){ return i; })
-                    .duration(1000)
-                    .attr('r', 0);
-            }
+                });
+                return indices;
+            };
+            svg.selectAll('circle')
+                .transition()
+                .delay(function(d,i){ return i*10; })
+                .duration(1000)
+                .attr('cx', function(d){
+                    //find color
+                    var indices = findInCluster(d.color);
+                    return ((w-(app.padding*2))/(numClusters-1)) * indices[0] + app.padding;
+                })
+                .attr('cy', function(d){
+                    var indices = findInCluster(d.color);
+                    return ((h-(app.padding*2))/(slices[0].length-1)) * indices[1] + app.padding;
+                })
+                .each('end', function(){
+                    d3.select(this)
+                        .transition()
+                        .duration(1000)
+                        .attr('r', 12);
+                });
         };
-        window.settings = settings;
-        //Initialize the Gui
-        gui.add(settings,'num',50,500);
-        gui.add(settings, 'remove');
-        gui.add(settings, 'reset');
-        gui.add(settings,'sort').onChange(function(){
-            settings.updateSort();
-        });
-
-        gui.add(settings, 'primaryCriteria', Object.keys(color.AccessCriteria)).onChange(function(){
-            settings.updateSort();
-        });
-        gui.add(settings, 'secondaryCriteria', Object.keys(color.AccessCriteria)).onChange(function(){
-            settings.updateSort();
-        });
+        app.unSort = function(){
+            console.log('unSort: ', svg.selectAll('circle') );
+            svg.selectAll('circle')
+                .transition()
+                .delay(function(d,i){ return i * 10; })
+                .duration(1000)
+                .ease('elastic')
+                .attr('r', function(d){ return d.vec3.z; })
+                .attr('cx', function(d){ return d.vec3.x; })
+                .attr('cy', function(d){ return d.vec3.y; });
+        };
+        app.reset =  function(){
+            var count = 0;
+            var circles = app.remove();
+            circles
+                .remove()
+                .each(function(){ ++count; })
+                .each("end", function(){
+                    if(!--count){
+                        app.list = create(svg, app.num);
+                        app.updateSort();
+                    }
+                });
+        };
+        app.updateSort = function(){
+            app[ app.sort ? 'clusterSort' : 'unSort' ]();
+        };
+        app.remove = function(){
+            return svg.selectAll('circle')
+                .transition()
+                .delay(function(d,i){ return i; })
+                .duration(1000)
+                .attr('r', 0);
+        };
+        window.app = app;
 
 
         var svg = d3.select('#example-container')
@@ -157,7 +167,12 @@ define([
 
 
         var create = function( svg, num ){
-            var list = createPalette(paletteDescription, num),
+            var theme = new color.ColorTheme('discs');
+            each( app.palette, function( weight, descriptor ){
+                theme.addRange(descriptor, weight);
+            });
+            theme.addRange( color.ColorRange.BRIGHT, color.TColor.newRandom(), Math.random(0.02, 0.05) );
+            var list = theme.getColors(num),
                 nodes = list.colors.map(function(color, i){
                     return {
                         vec3: new Vec3D(Math.random()*w, Math.random()*h, (Math.random()*(maxScale-minScale)) + minScale),
@@ -166,10 +181,6 @@ define([
                 });
 
             window.colorList = list;
-
-            nodes.forEach(function(node){
-                console.log( node.vec3.z );
-            });
 
             d3.select('#example-container')
                 .style('background-color', list.getAverage().toHexCSS());
@@ -187,37 +198,8 @@ define([
             return list;
         };
 
-        settings.list = create( svg, settings.num );
-        settings.updateSort();
+        app.list = create( svg, app.num );
+        app.updateSort();
+        return app;
     };
-/*    return function(){
-        var $container = $('#example-container');
-        var swatch = {
-            width: window.innerWidth/10,
-            height: window.innerHeight/10,
-            gap: 1
-        };
-
-        var settings = {
-            maxSize: 150,
-            rows: 20,
-            columns: 20,
-            numDiscs: 300
-        };
-
-        $container.height( window.innerHeight );
-
-        list.each(function(color){
-            var $sw = $('<div/>')
-                .addClass('swatch')
-                .css({
-                    float: 'left',
-                    width: window.innerWidth/settings.columns,
-                    height: window.innerHeight/settings.rows,
-                    'background-color': color.toRGBCSS()
-                });
-            $container.append($sw);
-        });
-    };
-*/
 });
