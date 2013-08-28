@@ -1,3 +1,8 @@
+//#Theme Discs
+//**Usage:** Select _"view sorted"_  and adjust the _"Sorting Criteria"_ to sort the colors into
+//clusters. Click _"Generate New"_ to create a new theme with a new random bright color added to the range.
+//This demonstrates construction of `toxi.color.TColor` themes via textual descriptions of shades and Colors
+//adding a random element to the theme.
 define([
     'd3',
     'dat/gui/GUI',
@@ -14,6 +19,8 @@ define([
         create;
 
     defaults = {
+        //build a ColorTheme with a ColorRange, NamedColor
+        //and an arbitrary weight
         palette: {
             'soft ivory': 0.5,
             'intense goldenrod': 0.25,
@@ -28,7 +35,8 @@ define([
         secondaryCriteria: "BRIGHTNESS"
     };
 
-    //Build the dat-gui interface with the instance of the application
+    //Build the [dat-gui](http://workshop.chromeexperiments.com/examples/gui/)
+    //interface with the instance of the application
     buildGui = function( app ){
         var gui = new datGui(),
             criterias = keys(color.AccessCriteria),
