@@ -3,8 +3,9 @@ define([
     'dat/gui/GUI',
     'toxi/internals',
     'toxi/geom/Vec3D',
+    'toxi/utils/datatypes/FloatRange',
     'toxi/color'
-], function( d3, datGui, internals, Vec3D, color ){
+], function( d3, datGui, internals, Vec3D, FloatRange, color ){
 
     var each = internals.each,
         keys = internals.keys,
@@ -21,6 +22,7 @@ define([
             'fresh teal': 0.05,
             'bright yellowgreen': 0.05
         },
+        scaleRange: new FloatRange(10,100),
         padding: 100,
         num: 200,
         sort: false,
@@ -29,6 +31,7 @@ define([
     };
 
     //Build the dat-gui interface with the instance of the application
+    //this is the menu in the top-right
     buildGui = function( app ){
         var gui = new datGui(),
             criterias = keys(color.AccessCriteria),
@@ -54,6 +57,10 @@ define([
 
 
     return function(){
+        mixin(defaults, {
+            width: window.innerWidth,
+            height: window.innerHeight - 50
+        });
         var app = themeDiscs( defaults );
         buildGui( app );
         return app;
@@ -61,13 +68,20 @@ define([
 
     function themeDiscs( options ){
 
-        var app = {};
+        var app = {},
+            container = d3.select('#example-container'),
+            svg;
+
         mixin(app, options||{});
 
-        var w = window.innerWidth,
-            h = window.innerHeight-50,
-            maxScale = 100,
-            minScale = 10;
+        svg = container
+            .append('svg:svg')
+            .attr('width', app.width)
+            .attr('height', 0);
+        svg
+            .transition()
+            .duration(1000)
+            .attr('height',app.height);
 
         app.clusterSort =  function( numClusters ){
             numClusters = numClusters || 10;
@@ -103,11 +117,11 @@ define([
                 .attr('cx', function(d){
                     //find color
                     var indices = findInCluster(d.color);
-                    return ((w-(app.padding*2))/(numClusters-1)) * indices[0] + app.padding;
+                    return ((app.width-(app.padding*2))/(numClusters-1)) * indices[0] + app.padding;
                 })
                 .attr('cy', function(d){
                     var indices = findInCluster(d.color);
-                    return ((h-(app.padding*2))/(slices[0].length-1)) * indices[1] + app.padding;
+                    return ((app.height-(app.padding*2))/(slices[0].length-1)) * indices[1] + app.padding;
                 })
                 .each('end', function(){
                     d3.select(this)
@@ -128,40 +142,38 @@ define([
                 .attr('cy', function(d){ return d.vec3.y; });
         };
         app.reset =  function(){
-            var count = 0;
-            var circles = app.remove();
-            circles
-                .remove()
-                .each(function(){ ++count; })
-                .each("end", function(){
-                    if(!--count){
-                        app.list = create(svg, app.num);
-                        app.updateSort();
-                    }
-                });
+            app.remove(function(){
+                app.list = create(svg, app.num);
+                app.updateSort();
+            });
         };
         app.updateSort = function(){
             app[ app.sort ? 'clusterSort' : 'unSort' ]();
         };
-        app.remove = function(){
-            return svg.selectAll('circle')
+        app.remove = function(callback){
+            callback = callback || function(){};
+
+            var count = 0,
+                nodes = svg.selectAll('circle');
+
+            if( !nodes[0].length ){
+                callback();
+                return;
+            }
+            return nodes
                 .transition()
                 .delay(function(d,i){ return i; })
                 .duration(1000)
-                .attr('r', 0);
+                .attr('r', 0)
+                .remove()
+                .each(function(){ ++count; })
+                .each('end', function(){
+                    if( !--count){
+                        callback();
+                    }
+                });
         };
-        window.app = app;
 
-
-        var svg = d3.select('#example-container')
-            .append('svg:svg')
-            .attr('width', w)
-            .attr('height', 0);
-        window.svgInstance = svg;
-        svg
-            .transition()
-            .duration(1000)
-            .attr('height',h);
 
 
 
@@ -175,12 +187,10 @@ define([
             var list = theme.getColors(num),
                 nodes = list.colors.map(function(color, i){
                     return {
-                        vec3: new Vec3D(Math.random()*w, Math.random()*h, (Math.random()*(maxScale-minScale)) + minScale),
+                        vec3: new Vec3D(Math.random()*app.width, Math.random()*app.height, app.scaleRange.pickRandom()),
                         color: color.setAlpha(Math.random())
                     };
                 });
-
-            window.colorList = list;
 
             d3.select('#example-container')
                 .style('background-color', list.getAverage().toHexCSS());
@@ -193,7 +203,7 @@ define([
                 .attr('r', function(d){ return 0.0; })
                 .attr('cx', function(d){ return d.vec3.x; })
                 .attr('cy', function(d){ return d.vec3.y; })
-                .style('fill', function(d){ return d.color.toRGBACSS(); })
+                .style('fill', function(d){ return d.color.toRGBACSS(); });
 
             return list;
         };
@@ -201,5 +211,5 @@ define([
         app.list = create( svg, app.num );
         app.updateSort();
         return app;
-    };
+    }
 });
