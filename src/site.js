@@ -35,6 +35,12 @@ define({
         "tags": "color, dom, require",
         "template": "require"
     },{
+        "title": "Multi-color Gradient",
+        "src": "multiColorGradient.js",
+        "thumbnail": "subdivThree.png",
+        "tags": "color, require",
+        "template": "require"
+    },{
 		"title": "Subdivision Basics",
 		"src": "subDivThree.js",
 		"thumbnail": "subdivThree.png",
