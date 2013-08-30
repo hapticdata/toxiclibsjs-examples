@@ -1,4 +1,17 @@
-define(['toxi/color/ColorGradient', 'toxi/color/TColor', 'toxi/util/datatypes/FloatRange'], function( ColorGradient, TColor, FloatRange ){
+define([
+    'dat/gui/GUI',
+    'toxi/internals',
+    'toxi/color/ColorGradient',
+    'toxi/color/TColor',
+    'toxi/util/datatypes/FloatRange'
+], function( datGui, internals, ColorGradient, TColor, FloatRange ){
+
+    var each = internals.each,
+        buildGui;
+
+    buildGui = function( app ){
+
+    };
 
     return function(){
 
@@ -9,6 +22,33 @@ define(['toxi/color/ColorGradient', 'toxi/color/TColor', 'toxi/util/datatypes/Fl
             range;
 
 
+
+        var toLinearGradientCSS = (function(){
+            //find out if there should be a vendor prefix
+            var styles = window.getComputedStyle(document.documentElement, ''),
+                pre = (Array.prototype.slice
+                    .call(styles)
+                    .join('')
+                    .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
+                    )[1];
+
+            return function( grad, width, angle ){
+                angle = angle || "left";
+                var stops = [];
+                each(grad.getGradientPoints(), function(gradPoint){
+                    stops.push(gradPoint.getColor().toRGBACSS() +' '+Math.round((gradPoint.getPosition()/width)*100)+'%');
+                });
+
+                console.log( 'stops: ', stops);
+                var css = "";
+                var stopsStr = stops.toString();
+                css += '-'+pre+'-linear-gradient(' +angle+ ', ' +stopsStr+ ')';
+                return css;
+            };
+        })();
+
+        window.gradient = gradient;
+        window.toLinearGradientCSS = toLinearGradientCSS;
         canvas.width = window.innerWidth;
         canvas.height = 1;
         if( window.devicePixelRatio >= 2 ){
@@ -18,7 +58,6 @@ define(['toxi/color/ColorGradient', 'toxi/color/TColor', 'toxi/util/datatypes/Fl
 
         range = new FloatRange(0, canvas.width);
 
-        window.ColorGradient = ColorGradient;
         canvas.style.webkitTransformOrigin = 'top left';
         canvas.style.webkitTransform = 'scaleY('+(window.innerHeight-50)+')';
         container.style.height = (window.innerHeight - 50) + 'px';
@@ -42,5 +81,20 @@ define(['toxi/color/ColorGradient', 'toxi/color/TColor', 'toxi/util/datatypes/Fl
 
 
         container.appendChild( canvas );
+
+
+        var div = document.createElement('div');
+        div.style.width = '200px';
+        div.style.height = '75px';
+        div.style.position = 'absolute';
+        div.style.top = '20px';
+        div.style.left = '10px';
+        div.style.border = '1px solid black';
+
+        container.appendChild( div );
+
+        div.style.backgroundImage = toLinearGradientCSS( gradient, canvas.width );
+
+
     };
 });
