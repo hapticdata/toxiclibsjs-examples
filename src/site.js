@@ -20,33 +20,35 @@ define({
 	],
 
 	"apis": [
-		{ "id": "Processing.js", "tag": "pjs" },
-		{ "id": "WebGL", "tag": "webgl" },
-		{ "id": "Three.js", "tag": "three.js" },
 		{ "id": "Canvas 2D", "tag": "canvas" },
+        { "id": "D3.js", "tag": "d3" },
+		{ "id": "Processing.js", "tag": "pjs" },
 		{ "id": "Raphael.js", "tag": "raphael.js" },
-		{ "id": "Require.js", "tag": "require" }
+		{ "id": "Require.js", "tag": "require" },
+		{ "id": "Three.js", "tag": "three.js" },
+		{ "id": "WebGL", "tag": "webgl" }
 	],
 
 	"examples": [{
         "title": "Theme Discs",
         "src": "themeDiscs.js",
-        "thumbnail": "subdivThree.png",
-        "tags": "color, dom, require",
+        "thumbnail": "themeDiscs.jpg",
+        "tags": "color, d3, require",
         "template": "require"
     },{
         "title": "Multi-color Gradient",
         "src": "multiColorGradient.js",
-        "thumbnail": "subdivThree.png",
+        "thumbnail": "multiColorGradient.jpg",
         "tags": "color, require",
         "template": "require"
-    },{
+    },
+    /*{
 		"title": "Subdivision Basics",
 		"src": "subDivThree.js",
 		"thumbnail": "subdivThree.png",
 		"tags": "mesh, three.js, webgl, require",
 		"template": "require"
-	},/*{
+	},{
 		"title": "Terrain Noise",
 		"src": "terrainNoise.js",
 		"template": "require",

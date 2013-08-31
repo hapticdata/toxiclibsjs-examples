@@ -4,8 +4,7 @@
 //
 //Demonstrates `toxi.geom.mesh.Terrain` and `toxi.math.noise.PerlinNoise`
 //and using `toxi.THREE.ToxiclibsSupport` for generating a three.js mesh.
-
-define('example',function( require ){
+define(function( require ){
 
 	var THREE = require('three'),
 		datGUI = require('dat/gui/GUI'),
@@ -103,7 +102,7 @@ define('example',function( require ){
 			g.normalsNeedUpdate = true;
 		}());
 		renderer.render( scene, camera );
-		
+
 		if( options.running ){
 			//three.js bundles a polyfill, so this will work fine in all browsers
 			window.requestAnimationFrame( draw );
@@ -111,4 +110,3 @@ define('example',function( require ){
 	}
 	draw();
 });
-require(['example']);

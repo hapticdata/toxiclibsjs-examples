@@ -8,7 +8,7 @@ define([
     'dat/gui/GUI',
     'toxi/internals',
     'toxi/geom/Vec3D',
-    'toxi/util/datatypes/FloatRange',
+    'toxi/utils/datatypes/FloatRange',
     'toxi/color'
 ], function( d3, datGui, internals, Vec3D, FloatRange, color ){
 
@@ -37,8 +37,13 @@ define([
         secondaryCriteria: "BRIGHTNESS"
     };
 
+<<<<<<< HEAD
     //Build the [dat-gui](http://workshop.chromeexperiments.com/examples/gui/)
     //interface with the instance of the application
+=======
+    //Build the dat-gui interface with the instance of the application
+    //this is the menu in the top-right
+>>>>>>> c32432f5db4cd9e907fefb1ee5956c6c113adacf
     buildGui = function( app ){
         var gui = new datGui(),
             criterias = keys(color.AccessCriteria),
