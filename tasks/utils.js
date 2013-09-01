@@ -1,10 +1,7 @@
 var fs = require('fs'),
 	_ = require('underscore'),
-	requirejs = require('requirejs'),
-	siteMap;
+	siteMap = require('../sitemap');
 
-requirejs.config({ nodeRequire: require });
-siteMap = requirejs(__dirname + '/../src/site.js');
 
 exports.read = function( cred ){
 	var b = __dirname+'/../'+cred.baseUrl;

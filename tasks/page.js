@@ -2,14 +2,10 @@ var fs = require('fs'),
 	jade = require('jade'),
 	async = require('async'),
 	_ = require('underscore'),
-	requirejs = require('requirejs'),
 	utils = require('./utils'),
 	getPagesToGenerate,
 	generatePage,
-	siteMap;
-
-requirejs.config({ nodeRequire: require });
-siteMap = requirejs(__dirname+'/../' + '/src/site.js');
+	siteMap = require('../sitemap');
 
 
 generatePage = function(page, options, callback){

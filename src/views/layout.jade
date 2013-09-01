@@ -2,7 +2,7 @@ doctype 5
 html
   head
     title= title
-    link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Droid+Serif:400')
+    //link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Droid+Serif:400')
     link(rel='stylesheet', href='#{staticUrl}stylesheets/style.css')
     block config
     script(type="text/javascript")
@@ -15,7 +15,7 @@ html
     //script(src="javascripts/vendor/xrayquire.js")
     - if (typeof dependencies !== 'undefined')
       each include in dependencies
-        script(src="#{include}")
+          script(src="#{staticUrl}#{include}")
 
   body(class=options.bodyClasses)
     block content
@@ -24,7 +24,7 @@ html
       nav#navigation(class=options.navClasses)
         ul
           li.home
-            a(href="./") Toxiclibs.js
+              a(href="#{rootUrl}") Toxiclibs.js
           li.examples
             a(href="#") Examples
           - if (typeof name !== 'undefined')

@@ -21,17 +21,17 @@ exports = module.exports = function( env ){
 			layout: 'src/views/layout.jade',
 			examples: 'javascripts/examples/',
 			//the root location of the site
-			root: '/',
+			rootUrl: '/',
 			pretty: true,
+            port: 3004,
 			compress: false
 
 		},
 		dev: {
 			//the root location for the static assets over http
             staticUrl: '/',
-			root: '/',
 			//the hard-disk location of static files to serve during development
-            staticDir: 'www/'
+            staticDir: 'src/'
 		},
 		staging: {
 			staticUrl: '/',
@@ -40,7 +40,7 @@ exports = module.exports = function( env ){
 		production: {
             staticUrl: 'http://s3.amazonaws.com/toxiclibsjs/',
 			//the root location of the site
-			root: '/toxiclibsjs/',
+			rootUrl: '/toxiclibsjs/',
 			//the hard-disk location of files to upload to s3
             staticDir: 'dist/',
 			compress: true

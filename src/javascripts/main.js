@@ -1,7 +1,7 @@
 require(['../config'], function(){
-	require(['domReady','common'], function( domReady ){
+	require(['jquery','common'], function($){
 		//don't load the js until the site loads, so that the views can grab their doms
-		domReady(function(){
+		$(document).ready(function(){
 			require(['site/index']);
 		});
 	});

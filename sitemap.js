@@ -1,5 +1,4 @@
-define({
-
+module.exports = {
 	"pages": [{
 		"title": "Open-Source Library for Computational Design",
 		"template": "index",
@@ -182,4 +181,4 @@ define({
 			"javascripts/vendor/raphael-min.js"
 		]
 	}]
-});
+};

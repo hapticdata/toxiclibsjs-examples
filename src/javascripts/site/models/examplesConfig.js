@@ -2,13 +2,13 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
-	'site/map',
 	'../collections/examples',
 	'../collections/Topics',
 	'../collections/Apis'
-], function ( $, _, Backbone, siteMap, examples, Topics, Apis ){
-	
+], function ( $, _, Backbone, examples, Topics, Apis ){
+
 	var ExamplesConfig = Backbone.Model.extend({
+        url: '/api',
 		defaults: {
 			selectedTopic: '',
 			selectedApi: '',
@@ -26,7 +26,7 @@ define([
 			console.log("BOOM");
 			var topicExamples = new examples.Examples().reset(this.get('examples').clone().models);
 			var apiExamples = new examples.Examples().reset(this.get('examples').clone().models);
-			
+
 			if( this.get('selectedTopic') !== "" ){
 				topicExamples.reset(function(m){
 					var match = m.get('topics').where({ tag: m.get('selectedTopic').toLowerCase() })[0];
@@ -80,10 +80,6 @@ define([
 		}
 	});
 
-	var model = new ExamplesConfig();
-	model.parse( siteMap );
-	window.map = siteMap;
-	model.ExamplesConfig = ExamplesConfig;
-	return model;
+    return ExamplesConfig;
 });
-    
+

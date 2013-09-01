@@ -9,7 +9,10 @@
   "dependencies": {
     "jade": "*",
     "async": "~0.1.22",
-    "markdown-js": "0.0.3"
+    "markdown-js": "0.0.3",
+    "express": "~3.3.7",
+    "less-middleware": "~0.1.12",
+    "underscore.string": "~2.3.3"
   },
   "devDependencies": {
     "requirejs": "~2.1.1",

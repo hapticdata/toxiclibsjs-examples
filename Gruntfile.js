@@ -2,29 +2,14 @@
 var envs = require('./envs'),
 	_ = require('underscore'),
 	docco = require('docco'),
-	requirejs = require('requirejs'),
 	generateExamples = require('./tasks/example'),
-	generatePages = require('./tasks/page'),
-	siteMap;
+	generatePages = require('./tasks/page');
 
-requirejs.config({
-	nodeRequire: require
-});
-
-console.log(requirejs.toUrl(__dirname + '/src/site'));
-siteMap = requirejs(__dirname + '/src/site.js');
 
 //docco needs to think .pde files are javascript
 docco.languages[".pde"] = docco.languages[".js"];//{"name" : "javascript", "symbol" : "//"};
 
 
-/**
- * Grunt process
- * The goal should be:
- * 1) Develop directly in the src/ directory
- * 2) Produce `staging` build that runs locally
- * 3) Produce `dist` build and `deploy` it across s3
- */
 module.exports = function (grunt){
 
 	var options = envs( grunt.option('production') ? 'production' : 'dev' );
@@ -85,36 +70,7 @@ module.exports = function (grunt){
 				}
 			}
 		},
-		less: {
-			dev: {
-				options: {
-					paths: ["src/less"]
-				},
-				files: {
-					"www/stylesheets/style.css": "src/less/style.less"
-				}
-			},
-			production: {
-				options: {
-					paths: ["src/less"],
-					yuicompress: true
-				},
-				files: {
-					"dist/stylesheets/style.css": "src/less/style.less"
-				}
-			}
-		},
 		watch: {
-			less: {
-				files: [
-					'src/less/*.less'
-				],
-				tasks: ['less:dev']
-			},
-			template: {
-				files: [ 'app/templates/*.html'],
-				tasks: ['template']
-			},
             scripts: {
                 files: ['src/javascripts/*.js', 'src/javascripts/**/*.js'],
                 tasks: ['requirejs','example']
@@ -170,19 +126,17 @@ module.exports = function (grunt){
 
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-s3');
-	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-docco');
-	grunt.loadNpmTasks('grunt-regarde');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
 	//grunt.loadNpmTasks('grunt-contrib-connect');
 
 	/**
-	 * custom grunt task to build an example
-	 * _example:_ grunt generate-example:"Spherical Harmonics" or just grunt generate-example
-	 * @param {Array|string} [exampleTitles] title(s) of examples to build
-	 */
+	* custom grunt task to build an example
+	* _example:_ grunt generate-example:"Spherical Harmonics" or just grunt generate-example
+	* @param {Array|string} [exampleTitles] title(s) of examples to build
+	*/
 	grunt.registerTask('example', function (exampleTitles){
 		var done = this.async();
 		generateExamples(exampleTitles, options, done);

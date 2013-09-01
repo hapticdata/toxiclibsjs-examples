@@ -14,6 +14,7 @@ requirejs.config({
     'common': '../common',
     'main': '../main',
     'site': '../site',
+    'site/map': '../../site',
     'toxi': 'http://localhost:3006/lib/toxi'//'http://raw.github.com/hapticdata/toxiclibsjs/feature-color/lib/toxi'
   }
 });

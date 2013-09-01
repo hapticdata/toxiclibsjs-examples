@@ -5,7 +5,6 @@ define(function ( require ){
 
 	var Example = Backbone.Model.extend({
 		initialize: function( props ){
-			console.log('const');
 			this.set( Example.prototype.parse(props) );
 		},
 		parse: function( response ){
@@ -22,7 +21,7 @@ define(function ( require ){
 				this.attributes = {};
 			}
 			if ( !_.isArray(response.tags) ){
-				
+
 				response.tags = strip( response.tags ).split(',');
 			}
 			if ( response.thumbnail === undefined ){
@@ -31,11 +30,9 @@ define(function ( require ){
 			if ( response.thumbnail.indexOf('images/') < 0 ){
 				response.thumbnail = "images/" + response.thumbnail;
 			}
-			response.href = response.src.split('.')[0]+'.html';
-			console.log( response.tags );
 			return response;
 		}
 	});
 	return Example;
 });
-    
+
