@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "grunt",
-    "postinstall": "./node_modules/grunt/bin/grunt"
+    "start": "grunt"
   },
   "dependencies": {
     "jade": "*",
@@ -12,7 +11,8 @@
     "markdown-js": "0.0.3",
     "express": "~3.3.7",
     "less-middleware": "~0.1.12",
-    "underscore.string": "~2.3.3"
+    "underscore.string": "~2.3.3",
+    "toxiclibsjs": "*"
   },
   "devDependencies": {
     "requirejs": "~2.1.1",

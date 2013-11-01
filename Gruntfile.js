@@ -2,9 +2,7 @@
 var envs = require('./envs'),
 	_ = require('underscore'),
 	docco = require('docco'),
-	generateExamples = require('./tasks/example'),
-	generatePages = require('./tasks/page');
-
+	generateExamples = require('./tasks/example');
 
 //docco needs to think .pde files are javascript
 docco.languages[".pde"] = docco.languages[".js"];//{"name" : "javascript", "symbol" : "//"};
@@ -45,10 +43,12 @@ module.exports = function (grunt){
 		jshint: {
 			all: [
 				'Gruntfile.js',
+                'app.js',
 				'src/*.js',
 				'src/javascripts/*.js',
-				'src/javascripts/**/*.js',
-				'src/javascripts/site/**/*.js'
+				'src/javascripts/site/**/*.js',
+                'src/javascripts/examples/*.js',
+                'src/javascripts/extras/*.js'
 			],
 			options: {
 				eqeqeq: true,
@@ -73,7 +73,11 @@ module.exports = function (grunt){
 		watch: {
             scripts: {
                 files: ['src/javascripts/*.js', 'src/javascripts/**/*.js'],
-                tasks: ['requirejs','example']
+                tasks: ['example']
+            },
+            jshint: {
+                files: '<%= jshint.all %>',
+                tasks: [ 'jshint' ]
             }
 		},
 		requirejs: {

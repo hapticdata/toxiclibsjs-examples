@@ -25,7 +25,6 @@ app.configure(function(){
 	app.use(express.logger('dev'));
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
-//	app.use(express.directory( staticPath ))
 	app.use(require('less-middleware')({
         src: __dirname+'/src/less',
         force: true,
@@ -34,7 +33,9 @@ app.configure(function(){
         prefix: '/stylesheets',
         compress: false
     }));
-	app.use(express.static(staticPath));
+	app.use(express['static'](staticPath));
+    //serve toxiclibsjs modules
+    app.use('/toxiclibsjs',express.static(config.toxiclibsjsDir));
 	app.use(app.router);
 });
 
@@ -65,6 +66,7 @@ app.configure('dev',function(){
 app.get('/', function(req, res){
     res.render('index', siteMap.pages[0]);
 });
+
 
 //generate an app.get for every example
 siteMap.examples.forEach(function(ex){

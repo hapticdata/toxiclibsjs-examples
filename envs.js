@@ -17,7 +17,7 @@ exports = module.exports = function( env ){
                 access: 'public-read'
             },
 			baseUrl: 'src/',
-			dest: 'www/',
+            toxiclibsjsDir: './node_modules/toxiclibsjs/',
 			layout: 'src/views/layout.jade',
 			examples: 'javascripts/examples/',
 			//the root location of the site
