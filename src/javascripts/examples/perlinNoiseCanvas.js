@@ -25,7 +25,7 @@ palette = [
 
 options = {
     running: true,
-    numStreams: 500,
+    numStreams: 200,
     distort: 0,
     strength:  Math.PI,
     scalar: 0.05,
