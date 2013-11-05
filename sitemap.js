@@ -9,7 +9,7 @@ module.exports = {
 		"out": "index.html"
 	}],
 
-	"_comment": "each examples tags get mapped to apis and topics",
+	//each examples tags get mapped to apis and topics
 	"topics": [
 		{ "id": "Geometry", "tag": "geom"},
 		{ "id": "Mesh", "tag": "mesh"},

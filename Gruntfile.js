@@ -1,12 +1,8 @@
 /*global module:false, __dirname:false, require:false, process:false*/
 var envs = require('./envs'),
 	_ = require('underscore'),
-	docco = require('docco'),
+    docco = require('docco'),
 	generateExamples = require('./tasks/example');
-
-//docco needs to think .pde files are javascript
-docco.languages[".pde"] = docco.languages[".js"];//{"name" : "javascript", "symbol" : "//"};
-
 
 module.exports = function (grunt){
 
@@ -31,14 +27,18 @@ module.exports = function (grunt){
 			}
 		},
 		docco: {
-			src: [
-				'src/javascripts/examples/*.js',
-				'src/javascripts/examples/*.pde'
-			],
-			options: {
-				output: 'docs/',
-				template: 'src/views/docco-template.jst'
-			}
+            examples: {
+                src: [
+                    'src/javascripts/examples/*.js',
+                    'src/javascripts/examples/*.pde'
+                ],
+                options: {
+                    output: 'docs/',
+                    //make docco treat all files (.pde too) as javascript
+                    extension: '.js',
+                    template: 'src/views/docco.jst'
+                }
+            }
 		},
 		jshint: {
 			all: [
@@ -130,7 +130,6 @@ module.exports = function (grunt){
 
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-s3');
-	grunt.loadNpmTasks('grunt-docco');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
@@ -150,11 +149,18 @@ module.exports = function (grunt){
 		generatePages( pageTitles, options, this.async() );
 	});
 
-	grunt.registerTask('default', ['copy:images','less:dev','docco','example','page','requirejs']);
+	grunt.registerTask('default', ['copy:images','docco','example','page','requirejs']);
 	grunt.registerTask('production', function(){
 		options = envs('production');
-		grunt.task.run('docco','less:production','requirejs');
+		grunt.task.run('docco','requirejs');
 	});
+
+    grunt.registerMultiTask('docco', 'Docco processor.', function() {
+        // Either set the destination in the files block, or (prefferred) in { options: output }
+        this.options.output = this.options.output || (this.file && this.file.dest);
+        docco.document(this.options({ args: this.filesSrc }), this.async());
+    });
+
 	grunt.registerTask('deploy', function(){
 		options = envs('production');
 		grunt.task.run('production','s3:production');
