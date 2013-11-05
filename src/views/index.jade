@@ -1,13 +1,48 @@
 extends layout
 
+mixin whatItIs()
+  div.what-it-is.offset2.span4.small
+    h5 What it is:
+    ul
+      li 2D/3D geometry
+      li Mesh generation and subdivision
+      li Interpolation / Mapping
+      li Wave Generators
+      li 2D physics simulation
+      li Color theory sorting and conversion
+
+mixin asSeenIn()
+  h3 As seen in:
+  ul
+    li
+      a(href="http://www.chromeweblab.com/") Chrome Web Lab - Google
+    li
+      a(href="http://justafriend.ie") Just A Friend - Microsoft
+    //li
+      a(href="http://youtube.com/thevoiceof") Commission for Presidential Debates - The Voice of
+    li
+      a(href="http://www.nand.io/visualisation/tyne") Tyne - Studio Nand and Moritz Stefaner
+    li
+      a(href="http://www.shapeways.com/creator/sake-set/") Sake Set Creator - Shapeways
+    li
+      a(href="http://aaron-sherwood.com/works/flow/index.html") Flow Micro - Aaron Sherwood
+    li
+      a(href="https://vimeo.com/27951113") Adobe Illustrator + Physics - Ken Frederick
+    li
+      a(href="http://my.safaribooksonline.com/book/-/9781849517942/9dot-exploring-javascript-mode/id286781626") Processing 2: Creative Programming Cookbook - Jan Vantomme
+    li
+      a(href="https://vimeo.com/41631496") Constellation - Joshua Albers 
+
 block content 
+  a(href="https://github.com/hapticdata/toxiclibsjs")
+    img(style="position: absolute; top: 0; right: 0; border: 0;", src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png", alt="Fork me on GitHub")
   section.header.above.container-fluid
     div.row-fluid
       div.span6
-        div.hero-unit
+        div
           h1 Toxiclibs.js
+          h2 an open-source library for computational design.
           :markdown
-            is an open-source library for computational design.
             
             [Toxiclibs](http://toxiclibs.org) was originally written by 
             [Karsten Schmidt](http://postspectacular.com) for Java and
@@ -19,47 +54,20 @@ block content
             [Processing.js](http://processingjs.org), [Three.js](http://threejs.org),
             or [Raphael.js](http://raphaeljs.com) for SVG.
 
-          ul.twitter
-            li
+          ul.pill-list.twitter
+            li.button
+              a.twitter-share-button(date-url="http://haptic-data.com/toxiclibsjs",href="https://twitter.com/share", data-via="hapticdata") Tweet
+              script
+                !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+            li.button
               a(href="http://twitter.com/hapticdata") @hapticdata
-            li.button
-              a.twitter-follow-button(href="https://twitter.com/hapticdata", data-show-count="false", data-show-screen-name="false", data-dnt="true") Follow @hapticdata
-              script
-                !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-            li.button
-              a.twitter-share-button(href="https://twitter.com/share", data-via="hapticdata") Tweet
-              script
-                !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+      mixin whatItIs()
 
-      div.span6
-        h3 What it is:
-        ul
-          li 2D/3D geometry
-          li Mesh generation and subdivision
-          li Interpolation / Mapping
-          li Wave Generators
-          li 2D physics simulation
-          li Color theory sorting and conversion
-        h3 As seen in:
-        ul
-          li
-            a(href="http://www.chromeweblab.com/") Google - WebLab
-          li
-            a(href="http://justafriend.ie") Microsoft - Just A Friend
-          li
-            a(href="http://youtube.com/thevoiceof") Commission for Presidential Debates - The Voice of
-          li
-            a(href="http://www.nand.io/visualisation/tyne") Tyne - Studio Nand and Moritz Stefaner
-          li
-            a(href="http://www.shapeways.com/creator/sake-set/") Shapeways - Sake Set Creator
-          li
-            a(href="https://vimeo.com/27951113") Ken Frederick - Adobe Illustrator + Physics
-          li
-            a(href="http://my.safaribooksonline.com/book/-/9781849517942/9dot-exploring-javascript-mode/id286781626") Jan Vantomme - Processing 2: Creative Programming Cookbook
-          li
-            a(href="https://vimeo.com/41631496") Joshua Albers - Constellation
 block below
   section.below.container-fluid
+    div.row-fluid
+      .span6
+        mixin asSeenIn()
     header.page-header
       h2 Getting Started with Toxiclibs.js
     div.row-fluid
