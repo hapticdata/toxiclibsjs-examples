@@ -8,7 +8,7 @@ define([
 	'jade!templates/_examples-list'
 ], function ( $, _, Backbone, exampleConfig, examples, navTemplate, listTemplate ){
 
-	
+
 	var Examples = Backbone.View.extend({
 		tagName: 'section',
 		className: 'examples-nav',
@@ -46,23 +46,6 @@ define([
 		}
 	});
 
-	var view = new Examples({ model: exampleConfig });
-	window.exampleConfig = exampleConfig;
-	/*view.on('change:topics', function( topic ){
-		var matches;
-		console.log('topic', topic);
-		if( topic == "all" ){
-			matches = collection;
-		} else {
-			matches = collection.filter(function( model ){
-				return model.get('tags').indexOf(topic) > -1;
-			});
-		}
-		filtered.reset( matches );
-	});
-	view.on('change:libs', function( lib ){
-
-	});*/
-	return view;
+	return Examples;
 });
-    
+

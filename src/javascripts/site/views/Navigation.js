@@ -3,7 +3,7 @@ define([
 	'underscore',
 	'backbone',
 	'./examples'
-], function( $, _, Backbone, examples ){
+], function( $, _, Backbone, Examples ){
 
 	var NavWaist = Backbone.View.extend({
 		events: {
@@ -12,13 +12,13 @@ define([
 			'click .source': 'clickSource'
 		},
 		updateSelected: function( e ){
-			
+
 		},
 		toggleExamples: function( e ){
 			if( e && e.preventDefault ){
 				e.preventDefault();
 			}
-			if( examples.$el.is(':visible') ){
+			if( this.examplesView.$el.is(':visible') ){
 				//close it
 				this.$('li').removeClass('selected').removeClass('blur');
 			} else {
@@ -26,7 +26,7 @@ define([
 				this.$('li').not('.examples').removeClass('selected');
 				this.$('li.home').addClass('blur');
 			}
-			examples.$el.slideToggle('slow');
+			this.examplesView.$el.slideToggle('slow');
 		},
 		clickSource: function( e ){
 			e.preventDefault();
@@ -37,6 +37,7 @@ define([
 		initialize: function(){
 			console.log('init navWaist ', this.$el );
 			var self = this;
+            this.examplesView = new Examples({ model: this.model });
 			if( this.options.lock ){
 				console.log("lock Navigation to top");
 				$(window).scroll(function(){
@@ -53,7 +54,7 @@ define([
 			}
 		},
 		render: function(){
-			this.$el.append( examples.render().$el.hide() );
+			this.$el.append( this.examplesView.render().$el.hide() );
 			return this;
 		}
 	});

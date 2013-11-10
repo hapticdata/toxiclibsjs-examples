@@ -69,7 +69,7 @@ function mouseMove(e){
 			x: e.pageX - canvas.offsetLeft,
 			y: e.pageY - canvas.offsetTop
 		};
-		
+
 		rotation.set({
 			x: mouse.x * 0.005,
 			y: mouse.y * 0.005,
@@ -82,10 +82,15 @@ function init() {
 	canvas = document.getElementById("example");
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight - 60;
+    if( window.devicePixelRatio >= 2 ){
+        canvas.width *= 2;
+        canvas.height *= 2;
+        canvas.style.width = "100%";
+    }
 	canvas.addEventListener('mouseover',mouseOver,false);
 	canvas.addEventListener('mouseout',mouseOut,false);
 	canvas.addEventListener('mousemove',mouseMove,false);
-	
+
 	try {
 		gl = canvas.getContext("experimental-webgl");
 		gl.viewportWidth = canvas.width;
@@ -171,7 +176,7 @@ function initBuffers() {
 
 	boxesVertexPositionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, boxesVertexPositionBuffer);
-	
+
 	//(num of boxes) * (num of sides) * (num of points) * (floats per point [xyz])
 	var vertices = new Float32Array(NUM_BOXES * N_PER_BOX);
 	var vertIndex = 0;
@@ -193,12 +198,12 @@ function initBuffers() {
 		b.transform(new toxi.geom.Matrix4x4().translateSelf(pos.x,pos.y,pos.z));
 		v = new Float32Array(N_PER_BOX);
 		b.getMeshAsVertexArray(v,0,3);
-		
+
 		vertices.set(v,vertIndex); //push the shape in
 		vertIndex += v.length;
-		
+
 	}
-	
+
 	gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 	boxesVertexPositionBuffer.itemSize = 3;
 	boxesVertexPositionBuffer.numItems = 36 * NUM_BOXES;
@@ -217,7 +222,7 @@ function initBuffers() {
 			color2 = color1.copy().darken(0.125); //second face
 			c1Array = color1.toRGBAArray();
 			c2Array = color2.toRGBAArray();
-			
+
 			for ( p=0; p<3; p++ ) {
 				//the first face of the side
 				colors.set(c1Array,colorIndex);
@@ -230,7 +235,7 @@ function initBuffers() {
 			}
 		}
 	}
-	
+
 	gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
 	boxesVertexColorBuffer.itemSize = 4;
 	boxesVertexColorBuffer.numItems = 36 * NUM_BOXES;
@@ -253,7 +258,7 @@ function drawScene() {
 	var rot = new toxi.geom.Vec3D(0.45,1,0.125)
 		.scaleSelf(toxi.math.MathUtils.radians(rotBoxes))
 		.addSelf(rotation);
-		
+
 	mvMatrix.rotateX(rot.x)
 		.rotateY(rot.y)
 		.rotateZ(rot.z);

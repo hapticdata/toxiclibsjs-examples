@@ -11,6 +11,7 @@
 @magenta: #FF1960;
 @lightGray: #F5F8FA;
 //@import "bootstrap/bootstrap.less";
+
 @import "mixins.less";
 @import "variables.less";
 @import "reset.less";
@@ -25,9 +26,10 @@
 @import "type.less";
 @import "footer.less";
 
+/*
 * {
   .box-sizing( border-box );
-}
+}*/
 body {
   background-color: @lightGray;
   padding: 0;
@@ -45,14 +47,9 @@ a {
   padding-top: 50px;
 }
 
-footer {
-  border-top: 1px solid #cccccc;
-  width: 100%;
-  background-color: white;
-  padding-top: 50px;
+.as-seen-in {
+    padding-bottom: @baseLineHeight;
 }
-
-
 
 //
 // Hero unit
@@ -102,6 +99,27 @@ canvas:focus {
     padding-top: 100px;
     padding-bottom: 100px;
   }
+}
+
+.pill-list {
+    border: 1px solid #aaaaaa;
+    padding: 4px;
+    display: table;
+    margin-left: 0;
+    li {
+        padding: 8px;
+        display: table-cell;
+        vertical-align: middle;
+        margin: 8px;
+        list-style-type: none;
+    }
+}
+.what-it-is {
+    margin-top: @baseLineHeight * 4;
+}
+
+.small {
+    font-size: 12px;
 }
 
 #info {
@@ -200,7 +218,6 @@ canvas:focus {
   padding-bottom: 20px;*/
   background-color: black;
   border-bottom: 3px solid #444444;
-  width: 100%;
   overflow: auto;
   form {
     text-align: left;
@@ -213,11 +230,19 @@ canvas:focus {
 .row-fluid {
   padding-left: 10px;
 }
+.row-fluid {
+    h1, h2, h3, h4, h5, h6 {
+        &:first-child {
+            margin-top: 0px;
+        }
+    }
+}
 .examples-list {
   margin: auto;
   text-align: left;
   .example-link {
     background-position: center;
+    background-size: cover;
     margin-right: 0.5%;
     margin-bottom: 0.5%;
     font-size: 11px;

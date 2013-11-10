@@ -6,7 +6,7 @@
     each ex, i in exampleRow
       div.example-link(
         data-tags= ex.tags.join(', '),
-        style="background-image: url(#{ex.thumbnail})")
+        style="background-image: url(#{staticUrl}#{ex.thumbnail})")
         div.inner
           span.title
             a(href="#{ex.href}",title="#{ex.title}")= ex.title
