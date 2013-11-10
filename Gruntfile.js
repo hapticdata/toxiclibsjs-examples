@@ -1,12 +1,6 @@
 /*global module:false, __dirname:false, require:false, process:false*/
 var envs = require('./envs'),
-	_ = require('underscore'),
-	docco = require('docco'),
-	generateExamples = require('./tasks/example');
-
-//docco needs to think .pde files are javascript
-docco.languages[".pde"] = docco.languages[".js"];//{"name" : "javascript", "symbol" : "//"};
-
+	_ = require('underscore');
 
 module.exports = function (grunt){
 
@@ -16,29 +10,19 @@ module.exports = function (grunt){
 	// Project configuration.
 	grunt.initConfig({
 		pkg: '<json:package.json>',
-		meta: {
-			banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-				'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-				'<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-				'* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-				' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
-		},
-		copy: {
-			images: {
-				files: [
-					{expand: true, cwd: 'src/images/', src: ['**'], dest: 'www/images/'},
-				]
-			}
-		},
 		docco: {
-			src: [
-				'src/javascripts/examples/*.js',
-				'src/javascripts/examples/*.pde'
-			],
-			options: {
-				output: 'docs/',
-				template: 'src/views/docco-template.jst'
-			}
+            examples: {
+                src: [
+                    'src/javascripts/examples/*.js',
+                    'src/javascripts/examples/*.pde'
+                ],
+                options: {
+                    output: 'docs/',
+                    //make docco treat all files (.pde too) as javascript
+                    extension: '.js',
+                    template: 'src/views/docco.jst'
+                }
+            }
 		},
 		jshint: {
 			all: [
@@ -86,19 +70,25 @@ module.exports = function (grunt){
 					appDir: "src/javascripts/",
 					mainConfigFile: "./src/javascripts/config.js",
 					baseUrl: "./vendor",
-					dir: "www/javascripts/",
+					dir: "src/javascripts-build/",
 					//findNestedDependencies: true,
 					optimize: (options.compress ? 'uglify' : 'none'),
 					pragmasOnSave: {
 						excludeJade: true
 					},
 					paths: {
-						"site/map": "../../site"
-					},
+                        'toxi': '../../../node_modules/toxiclibsjs/lib/toxi'
+                    },
 					modules: [
-						{
+                        {
+                            name: "jquery",
+                            include: ['jquery', 'underscore', 'backbone']
+                        },{
+                            name: "main",
+                            include: ['common'],
+                            exclude: ['jquery', 'underscore', 'backbone']
+                        },{
 							name: "site/index",
-							include: [ "site/map" ],
 							exclude: [ 'toxi', 'jquery', 'underscore', 'backbone' ]
 						}
 					]
@@ -128,32 +118,15 @@ module.exports = function (grunt){
 		}
 	});
 
-	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-s3');
-	grunt.loadNpmTasks('grunt-docco');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
-	//grunt.loadNpmTasks('grunt-contrib-connect');
-
-	/**
-	* custom grunt task to build an example
-	* _example:_ grunt generate-example:"Spherical Harmonics" or just grunt generate-example
-	* @param {Array|string} [exampleTitles] title(s) of examples to build
-	*/
-	grunt.registerTask('example', function (exampleTitles){
-		var done = this.async();
-		generateExamples(exampleTitles, options, done);
-	});
-
-	grunt.registerTask('page', function(pageTitles){
-		generatePages( pageTitles, options, this.async() );
-	});
-
-	grunt.registerTask('default', ['copy:images','less:dev','docco','example','page','requirejs']);
+    grunt.loadNpmTasks('grunt-docco');
+	grunt.registerTask('default', ['docco','requirejs']);
 	grunt.registerTask('production', function(){
 		options = envs('production');
-		grunt.task.run('docco','less:production','requirejs');
+		grunt.task.run('docco','requirejs');
 	});
 	grunt.registerTask('deploy', function(){
 		options = envs('production');
