@@ -6,8 +6,17 @@ var express = require('express'),
     app = express(),
     str = require('underscore.string'),
     siteMap = require('./sitemap'),
+    generateDocco = require('./server/docco-generator'),
     config,
     read;
+
+
+//docco is async but doesnt provide callback support :(
+generateDocco( './src/javascripts/examples/', {
+    output: 'docs/',
+    extension: '.js',
+    template: 'src/views/docco.jst'
+});
 
 
 /**
@@ -15,7 +24,7 @@ var express = require('express'),
  */
 config = envs( app.get('env') );
 app.configure(function(){
-    read = require('./tasks/utils').read(config);
+    read = require('./server/utils').read(config);
     var staticPath = path.join(__dirname, config.staticDir);
 	app.set('port', config.port);
 	app.set('views', __dirname + '/src/views');
@@ -39,15 +48,14 @@ app.configure(function(){
 	app.use(app.router);
 });
 
-//process the examples to generate id's, hrefs pagelets, etc
+//process the examples to generate id's, hrefs, etc
 siteMap.examples.forEach(function(ex){
     var hyphenated = str.dasherize( str.strLeftBack(ex.src,'.') );
     ex = _.defaults( ex, { options: {} });
      _.extend(ex, {
         id: hyphenated,
         href: '/examples/'+hyphenated,
-        tags: ex.tags.split(', '),
-        pagelet: read.docco( ex.src )
+        tags: ex.tags.split(', ')
     });
 });
 
@@ -71,6 +79,12 @@ app.get('/', function(req, res){
 //generate an app.get for every example
 siteMap.examples.forEach(function(ex){
     app.get(ex.href, function( req, res ){
+        //FIXME: workaround because docco doesnt have callback
+        //read the pagelet synchronously if this is the first-ever server request
+        //during this process.
+        if( !ex.pagelet ){
+            ex.pagelet = read.docco( ex.src );
+        }
         res.render( ex.template, ex );
     });
 });

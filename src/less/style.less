@@ -11,12 +11,13 @@
 @magenta: #FF1960;
 @lightGray: #F5F8FA;
 //@import "bootstrap/bootstrap.less";
+
 @import "mixins.less";
 @import "variables.less";
 @import "reset.less";
 @import "prefixer.less";
 @import "syntax.less";
-@import "docco0.6.2.less";
+@import "docco.less";
 @import "code.less";
 @import "small.less";
 @import "medium.less";
@@ -46,7 +47,9 @@ a {
   padding-top: 50px;
 }
 
-
+.as-seen-in {
+    padding-bottom: @baseLineHeight;
+}
 
 //
 // Hero unit
@@ -226,6 +229,13 @@ canvas:focus {
 }
 .row-fluid {
   padding-left: 10px;
+}
+.row-fluid {
+    h1, h2, h3, h4, h5, h6 {
+        &:first-child {
+            margin-top: 0px;
+        }
+    }
 }
 .examples-list {
   margin: auto;

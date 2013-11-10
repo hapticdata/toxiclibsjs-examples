@@ -21,12 +21,10 @@
     "grunt-docco": "~0.3.0",
     "underscore": "~1.4.4",
     "grunt-contrib-jshint": "~0.4.3",
-    "grunt-regarde": "~0.1.1",
     "grunt-contrib-requirejs": "~0.4.0",
     "grunt-contrib-less": "~0.5.0",
     "grunt-s3": "~0.2.0-alpha",
     "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-watch": "~0.5.2",
-    "docco": "~0.6.2"
+    "grunt-contrib-watch": "~0.5.2"
   }
 }
