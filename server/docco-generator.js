@@ -45,6 +45,7 @@ var getFiles = function( directory, callback ){
  * @param {Function} callback
  */
 module.exports = function( directory, options, callback ){
+    callback = callback || function(){};
     getFiles( directory, function( err, files ){
        if( err ){
            callback( err );

@@ -9,7 +9,7 @@
         style="background-image: url(#{staticUrl}#{ex.thumbnail})")
         div.inner
           span.title
-            a(href="#{ex.href}",title="#{ex.title}")= ex.title
+              a(href="#{rootUrl}#{ex.href}",title="#{ex.title}")= ex.title
           br
           span.tags= ex.tags.join(', ')
 - }

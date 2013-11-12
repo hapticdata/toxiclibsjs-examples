@@ -5,27 +5,27 @@ var fs = require('fs'),
 /**
  * Various credentials and other protected information
  */
-exports = module.exports = function( env ){
+exports = module.exports = function( env, config ){
 	env = env || process.env.NODE_ENV;
-	var cred, creds;
-	creds = {
+	var creds = {
 		defaults: {
 			s3: {
-				key: '######',
-				secret: '###########',
+				key: process.env.S3_KEY,
+				secret: process.env.S3_SECRET,
                 bucket: 'toxiclibsjs',
                 access: 'public-read'
             },
+            doccoPath: 'generated/docs/',
+            stylesheetsPath: 'generated/stylesheets/',
 			baseUrl: 'src/',
-            toxiclibsjsDir: './node_modules/toxiclibsjs/',
+            toxiclibsjsDir: 'node_modules/toxiclibsjs/',
 			layout: 'src/views/layout.jade',
-			examples: 'javascripts/examples/',
+			examples: 'src/javascripts/examples/',
 			//the root location of the site
 			rootUrl: '/',
 			pretty: true,
             port: 3004,
 			compress: false
-
 		},
 		dev: {
 			//the root location for the static assets over http
@@ -47,7 +47,5 @@ exports = module.exports = function( env ){
 		}
 	};
 
-	cred = creds[env];
-
-	return _.defaults( creds[env], creds.defaults );
+	return _.defaults( _.defaults(creds[env], config || {}), creds.defaults );
 };

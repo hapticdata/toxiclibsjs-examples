@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "grunt"
+    "start": "node app.js --start"
   },
+  "main": "./app.js",
   "dependencies": {
     "jade": "*",
     "async": "~0.1.22",

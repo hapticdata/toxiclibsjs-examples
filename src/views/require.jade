@@ -4,11 +4,9 @@ block config
   - if (src)
     - src = src.split('.')[0]
 block post-config
-    script(type='text/javascript')
-        window.requirejs.config = {
-            'site/index': {
-                example: 'examples/#{src}'
-            }
+    script(type='text/javascript').
+        window.requirejs.config['site/index'] = {
+            example: 'examples/#{src}'
         };
 
 block content

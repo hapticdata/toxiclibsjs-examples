@@ -5,13 +5,21 @@ html
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Droid+Serif:400')
     link(rel='stylesheet', href='#{staticUrl}stylesheets/style.css')
     block config
-    script(type="text/javascript")
+    script(type="text/javascript").
       window.staticUrl = '#{staticUrl}';
+      window.rootUrl = '#{rootUrl}';
       window.requirejs = {
-        baseUrl: '#{staticUrl}javascripts/vendor'
+          baseUrl: '#{staticUrl}javascripts',
+          config: {
+            'site/models/urls': {
+              root: '#{rootUrl}',
+              static: '#{staticUrl}'
+            }
+          }
       };
     block post-config
-    script(data-main="../main",src="#{staticUrl}javascripts/vendor/require.js")
+    script(src="#{staticUrl}javascripts/vendor/require.js")
+    script(src="#{staticUrl}javascripts/main.js", async)
     //script(src="javascripts/vendor/xrayquire.js")
     - if (typeof dependencies !== 'undefined')
       each include in dependencies

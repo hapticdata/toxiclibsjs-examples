@@ -7,7 +7,7 @@ exports.read = function( cred ){
 	var b = __dirname+'/../'+cred.baseUrl;
 	return {
 		docco: function( src ){
-			return fs.readFileSync(__dirname+'/../docs/' + src.split('.')[0] + '.html');
+			return fs.readFileSync(__dirname+'/../'+cred.doccoPath + src.split('.')[0] + '.html');
 		},
 		example: function (src){
 			return fs.readFileSync(b + 'javascripts/examples/' + src);

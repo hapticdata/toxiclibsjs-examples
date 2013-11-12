@@ -8,13 +8,15 @@ requirejs.config({
     'd3': { exports: 'd3' }
   },
   paths: {
-    'templates': '../../views',
-    'examples': '../examples',
-    'extras': '../extras',
-    'common': '../common',
-    'main': '../main',
-    'site': '../site',
-    'site/map': '../../site',
-    'toxi': '../../toxiclibsjs/lib/toxi'//'http://raw.github.com/hapticdata/toxiclibsjs/feature-color/lib/toxi'
+    'd3': 'vendor/d3',
+    'dat': 'vendor/dat',
+    'jquery': 'vendor/jquery',
+    'underscore': 'vendor/underscore',
+    'backbone': 'vendor/backbone',
+    'prettify': 'vendor/prettify',
+    'jade': 'vendor/jade',
+    'templates': '../views',
+    'text': 'vendor/text',
+    'toxi': '../toxiclibsjs/lib/toxi'//'http://raw.github.com/hapticdata/toxiclibsjs/feature-color/lib/toxi'
   }
 });
