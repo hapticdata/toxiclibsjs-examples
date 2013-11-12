@@ -1,19 +1,5 @@
-@dark_gray: #272822;
-@focal_blue: #00C6FF;
-@off_white: #FAFAFA; //#F8F8E6;
-@selection: #383830;
-@yellow: #E6DB74;
-@green: #6B9901;
-@code_bg: #faf9f5;
-//syntax highlighting colors
-@keyword: #0076AF;
-@literal_number: #990257;
-@magenta: #FF1960;
-@lightGray: #F5F8FA;
-//@import "bootstrap/bootstrap.less";
-
-@import "mixins.less";
 @import "variables.less";
+@import "mixins.less";
 @import "reset.less";
 @import "prefixer.less";
 @import "syntax.less";
@@ -47,8 +33,12 @@ a {
   padding-top: 50px;
 }
 
-.as-seen-in {
+.doc-block {
     padding-bottom: @baseLineHeight;
+
+    h2, h3, h4 {
+        padding-top: @baseLineHeight;
+    }
 }
 
 //
@@ -135,7 +125,7 @@ canvas:focus {
     border-right: 1px solid #cccccc;
     border-bottom: 1px solid #cccccc;
     a {
-      color: @focal_blue;
+      color: @focalBlue;
     }
     &.blur {
       background-color: #efefef !important;
@@ -159,7 +149,7 @@ canvas:focus {
   min-height: 50px;
   .selected:not(.examples) {
     .transition( all 1s easeIn );
-    background-color: @off_white;
+    background-color: @offWhite;
     color: black;
     a {
       font-weight: bold;

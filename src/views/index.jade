@@ -1,18 +1,18 @@
 extends layout
 
 mixin whatItIs()
-  div.what-it-is.offset2.span4.small
+  div.what-it-is.offset2.span4.small.doc-block
     h5 What it is:
     ul
       li 2D/3D geometry
-      li Mesh generation and subdivision
+      li Mesh generation
       li Interpolation / Mapping
       li Wave Generators
       li 2D physics simulation
       li Color theory sorting and conversion
 
 mixin asSeenIn()
-  .as-seen-in
+  .as-seen-in.doc-block
     h3 As seen in:
     ul
       //li
@@ -67,7 +67,7 @@ block content
 block below
   section.below.container-fluid
     div.row-fluid
-      div.span6
+      div.span6.doc-block
         h2 Getting Started with Toxiclibs.js
         :markdown
           Toxiclibs.js can be used in the following ways:
@@ -76,14 +76,16 @@ block below
           * [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules for loaders such as [RequireJS](http://requirejs.org)
           * [Node.js](http://nodejs.org) package, available through [NPM](http://npmjs.org)
 
-          Using the concatenated / minified files from `build/` :
+        
+          ####Using the concatenated / minified files from `build/` :
             
         pre.prettyprint.language-html
           - var scriptTag = ['<script type="text/javascript" src="js/toxiclibs.min.js"></script>','<script type="text/javascript">','  var myVector = new toxi.geom.Vec2D( 2, 3 ).scaleSelf(0.5);','  var myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);','</script>'].join('\n');
           code= scriptTag
-
+        
+        a(name="use-with-requirejs-or-other-amd-loader")
         :markdown
-          ###To use with [RequireJS](http://requirejs.org), use the contents of `lib/`:
+          ####To use with [RequireJS](http://requirejs.org), use the contents of `lib/`:
 
         pre.prettyprint.language-js
           | require([
@@ -95,7 +97,7 @@ block below
           | });
 
         :markdown
-          ###To use with [Node.js](http://nodejs.org):
+          ####To use with [Node.js](http://nodejs.org):
               
               npm install toxiclibsjs
 
@@ -122,12 +124,16 @@ block below
 
           For comprehensive documentation, read the original [javadocs](http://toxiclibs.org/javadocs/).
 
-      div.span6
+      div.span6.doc-block
         :markdown
-            Many of the [examples](http://haptic-data.com/toxiclibsjs/#examples)
-            currently use [Processing.js](http://processingjs.org) and are
-            created using the java-syntax style of the original [Processing](http://processing.org).
-            This can be helpful to those that are making the transition from Java, but can be confusing to others. I will explain the basics of using toxiclibs.js and the few differences between it and [the original toxiclibs](http://toxiclibs.org).
+          ####Create custom builds easily
+          If you are working with the `build/` files you may wish to [create a custom build](https://github.com/hapticdata/toxiclibsjs/blob/master/README.md#creating-builds)
+          that only includes the modules you are using in order to save file size. 
+          _If you are [using the files as AMD modules](#use-with-requirejs-or-other-amd-loader) there is no need for this._
+          
+          To generate a custom build, space-delimit the modules you want:
+
+              ./bin/toxiclibsjs --include "toxi/geom/Vec2D toxi/physics2d" --minify --out "./build/toxiclibsjs-custom.min.js"
 
     div.page-header
       :markdown
