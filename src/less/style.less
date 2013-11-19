@@ -92,7 +92,8 @@ canvas:focus {
 }
 
 .pill-list {
-    border: 1px solid #aaaaaa;
+    //border: 1px solid #aaaaaa;
+    background-color: white;
     padding: 4px;
     display: table;
     margin-left: 0;
@@ -105,7 +106,12 @@ canvas:focus {
     }
 }
 .what-it-is {
-    margin-top: @baseLineHeight * 4;
+    padding-top: @baseLineHeight * 4;
+    background-color: white;
+    li {
+        list-style-type: none;
+        border-bottom: 1px solid @black;
+    }
 }
 
 .small {
@@ -120,6 +126,12 @@ canvas:focus {
 #navigation.light{
   background-color: #ffffff;
   border-top: 1px solid #cccccc;
+  &.minimized {
+    border-bottom: 1px solid #cccccc;
+    .home {
+      border-bottom: none;
+    }
+  }
   .home {
     background-color: #eeeeee;
     border-right: 1px solid #cccccc;

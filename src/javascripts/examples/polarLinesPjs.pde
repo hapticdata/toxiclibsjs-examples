@@ -1,7 +1,7 @@
 //#Polar Lines w/ [Processing.js](http://processingjs.org)
 //
-//-	original example by [Karsten Schmidt](http://postspectacular.com)
-//-	Toxiclibs ported to js by [Kyle Phillips](http://haptic-data.com)
+//- original example by [Karsten Schmidt](http://postspectacular.com)
+//- Toxiclibs ported to js by [Kyle Phillips](http://haptic-data.com)
 //
 //PolarLines demo shows the difference between lines in normal cartesian and 
 //polar coordinate systems, where a line is actually a curve/spiral. Both 

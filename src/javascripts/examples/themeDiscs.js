@@ -6,16 +6,15 @@
 define([
     'd3',
     'dat/gui/GUI',
-    'toxi/internals',
+    'toxi/internals/each',
+    'toxi/internals/keys',
+    'toxi/internals/mixin',
     'toxi/geom/Vec3D',
     'toxi/util/datatypes/FloatRange',
     'toxi/color'
-], function( d3, datGui, internals, Vec3D, FloatRange, color ){
+], function( d3, datGui, each, keys, mixin, Vec3D, FloatRange, color ){
 
-    var each = internals.each,
-        keys = internals.keys,
-        mixin = internals.mixin,
-        defaults,
+    var defaults,
         buildGui,
         create;
 

@@ -1,3 +1,6 @@
+//#TColor Basics
+//Simple Processing.js sketch showing the use of TColor in a cross-mode fashion.
+
 toxi.color.TColor c1;
 toxi.color.TColor c2;
 

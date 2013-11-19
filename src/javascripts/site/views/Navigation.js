@@ -21,10 +21,12 @@ define([
 			if( this.examplesView.$el.is(':visible') ){
 				//close it
 				this.$('li').removeClass('selected').removeClass('blur');
+                this.$el.addClass('minimized');
 			} else {
 				//open it
 				this.$('li').not('.examples').removeClass('selected');
 				this.$('li.home').addClass('blur');
+                this.$el.removeClass('minimized');
 			}
 			this.examplesView.$el.slideToggle('slow');
 		},

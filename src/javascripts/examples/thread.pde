@@ -1,3 +1,10 @@
+//#Thread
+//
+//  - **click** to lock the tail of the thread
+
+//Demonstrates the `toxi.physics2d.*` package and  `toxi.physics2d.ParticleString2D`
+//for creating a series of particles connected by springs.
+
 /**
  *
  * @author Karsten Schmidt <info at postspectacular dot com>
@@ -24,17 +31,16 @@
  */
 
 
- var  VerletPhysics2D = toxi.physics2d.VerletPhysics2D,
-      VerletParticle2D = toxi.physics2d.VerletParticle2D,
-      Vec2D = toxi.geom.Vec2D,
-      Rect = toxi.geom.Rect,
-      ParticleString2D = toxi.physics2d.ParticleString2D;
+//to be compatible in JS, create references to the classes
+//as you will use them in processing
+var VerletPhysics2D = toxi.physics2d.VerletPhysics2D,
+    VerletParticle2D = toxi.physics2d.VerletParticle2D,
+    Vec2D = toxi.geom.Vec2D,
+    Rect = toxi.geom.Rect,
+    ParticleString2D = toxi.physics2d.ParticleString2D;
 
 import processing.opengl.*;
-
-import toxi.physics2d.constraints.*;
 import toxi.physics2d.*;
-
 import toxi.geom.*;
 import toxi.math.*;
 

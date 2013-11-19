@@ -80,7 +80,7 @@ void draw() {
   }
   physics.update();
   for (int i=0;i<physics.particles.length;i++) {
-  	VerletParticle2D p = physics.particles[i];
+    VerletParticle2D p = physics.particles[i];
     ellipse(p.x, p.y, 5, 5);
   }
  

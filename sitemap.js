@@ -42,7 +42,7 @@ exports.examples = [{
 },{
     "title": "Circle Tangent Point",
     "src": "circleTangentPoint.js",
-    "thumbnail": "themeDiscs.jpg",
+    "thumbnail": "circleTangentPoint.gif",
     "tags": "geom",
     "template": "require"
 },

@@ -6,6 +6,7 @@ var express = require('express'),
     str = require('underscore.string'),
     siteMap = require('./sitemap'),
     generateDocco = require('./server/docco-generator'),
+    legacyRoutes = require('./server/legacy-routes'),
     jade = require('jade'),
     app = express(),
     config,
@@ -30,23 +31,23 @@ var omitFor = function(key, omits){
 config = envs( app.get('env') );
 
 //docco is async but doesnt provide callback support :(
-generateDocco( config.examples, {
-    output: config.doccoPath,
+generateDocco( __dirname +'/'+ config.examples, {
+    output: __dirname +'/'+ config.doccoPath,
     extension: '.js',
-    template: 'src/views/docco.jst'
+    template: __dirname +'/'+ 'src/views/docco.jst'
 });
 
 app.configure(function(){
     read = require('./server/utils').read(config);
 	app.set('port', config.port);
-	app.use(express.favicon());
+	app.use(express.favicon(path.join(__dirname, 'src/favicon.ico')));
 	app.use(express.logger('dev'));
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(require('less-middleware')({
         src: __dirname+'/src/less',
         force: true,
-        dest: config.stylesheetsPath,
+        dest: __dirname +'/'+ config.stylesheetsPath,
         paths: [__dirname+ '/src/less'],
         prefix: '/stylesheets',
         compress: false
@@ -121,6 +122,14 @@ app.get('/api', function(req, res){
         .value()
     );
 });
+
+_.each( legacyRoutes.routes, function( newRoute, oldRoute ){
+    app.get('/'+oldRoute, function( req, res ){
+        console.log( res );
+        res.redirect( exports.locals.rootUrl + newRoute );
+    });
+});
+
 
 if ( process.argv.indexOf('--start') > 0 ) {
     console.log('create server!');
