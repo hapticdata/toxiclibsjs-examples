@@ -5,7 +5,7 @@ block config
     - src = src.split('.')[0]
 block post-config
     script(type='text/javascript').
-        window.requirejs.config['site/index'] = {
+        window.requirejs.config['site/commands/loadExample'] = {
             example: 'examples/#{src}'
         };
 
