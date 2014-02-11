@@ -304,7 +304,8 @@ function animate() {
 
 
 function tick() {
-    webkitRequestAnimationFrame(tick);
+    //using a polyfill for requestAnimationFrame
+    requestAnimationFrame(tick);
     drawScene();
     animate();
 }

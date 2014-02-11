@@ -6,19 +6,18 @@
 define([
     'd3',
     'dat/gui/GUI',
-    'toxi/internals/each',
-    'toxi/internals/keys',
-    'toxi/internals/mixin',
     'toxi/geom/Vec3D',
     'toxi/util/datatypes/FloatRange',
-    'toxi/color'
-], function( d3, datGui, each, keys, mixin, Vec3D, FloatRange, color ){
+    'toxi/color/TColor',
+    'toxi/color/ColorTheme',
+    'toxi/color/ColorRange',
+    'toxi/color/AccessCriteria',
+    'toxi/internals/each',
+    'toxi/internals/keys',
+    'toxi/internals/mixin'
+], function( d3, datGui, Vec3D, FloatRange, TColor, ColorTheme, ColorRange, AccessCriteria, each, keys, mixin ){
 
-    var defaults,
-        buildGui,
-        create;
-
-    defaults = {
+    var defaults = {
         //build a ColorTheme with a ColorRange, NamedColor
         //and an arbitrary weight
         palette: {
@@ -36,46 +35,10 @@ define([
         secondaryCriteria: "BRIGHTNESS"
     };
 
-    //Build the [dat-gui](http://workshop.chromeexperiments.com/examples/gui/)
-    //interface with the instance of the application
-    buildGui = function( app ){
-        var gui = new datGui(),
-            criterias = keys(color.AccessCriteria),
-            sortingFolder = gui.addFolder('Sorting Criteria');
-
-        each([
-            sortingFolder
-                .add(app, 'primaryCriteria', criterias)
-                .name('Primary'),
-            sortingFolder
-                .add(app, 'secondaryCriteria', criterias)
-                .name('Secondary'),
-            gui.add(app,'sort')
-                .name('View sorted')
-        ],function(controller){
-            controller.onChange(app.updateSort);
-        });
-        gui.add(app,'num',50,500).name('#');
-        gui.add(app, 'reset').name('Generate New Theme');
-        sortingFolder.open();
-        return gui;
-    };
-
-
-    return function(){
-        mixin(defaults, {
-            width: window.innerWidth,
-            height: window.innerHeight - 50
-        });
-        var app = themeDiscs( defaults );
-        buildGui( app );
-        return app;
-    };
-
     function themeDiscs( options ){
-
         var app = {},
             container = d3.select('#example-container'),
+            create,
             svg;
 
         mixin(app, options||{});
@@ -91,21 +54,17 @@ define([
 
         app.clusterSort =  function( numClusters ){
             numClusters = numClusters || 10;
+            var slices = [],
+                findInCluster,
+                clusterLength,
+                start,
+                i;
+
             if( !app.list ){
                 return;
             }
-            app.list.clusterSort(
-                color.AccessCriteria[app.primaryCriteria],
-                color.AccessCriteria[app.secondaryCriteria],
-                numClusters
-            );
-            var clusterLength = app.list.size() / numClusters;
-            var slices = [];
-            for( var i=0; i<numClusters; i++){
-                var start = i*clusterLength;
-                slices.push(app.list.colors.slice(start,start+clusterLength));
-            }
-            var findInCluster = function( color ){
+
+            findInCluster = function( color ){
                 var indices;
                 slices.forEach(function(slice, i){
                     slice.forEach(function(c, j){
@@ -116,6 +75,20 @@ define([
                 });
                 return indices;
             };
+
+            app.list.clusterSort(
+                AccessCriteria[app.primaryCriteria],
+                AccessCriteria[app.secondaryCriteria],
+                numClusters
+            );
+
+            clusterLength = app.list.size() / numClusters;
+
+            for( i=0; i<numClusters; i++){
+                start = i*clusterLength;
+                slices.push(app.list.colors.slice(start,start+clusterLength));
+            }
+
             svg.selectAll('circle')
                 .transition()
                 .delay(function(d,i){ return i*10; })
@@ -123,11 +96,11 @@ define([
                 .attr('cx', function(d){
                     //find color
                     var indices = findInCluster(d.color);
-                    return ((app.width-(app.padding*2))/(numClusters-1)) * indices[0] + app.padding;
+                    return ((app.width-(app.padding*2))/(numClusters-1)) * (indices[0] || 0) + app.padding;
                 })
                 .attr('cy', function(d){
                     var indices = findInCluster(d.color);
-                    return ((app.height-(app.padding*2))/(slices[0].length-1)) * indices[1] + app.padding;
+                    return ((app.height-(app.padding*2))/(slices[0].length-1)) * (indices[1] || 0) + app.padding;
                 })
                 .each('end', function(){
                     d3.select(this)
@@ -136,6 +109,7 @@ define([
                         .attr('r', 12);
                 });
         };
+
         app.unSort = function(){
             console.log('unSort: ', svg.selectAll('circle') );
             svg.selectAll('circle')
@@ -147,18 +121,20 @@ define([
                 .attr('cx', function(d){ return d.vec3.x; })
                 .attr('cy', function(d){ return d.vec3.y; });
         };
+
         app.reset =  function(){
             app.remove(function(){
                 app.list = create(svg, app.num);
                 app.updateSort();
             });
         };
+
         app.updateSort = function(){
             app[ app.sort ? 'clusterSort' : 'unSort' ]();
         };
+
         app.remove = function(callback){
             callback = callback || function(){};
-
             var count = 0,
                 nodes = svg.selectAll('circle');
 
@@ -180,18 +156,14 @@ define([
                 });
         };
 
-
-
-
-
-        var create = function( svg, num ){
-            var theme = new color.ColorTheme('discs');
+        create = function( svg, num ){
+            var theme = new ColorTheme('discs');
             each( app.palette, function( weight, descriptor ){
                 theme.addRange(descriptor, weight);
             });
-            theme.addRange( color.ColorRange.BRIGHT, color.TColor.newRandom(), Math.random(0.02, 0.05) );
+            theme.addRange( ColorRange.BRIGHT, TColor.newRandom(), Math.random(0.02, 0.05) );
             var list = theme.getColors(num),
-                nodes = list.colors.map(function(color, i){
+                nodes = list.colors.map(function(color){
                     return {
                         vec3: new Vec3D(Math.random()*app.width, Math.random()*app.height, app.scaleRange.pickRandom()),
                         color: color.setAlpha(Math.random())
@@ -218,4 +190,41 @@ define([
         app.updateSort();
         return app;
     }
+
+    //Build the [dat-gui](http://workshop.chromeexperiments.com/examples/gui/)
+    //interface with the instance of the application
+    function buildGui( app ){
+        var gui = new datGui(),
+            criterias = keys(AccessCriteria),
+            sortingFolder;
+
+        gui.add(app,'num',50,500).name('#');
+        sortingFolder = gui.addFolder('Sorting Criteria');
+        each([
+            sortingFolder
+                .add(app, 'primaryCriteria', criterias)
+                .name('Primary'),
+            sortingFolder
+                .add(app, 'secondaryCriteria', criterias)
+                .name('Secondary'),
+            gui.add(app,'sort')
+                .name('View sorted')
+        ],function(controller){
+            controller.onChange(app.updateSort);
+        });
+        gui.add(app, 'reset').name('Generate New Theme');
+        sortingFolder.open();
+        return gui;
+    }
+
+    //initialize the example, then build the gui
+    return function startExample(){
+        mixin(defaults, {
+            width: window.innerWidth,
+            height: window.innerHeight - 50
+        });
+        var app = themeDiscs( defaults );
+        buildGui( app );
+        return app;
+    };
 });

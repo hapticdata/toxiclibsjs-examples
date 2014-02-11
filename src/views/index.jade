@@ -15,18 +15,16 @@ mixin whatItIs()
 
 mixin asSeenIn()
   .as-seen-in.doc-block
-    h3 As seen in:
+    h3 Featured Projects
     ul
-      //li
-        a(href="http://www.chromeweblab.com/") Chrome Web Lab - Google
       li
         a(href="http://justafriend.ie") Just A Friend - Microsoft
       li
         a(href="http://www.nand.io/visualisation/tyne") Tyne - Studio Nand and Moritz Stefaner
       li
-        a(href="http://madeinhaus.com/work/white-house") The Voice Of __ - Commission for Presidential Debates
-      li
         a(href="http://www.shapeways.com/creator/sake-set/") Sake Set Creator - Shapeways
+      li
+        a(href="http://madeinhaus.com/work/white-house") The Voice Of __ - Commission for Presidential Debates
       li
         a(href="http://aaron-sherwood.com/works/flow/index.html") Flow Micro - Aaron Sherwood
       li
@@ -69,17 +67,17 @@ block content
 block below
   section.below.container-fluid
     div.row-fluid
-      div.span6.doc-block
+      div.getting-started.span6.doc-block
         h2 Getting Started with Toxiclibs.js
         :markdown
           Toxiclibs.js can be used in the following ways:
 
-          * a standard javascript include within a global `toxi` object.
+          * include `toxiclibs.js` in your page and access with a global `toxi` object.
           * [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules for loaders such as [RequireJS](http://requirejs.org)
           * [Node.js](http://nodejs.org) package, available through [NPM](http://npmjs.org)
 
         
-          ####Using the concatenated / minified files from `build/` :
+          ####Using the files from `build/` :
             
         pre.prettyprint.language-html
           - var scriptTag = ['<script type="text/javascript" src="js/toxiclibs.min.js"></script>','<script type="text/javascript">','  var myVector = new toxi.geom.Vec2D( 2, 3 ).scaleSelf(0.5);','  var myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);','</script>'].join('\n');

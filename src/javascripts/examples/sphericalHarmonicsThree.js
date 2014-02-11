@@ -5,6 +5,7 @@
 //[Paul Bourke's website](http://paulbourke.net/geometry/sphericalh/).
 
 //I like this one [4, 2, 4, 6, 4, 0, 1, 1]
+
 var container = document.getElementById('example-container'),
     $m = $("<div>"),
     stage = new toxi.geom.Vec2D(window.innerWidth,window.innerHeight - 60),
@@ -26,7 +27,7 @@ var controls = new THREE.TrackballControls( camera, renderer.domElement );
 controls.rotateSpeed = 1.0;
 controls.zoomSpeed = 1.2;
 controls.panSpeed = 0.2;
-controls.noZoom = false;
+controls.noZoom = true;
 controls.noPan = false;
 controls.staticMoving = false;
 controls.dynamicDampingFactor = 0.1;
@@ -68,6 +69,7 @@ options = {
         toxiMesh = builder.createMesh(new toxi.geom.mesh.TriangleMesh(),res,1,true);
         //turn the mesh into THREE.Geometry
         threeGeometry = toxi.THREE.ToxiclibsSupport.createMeshGeometry( toxiMesh );
+        console.log( threeGeometry.vertices.length );
         threeMesh = new THREE.Mesh( threeGeometry, material );
         threeMesh.scale.set(options.objectRadius,options.objectRadius,options.objectRadius);
         scene.add(threeMesh);
@@ -81,35 +83,39 @@ $("#guidat")
     .find(".guidat")
     .prepend("<div id=\"guiAbout\">"+$("#about").html()+"</div>");
 
-gui.add(options,"objectRadius")
-    .name("Mesh Scale").min(10).max(500)
+gui.add(options,"objectRadius").min(10).max(500)
     .onChange(function(){
         threeMesh.scale.set(options.objectRadius,options.objectRadius,options.objectRadius);
     });
 gui.add(material,"wireframe");
 gui.add(options,"meshResolution")
-    .name("Mesh Resolution").min(10).max(250).step(1);
+    .name("Mesh Resolution").min(10).max(350).step(1);
 gui.add(options,"changeHarmonics")
     .name("New Random Parameters");
 gui.add(options,"updateMesh")
     .name("Generate New Mesh!");
 
-/*
+
 (function addParticles(){
     var positions = [];
     for(var k=0;k<500;k++){
         positions.push(toxi.geom.Vec3D.randomVector().scale(200+Math.random()*300));
     }
-    var particleMaterial = new THREE.ParticleBasicMaterial({
+    var geom = new THREE.Geometry();
+    geom.vertices = positions.map(function(v){ return new THREE.Vector3(v.x, v.y, v.z); });
+    var material = new THREE.ParticleBasicMaterial({
         color: 0xffff00,
         transparent: true,
         blending: THREE.AdditiveBlending
     });
+
+    var particleSystem = new THREE.ParticleSystem( geom, material );
+    scene.add( particleSystem );
+
     //if you construct a new toxi.THREE.ToxiclibsSupport
     //and pass it the THREE.Scene it can add things for you
     //new toxi.THREE.ToxiclibsSupport( scene ).addParticles(positions, particleMaterial );
 }());
-*/
 
 //create first mesh
 options.updateMesh();
@@ -124,3 +130,11 @@ function render() {
     controls.update();
     renderer.render( scene, camera );
 }
+
+
+//THREE.TrackballControls prevents scrolling, so let's stop it from getting the event
+(function(){
+    var stopProp = function(evt){ evt.stopPropagation(); };
+    document.addEventListener('mousewheel', stopProp, true);
+    document.addEventListener('DOMMouseScroll', stopProp, true);
+})();

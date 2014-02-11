@@ -340,3 +340,26 @@ canvas:focus {
 code {
   font-size: 14px;
 }
+
+.as-seen-in {
+  background-color: white;
+  padding: @baseLineHeight / 2;
+  margin-bottom: @baseLineHeight * 2;
+  h3 {
+    padding-top: @baseLineHeight / 2;
+  }
+  li {
+    line-height: @baseLineHeight - 1; //make room for border
+    border-bottom: 1px solid @gray;
+    list-style-type: none;
+    a {
+      text-decoration: none;
+    }
+  }
+}
+
+.getting-started {
+  & > p {
+    margin-bottom: 0;
+  }
+}

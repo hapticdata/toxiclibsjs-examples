@@ -11,75 +11,72 @@ define([
     var container = document.getElementById('example-container'),
         canvas = document.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        p = new Vec2D(0,0),
-        colorList = createListUsingStrategy('complementary', TColor.X11.teal.copy().setAlpha(0.5).setBrightness(0.9)),
-        color1 = TColor.newHex('f5f5f5').toRGBACSS(),//colorList.getRandom().setAlpha(0.5).toRGBACSS(),
-        color2 = color1, //colorList.getRandom().toRGBACSS(),
-        color3 = color2; //colorList.getRandom().toRGBACSS();
-
-
-    container.appendChild( canvas );
+        mouse = new Vec2D(0,0),
+        circle,
+        colorList = createListUsingStrategy('compound', TColor.X11.azure.copy()),
+        color1 = colorList.get(0).toRGBACSS(),
+        color2 = colorList.get(1).toRGBACSS(),
+        color3 = colorList.get(2).toRGBACSS(),
+        color4 = colorList.get(3).toRGBACSS(),
+        color5 = colorList.get(4).toRGBACSS(),
+        drawFrame;
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - 50;
-    p.set( canvas.width, canvas.height ).scaleSelf(0.5);
+    container.appendChild( canvas );
 
+    circle = new Circle( canvas.width/2, canvas.height/2, canvas.width*0.1);
+    mouse.set( canvas.width, canvas.height ).scaleSelf(0.5);
+
+    //operations to draw geometry on the canvas with Canvas2DRenderingContext
     var draw = {
-        circle: function( ctx, c){
+        circle: function( c ){
             ctx.beginPath();
             ctx.arc(c.x, c.y, c.getRadius(), 0, Math.PI * 2 );
             ctx.closePath();
         },
-        line: function( ctx, line){
+        line: function( line ){
+            ctx.beginPath();
             ctx.moveTo(line.a.x, line.a.y);
             ctx.lineTo(line.b.x, line.b.y);
-        },
-        ray: function( ctx, ray, distance ){
-            distance = distance || 1000;
-            var line2d = ray.toLine2DWithPointAtDistance(distance);
-            draw.line( ctx, line2d);
-        },
-        tangents: function(ctx, p, circle){
-            var l = new Line2D(p, circle);
-            ctx.strokeStyle = color1;
-            draw.circle( ctx, circle );
-            draw.line( ctx, l );
-            ctx.stroke();
-            var isecs = circle.getTangentPoints(p);
-            if( isecs ){
-                isecs.forEach(function(isec){
-                    ctx.strokeStyle = color2;
-                    draw.circle( ctx, new Circle(isec, 5));
-                    ctx.stroke();
-                    draw.ray( ctx, new Ray2D(p, isec.sub(p)), canvas.width );
-                    ctx.strokeStyle = color3;
-                    draw.line(ctx, { a: circle, b: isec });
-                    ctx.stroke();
-                });
-
-                draw.circle(ctx, new Circle(l.getMidPoint(), l.getLength()/2));
-                ctx.stroke();
-            }
+            ctx.closePath();
         }
     };
 
-
-    var circles = [];
-    for(var i=0; i<1; i++){
-        circles.push( new Circle( canvas.width/2, canvas.height/2, canvas.width*0.1) );//new Circle( Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*100 + 50 ) );
-    }
-
-    //draw the canvas
-    var drawFrame = function(){
+    //draw on the canvas
+    drawFrame = function(){
         ctx.clearRect(0,0,canvas.width,canvas.height);
-        circles.forEach(function( circle ){
-            draw.tangents( ctx, p, circle );
-        });
+        var line = new Line2D(mouse, circle);
+        ctx.strokeStyle = color1;
+        draw.circle( circle );
+        ctx.stroke();
+        ctx.strokeStyle = color2;
+        draw.line( line );
+        ctx.stroke();
+        draw.circle(new Circle(line.getMidPoint(), line.getLength()/2));
+        ctx.stroke();
+        var isecs = circle.getTangentPoints(mouse);
+        if( isecs ){
+            //for every intersection get the ray that casts from the mouse to that point
+            isecs.forEach(function( isec ){
+                var ray = new Ray2D(mouse, isec.sub(mouse)),
+                    rayLine = ray.toLine2DWithPointAtDistance(canvas.width);
+                ctx.strokeStyle = color3;
+                draw.line( new Line2D(circle, isec) );
+                ctx.stroke();
+                ctx.strokeStyle = color4;
+                draw.line( rayLine );
+                ctx.stroke();
+                ctx.fillStyle = color5;
+                draw.circle( new Circle(isec, 5) );
+                ctx.fill();
+            });
+        }
     };
 
     //every time the mouse moves, update the vec2d and redraw the canvas
     canvas.addEventListener('mousemove', function(evt){
-        p.set( evt.pageX, evt.pageY );
+        mouse.set( evt.pageX, evt.pageY );
         drawFrame();
     }, false);
 

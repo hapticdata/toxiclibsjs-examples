@@ -25,7 +25,7 @@ palette = [
 
 options = {
     running: true,
-    numStreams: 200,
+    numStreams: 400,
     distort: 0,
     strength:  Math.PI,
     scalar: 0.05,
@@ -44,7 +44,13 @@ gui.add(options, 'running').onChange(function(){
         draw();
     }
 });
-gui.add(options,'numStreams', 1, 2500, 1.0).name("# Streams").onChange(function(){
+gui.add(options,'numStreams', 1, 4500, 1.0).name("# Streams").onChange(throttleStreams);
+gui.add(options,'step',0.25,10,0.25).name("Speed");
+gui.add(options,'distort',-0.5,0.5,0.001).name("Progression");
+gui.add(options,'strength',0.01,Math.PI*2,0.01).name("Directional");
+gui.add(options,'scalar',0.01,0.25,0.01).name("Scalar");
+
+function throttleStreams(){
     //throttle streams if the gui has changed
     while(options.numStreams > streams.length){
         streams.push( createStream() );
@@ -52,19 +58,9 @@ gui.add(options,'numStreams', 1, 2500, 1.0).name("# Streams").onChange(function(
     while(options.numStreams < streams.length){
         streams.shift();
     }
-});
-gui.add(options,'step',0.25,10,0.25).name("Speed");
-gui.add(options,'distort',-0.5,0.5,0.001).name("Progression");
-gui.add(options,'strength',0.01,Math.PI*2,0.01).name("Directional");
-gui.add(options,'scalar',0.01,0.25,0.01).name("Scalar");
+}
 
-//self-invoking
-(function initStreams(){
-    var i;
-    for(i=0;i<options.numStreams;i++){
-        streams.push( createStream() );
-    }
-}());
+throttleStreams();
 
 
 function setCanvasSize(){
@@ -83,6 +79,7 @@ function getRandomVector(){
 }
 //call draw for the first time once load is complete
 window.onload = draw;
+var pt = new toxi.geom.Vec2D();
 //update the canvas
 function draw(){
     var i = 0,
@@ -92,12 +89,13 @@ function draw(){
     offset += options.distort;
     ctx.fillStyle = "rgba(0,0,0,0.05)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    for( i = 0; i<l; i++ ){
+    for(; i<l; i++ ){
         stream = streams[i];
         ctx.strokeStyle = stream.color;
         lastPos.set(stream);
-        var pt = stream.scale( options.scalar );
-        var noise = perlin.noise( pt.x, offset+pt.y ) - 0.5;
+        pt.set(stream).scaleSelf(options.scalar).addSelf(0, offset);
+        //var pt = stream.scale( options.scalar ).addSelf( 0, offset);
+        var noise = perlin.noise( pt.x, pt.y ) - 0.5;
         var angle = options.strength * noise;
         var dir = toxi.geom.Vec2D.fromTheta( angle );
 
