@@ -12,9 +12,10 @@ html
       window.requirejs = {
           baseUrl: '#{staticUrl}javascripts',
           config: {
-            'site/models/urls': {
-              root: '#{rootUrl}',
-              static: '#{staticUrl}'
+            'site/models/env': {
+                env: '#{env}',
+                rootUrl: '#{rootUrl}',
+                staticUrl: '#{staticUrl}'
             }
           }
       };
