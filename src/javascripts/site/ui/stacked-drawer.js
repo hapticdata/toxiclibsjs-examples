@@ -28,6 +28,12 @@ define(function( require, exports, module ){
             activeClassName: 'stacked-drawer-child',
             css: {
                 position: 'fixed',
+                transform: 'translateZ(0)',
+                webkitTransform: 'translateZ(0)',
+                mozTransform: 'translateZ(0)',
+                transformStyle: 'preserve-3d',
+                webkitTransformStyle: 'preserve-3d',
+                mozTransformStyle: 'preserve-3d',
                 top: -2,
                 height: 1,
                 width: '100%',
