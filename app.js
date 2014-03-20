@@ -86,8 +86,17 @@ var render = function( res, template, vars, callback ){
     });
 };
 
-app.get('/', function(req, res){
+var routeToIndex = function(req, res){
     render(res,'index', siteMap.pages[0]);
+};
+app.get('/',routeToIndex);
+app.get('/examples/', routeToIndex);
+app.use(function( req, res ){
+    res.send({
+        status: 404,
+        message: "File not Found",
+        url: req.url
+    });
 });
 
 //process the examples to generate id's, hrefs, etc
