@@ -111,7 +111,7 @@ function draw(){
     }
     //using `requestAnimationFrame` with a [polyfill](http://paulirish.com/2011/requestanimationframe-for-smart-animating/)
     if( options.running ){
-        requestAnimationFrame(draw);
+        window.requestAnimationFrame(draw);
     }
 }
 

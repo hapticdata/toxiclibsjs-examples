@@ -5,12 +5,11 @@ define([
 	'../collections/examples',
 	'../collections/Topics',
 	'../collections/Apis',
-    '../models/urls'
-], function ( $, _, Backbone, examples, Topics, Apis, urls ){
+    '../models/env'
+], function ( $, _, Backbone, examples, Topics, Apis, env ){
 
-    window.urls__ = urls;
 	var ExamplesConfig = Backbone.Model.extend({
-        url: urls.get('root') + 'api',
+        url: env.get('rootUrl') + 'api',
 		defaults: {
 			selectedTopic: '',
 			selectedApi: '',
