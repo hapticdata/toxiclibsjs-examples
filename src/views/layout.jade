@@ -1,10 +1,11 @@
-doctype 5
+doctype html
 html
   head
     block title
         title #{title} - Toxiclibs.js
+    block meta
     link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Droid+Serif:400')
-    link(rel='stylesheet', href='#{staticUrl}stylesheets/style.css')
+    link(rel='stylesheet', href='#{rootUrl}stylesheets/style.css')
     block config
     script(type="text/javascript").
       window.staticUrl = '#{staticUrl}';
@@ -37,8 +38,11 @@ html
               a(href="#{rootUrl}") Toxiclibs.js
           li.examples
             a(href="#") Examples
-          - if (typeof name !== 'undefined')
-            li.name= name
+          //- if (typeof name !== 'undefined')
+          - if (typeof src !== 'undefined')
+            - src = src.indexOf('.') < 0 ? src+'.js' : src;
+            li.name
+                a(href="#{githubExamples}#{src}")= title
     block below
       - if (typeof pagelet !== 'undefined' )
         section.below#pagelet !{pagelet}

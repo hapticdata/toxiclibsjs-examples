@@ -1,8 +1,13 @@
 extends layout
 
+block meta
+    meta(name="viewport", content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
+
 block content
   div.above.pjs#example-container
-    canvas#myCanvas(data-processing-sources="#{staticUrl}javascripts/examples/#{src}")
+    script(type="application/processing").
+      !{exampleBody}
+    canvas#myCanvas
   script(src='#{staticUrl}javascripts/vendor/processing.js')
   include toxi.min.jade
   //script(type="application/processing", data-processing-target="myCanvas") !{script}

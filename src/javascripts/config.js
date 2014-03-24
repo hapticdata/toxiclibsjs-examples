@@ -17,6 +17,7 @@ requirejs.config({
     'jade': 'vendor/jade',
     'templates': '../views',
     'text': 'vendor/text',
+    'three': 'vendor/three',
     'toxi': '../toxiclibsjs/lib/toxi'//'http://raw.github.com/hapticdata/toxiclibsjs/feature-color/lib/toxi'
   }
 });

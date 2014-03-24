@@ -1,4 +1,5 @@
 var express = require('express'),
+    fs = require('fs'),
     http = require('http'),
     path = require('path'),
     _ = require('underscore'),
@@ -69,6 +70,8 @@ app.configure('dev',function(){
 exports.locals = {
     pretty: true,
     env: app.get('env'),
+    githubExamples: config.githubExamples,
+    toxiclibsjsBuildUrl: config.toxiclibsjsBuildUrl,
     staticUrl: config.staticUrl,
     rootUrl: config.rootUrl
 };
@@ -106,7 +109,8 @@ siteMap.examples.forEach(function(ex){
      _.extend(ex, {
         id: hyphenated,
         href: 'examples/'+hyphenated,
-        tags: ex.tags.split(', ')
+        tags: ex.tags.split(', '),
+        exampleBody: fs.readFileSync( __dirname + '/src/javascripts/examples/'+ex.src, 'utf8')
     });
 });
 
@@ -127,7 +131,7 @@ app.get('/api', function(req, res){
     res.send(
         _.chain(siteMap)
         .clone()
-        .tap(omitFor('examples','pagelet'))
+        .tap(omitFor('examples','pagelet', 'exampleBody'))
         .value()
     );
 });
