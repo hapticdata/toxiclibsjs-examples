@@ -14,7 +14,7 @@
     "less-middleware": "~0.1.12",
     "underscore.string": "~2.3.3",
     "toxiclibsjs": "*",
-    "docco": "~0.6.2"
+    "docco": "0.6.2"
   },
   "devDependencies": {
     "requirejs": "~2.1.1",

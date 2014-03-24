@@ -6,6 +6,8 @@ module.exports = function (grunt){
 
     var options = envs( grunt.option('production') ? 'production' : 'dev' );
 
+    var toxiclibsjs = 'node_modules/toxiclibsjs/';
+
 
     // Project configuration.
     grunt.initConfig({
@@ -54,28 +56,38 @@ module.exports = function (grunt){
             compile: {
                 options: {
                     appDir: "src/javascripts/",
+                    preserveLicenseComments: false,
                     mainConfigFile: "./src/javascripts/config.js",
-                    baseUrl: "./vendor",
+                    baseUrl: "./",
                     dir: "javascripts-build/",
                     //findNestedDependencies: true,
-                    optimize: (options.compress ? 'uglify' : 'none'),
+                    optimize: 'uglify', //(options.compress ? 'uglify' : 'none'),
                     pragmasOnSave: {
                         excludeJade: true
                     },
                     paths: {
-                        'toxi': '../../../node_modules/toxiclibsjs/lib/toxi'
+                        'toxi': '../../' + toxiclibsjs + 'lib/toxi'
                     },
                     modules: [
                         {
                             name: "jquery",
                             include: ['jquery', 'underscore', 'backbone']
-                        },{
+                        },
+                        {
+                            name: "dat/gui/GUI",
+                            include: ["dat/gui/GUI"]
+                        },
+                        {
+                            name: "toxi",
+                            include: [ "toxi" ]
+                        },
+                        {
                             name: "main",
-                            include: ['common'],
+                            //include: ['common'],
                             exclude: ['jquery', 'underscore', 'backbone']
                         },{
                             name: "site/index",
-                            exclude: [ 'toxi', 'jquery', 'underscore', 'backbone' ]
+                            exclude: [ 'toxi', 'dat/gui/GUI', 'toxi', 'jquery', 'underscore', 'backbone' ]
                         }
                     ]
                 }
@@ -91,14 +103,25 @@ module.exports = function (grunt){
                 maxOperations: 20
             },
             production: {
-                // Files to be uploaded.
                 upload: [
+                    //all of the built javascript files are served on s3
                     {
-                        src: 'javascripts-build/**/*.js',
-                        dest: 'javascripts/'
-                    },{
+                        src: 'javascripts-build/**/*.{js,pde}',
+                        dest: 'javascripts/',
+                        rel: 'javascripts-build/',
+                        options: { gzip: true }
+                    },
+                    //all of the images of the site are served on s3
+                    {
                         src: 'src/images/*',
                         dest: 'images/'
+                    },
+                    //all of the toxiclibjs modules get uploaded for AMD-examples to use
+                    {
+                        src: toxiclibsjs + '/**/*.js',
+                        dest: 'toxiclibsjs/',
+                        rel: toxiclibsjs,
+                        options: { gzip: true }
                     }
                 ]
             }

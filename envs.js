@@ -16,9 +16,11 @@ defaults = {
     doccoPath: 'generated/docs/',
     stylesheetsPath: 'generated/stylesheets/',
     baseUrl: 'src/',
+    toxiclibsjsBuildUrl: '/toxiclibsjs/build/toxiclibs.js',
     toxiclibsjsDir: 'node_modules/toxiclibsjs/',
     layout: 'src/views/layout.jade',
     examples: 'src/javascripts/examples/',
+    githubExamples: 'https://github.com/hapticdata/toxiclibsjs-examples/blob/develop/src/javascripts/examples/',
     //the root location of the site
     rootUrl: '/',
     pretty: true,
@@ -39,6 +41,7 @@ creds = {
     },
     production: {
         staticUrl: 'http://s3.amazonaws.com/toxiclibsjs/',
+        toxiclibsjsBuildUrl: 'http://s3.amazonaws.com/toxiclibsjs/toxiclibsjs/build/toxiclibs.min.js',
         //the root location of the site
         rootUrl: '/toxiclibsjs/',
         //the hard-disk location of files to upload to s3
@@ -54,3 +57,4 @@ exports = module.exports = function( env, config ){
     env = env || process.env.NODE_ENV;
     return _.defaults( _.defaults(creds[env], config || {}), defaults );
 };
+
