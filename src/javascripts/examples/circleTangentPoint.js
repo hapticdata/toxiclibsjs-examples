@@ -80,6 +80,18 @@ define([
         drawFrame();
     }, false);
 
+    var onTouchUpdate = function( evt ){
+        if( evt.touches.length > 1 ){
+            evt.preventDefault();
+        }
+        var t = evt.touches[0];
+        mouse.set( t.pageX, t.pageY );
+        drawFrame();
+    };
+
+    document.addEventListener('touchstart', onTouchUpdate);
+    document.addEventListener('touchmove', onTouchUpdate);
+
     //draw the canvas once to start
     drawFrame();
 

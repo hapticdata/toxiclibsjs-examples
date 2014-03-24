@@ -92,7 +92,9 @@ function line(x1,y1,x2,y2){
 }
 
 document.ontouchmove = function(e){
-    e.preventDefault(); //prevents scrolling
+    if( e.target === canvas ){
+        e.preventDefault(); //prevents scrolling
+    }
     for(var i=0;i<e.touches.length;i++){
         update(e.touches[i].pageX,e.touches[i].pageY);
     }

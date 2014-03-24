@@ -11,12 +11,13 @@ define([
     'toxi/color/TColor',
     'toxi/color/ColorTheme',
     'toxi/color/ColorRange',
-    'toxi/color/AccessCriteria',
+    'toxi/color/accessCriteria',
     'toxi/internals/each',
     'toxi/internals/keys',
     'toxi/internals/mixin'
 ], function( d3, datGui, Vec3D, FloatRange, TColor, ColorTheme, ColorRange, AccessCriteria, each, keys, mixin ){
 
+    var area = window.innerWidth * window.innerHeight;
     var defaults = {
         //build a ColorTheme with a ColorRange, NamedColor
         //and an arbitrary weight
@@ -27,8 +28,8 @@ define([
             'fresh teal': 0.05,
             'bright yellowgreen': 0.05
         },
-        scaleRange: new FloatRange(10,100),
-        padding: 100,
+        scaleRange: new FloatRange( area * 0.00001, area * 0.0001 ),
+        padding: window.innerWidth / 20,
         num: 200,
         sort: false,
         primaryCriteria: "HUE",

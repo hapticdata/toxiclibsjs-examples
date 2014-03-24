@@ -37,7 +37,7 @@ material.side = THREE.DoubleSide;
 
 
 options = {
-    objectRadius: 81,
+    zoom: 81,
     meshResolution: 100,
     changeHarmonics: true,
     m: [5,8,3,1,7,3,3,7],
@@ -71,7 +71,7 @@ options = {
         threeGeometry = toxi.THREE.ToxiclibsSupport.createMeshGeometry( toxiMesh );
         console.log( threeGeometry.vertices.length );
         threeMesh = new THREE.Mesh( threeGeometry, material );
-        threeMesh.scale.set(options.objectRadius,options.objectRadius,options.objectRadius);
+        threeMesh.scale.set(options.zoom,options.zoom,options.zoom);
         scene.add(threeMesh);
     }
 };
@@ -83,9 +83,9 @@ $("#guidat")
     .find(".guidat")
     .prepend("<div id=\"guiAbout\">"+$("#about").html()+"</div>");
 
-gui.add(options,"objectRadius").min(10).max(500)
+gui.add(options,"zoom").min(10).max(500)
     .onChange(function(){
-        threeMesh.scale.set(options.objectRadius,options.objectRadius,options.objectRadius);
+        threeMesh.scale.set(options.zoom,options.zoom,options.zoom);
     });
 gui.add(material,"wireframe");
 gui.add(options,"meshResolution")

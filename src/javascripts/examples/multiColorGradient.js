@@ -15,11 +15,12 @@ define([
         mixin = internals.mixin,
         buildGui,
         createGradient,
-        prefix,
         toLinearGradientCSS,
         last;
 
+
     last = function( arr ){ return arr[arr.length-1]; };
+
 
     //Create a [ColorGradient](https://github.com/hapticdata/toxiclibsjs/blob/master/lib/toxi/color/ColorGradient.js)
     //convert it to an array of pixels to use on a canvas and
@@ -37,6 +38,7 @@ define([
             exports = {};
 
         canvas.width = window.innerWidth;
+        canvas.style.width = canvas.width + 'px';
         //this canvas is just 1px tall, set css-height to scale it
         canvas.height = 1;
         canvas.style.height = '500px';
@@ -125,7 +127,7 @@ define([
         return exports;
     };
 
-    //calculate the string for a css linear-gradient, given a ColorGradient
+    //calculate the string for a css linear-gradient,
     //given a `toxi.color.ColorGradient`, a pixel `width` and optionally an `angle`
     //return the string for the gradient, example:
     //
@@ -133,17 +135,28 @@ define([
     //    toLinearGradientCSS( gradient, canvas.width )
     //    //=> `"-webkit-linear-gradient(left, rgba(46,201,234,1) 0%,rgba(255,84,50,1) 35%,rgba(255,195,50,1) 60%)"`
     //```
-    toLinearGradientCSS = function( grad, width, angle ){
-        angle = angle || "left";
-        var stops = [];
-        //ColorGradient#getGradientPoints() returns an array of GradientPoint's
-        //getColor() will return the TColor and getPosition() returns the assigned position
-        each(grad.getGradientPoints(), function(gradPoint){
-            stops.push(gradPoint.getColor().toRGBACSS() +' '+Math.round((gradPoint.getPosition()/width)*100)+'%');
-        });
+    toLinearGradientCSS = (function(){
+        //determine the browsers vendor-prefix in order to make a linear-gradient with css
+        var prefix = (function(){
+            var styles = window.getComputedStyle(document.documentElement, '');
+            return (Array.prototype.slice.call(styles)
+                .join('')
+                .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
+            )[1];
+        })();
 
-        return '-'+prefix+'-linear-gradient(' +angle+ ', ' +stops.toString()+ ')';
-    };
+        return function toCSS( grad, width, angle ){
+            angle = angle || "left";
+            var stops = [];
+            //ColorGradient#getGradientPoints() returns an array of GradientPoint's
+            //getColor() will return the TColor and getPosition() returns the assigned position
+            each(grad.getGradientPoints(), function(gradPoint){
+                stops.push(gradPoint.getColor().toRGBACSS() +' '+Math.round((gradPoint.getPosition()/width)*100)+'%');
+            });
+
+            return '-'+prefix+'-linear-gradient(' +angle+ ', ' +stops.toString()+ ')';
+        };
+    })();
 
     //build the DatGui interface in the upper-right
     buildGui = function( app ){
