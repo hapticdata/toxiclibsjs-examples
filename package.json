@@ -1,6 +1,6 @@
 {
   "name": "toxiclibsjs-examples",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The website for toxiclibs.js",
   "author": {
     "name": "Kyle Phillips"
@@ -34,6 +34,7 @@
     "markdown-js": "0.0.3",
     "express": "~3.3.7",
     "less-middleware": "~0.1.12",
+    "underscore": "~1.4.4",
     "underscore.string": "~2.3.3",
     "toxiclibsjs": "*",
     "docco": "0.6.2"
@@ -42,7 +43,6 @@
     "requirejs": "~2.1.1",
     "grunt": "~0.4.1",
     "grunt-docco": "~0.3.0",
-    "underscore": "~1.4.4",
     "grunt-contrib-jshint": "~0.4.3",
     "grunt-contrib-requirejs": "~0.4.0",
     "grunt-contrib-less": "~0.5.0",
