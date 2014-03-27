@@ -2,6 +2,23 @@
   "name": "toxiclibsjs-examples",
   "version": "0.1.0",
   "description": "The website for toxiclibs.js",
+  "author": {
+    "name": "Kyle Phillips"
+  },
+  "scripts": {
+    "start": "node app.js --start"
+  },
+  "main": "./app.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/hapticdata/toxiclibsjs-examples.git"
+  },
+  "licenses": [
+    {
+      "type": "GPLv2",
+      "url": "http://www.gnu.org/licenses/lgpl-2.1.html"
+    }
+  ],
   "keywords": [
     "design",
     "examples",
@@ -11,10 +28,6 @@
     "mesh",
     "webgl"
   ],
-  "scripts": {
-    "start": "node app.js --start"
-  },
-  "main": "./app.js",
   "dependencies": {
     "jade": "*",
     "async": "~0.1.22",

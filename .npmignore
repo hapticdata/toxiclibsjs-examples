@@ -1,0 +1,4 @@
+.idea/*
+*.swp
+generated/
+javascripts-build/
