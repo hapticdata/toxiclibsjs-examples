@@ -45,20 +45,21 @@ exports.examples = [{
     "thumbnail": "circleTangentPoint.gif",
     "tags": "geom",
     "template": "require"
-},
-/*{
+},{
+    "private": true,
     "title": "Subdivision Basics",
     "src": "subDivThree.js",
     "thumbnail": "subdivThree.png",
     "tags": "mesh, three.js, webgl, require",
     "template": "require"
 },{
+    "private": true,
     "title": "Terrain Noise",
     "src": "terrainNoise.js",
     "template": "require",
     "thumbnail": "additiveWaves.jpg",
     "tags": "mesh, three.js, webgl, require"
-},*/{
+},{
     "title": "Spherical Harmonics",
     "src": "sphericalHarmonicsThree.js",
     "template": "empty",

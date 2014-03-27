@@ -132,11 +132,16 @@ app.get('/api', function(req, res){
         _.chain(siteMap)
         .clone()
         .tap(omitFor('examples','pagelet', 'exampleBody'))
+        .tap(function(siteMap){
+            siteMap.examples = siteMap.examples.filter(function(e){
+                return !e.private;
+            });
+        })
         .value()
     );
 });
 
-_.each( legacyRoutes.routes, function( newRoute, oldRoute ){
+_.each(legacyRoutes.routes, function( newRoute, oldRoute ){
     app.get('/'+oldRoute, function( req, res ){
         console.log( res );
         res.redirect( exports.locals.rootUrl + newRoute );
