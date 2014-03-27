@@ -1,7 +1,16 @@
 {
   "name": "toxiclibsjs-examples",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.1.0",
+  "description": "The website for toxiclibs.js",
+  "keywords": [
+    "design",
+    "examples",
+    "generative",
+    "color",
+    "physics",
+    "mesh",
+    "webgl"
+  ],
   "scripts": {
     "start": "node app.js --start"
   },

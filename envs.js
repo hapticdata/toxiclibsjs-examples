@@ -23,29 +23,30 @@ defaults = {
     githubExamples: 'https://github.com/hapticdata/toxiclibsjs-examples/blob/develop/src/javascripts/examples/',
     //the root location of the site
     rootUrl: '/',
+    //the hard-disk location of static files to serve during development
+    staticDir: 'src/',
+    //pretty-type the html
     pretty: true,
-    port: 3004,
-    compress: false
+    //port to run server on
+    port: 3004
 };
 
 creds = {
     dev: {
         //the root location for the static assets over http
-        staticUrl: '/',
-        //the hard-disk location of static files to serve during development
-        staticDir: 'src/'
+        staticUrl: '/'
     },
     staging: {
         staticUrl: '/',
         staticDir: 'dist/'
     },
     production: {
+        //in production load all static assets off s3,
         staticUrl: 'http://s3.amazonaws.com/toxiclibsjs/',
+        //also load the minified toxiclibs
         toxiclibsjsBuildUrl: 'http://s3.amazonaws.com/toxiclibsjs/toxiclibsjs/build/toxiclibs.min.js',
-        //the root location of the site
+        //the site is hosted in this sub-directory of haptic-data.com
         rootUrl: '/toxiclibsjs/',
-        //the hard-disk location of files to upload to s3
-        staticDir: 'dist/',
         compress: true
     }
 };
