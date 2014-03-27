@@ -1,20 +1,22 @@
-# [Toxiclibs.js](http://github.com/hapticdata/toxiclibsjs) Examples
+# Toxiclibs.js Examples
 ## [http://haptic-data.com/toxiclibsjs](http://haptic-data.com/toxiclibsjs)
 
-##The Examples
-This repository contains the site files for [toxiclibsjs](http://github.com/hapticdata/toxiclibsjs). The site is an Express.js server and you can learn more about how this works in the [Basic System](#basic-system).
+
+## The Examples
+This repository contains the site files for toxiclibs.js ([github](http://github.com/hapticdata/toxiclibsjs), [NPM](https://www.npmjs.org/package/toxiclibsjs), _bower_) . The site is an [Express.js](http://expressjs.com) server and you can learn more about how this works in the [Technical Overview](#technical-overview).
 The site's examples are configured in the [sitemap.js](https://github.com/hapticdata/toxiclibsjs-examples/blob/master/sitemap.js) and located in [src/javascripts/examples/](https://github.com/hapticdata/toxiclibsjs-examples/tree/master/src/javascripts/examples/). _Each example ending in `.pde` is a [processing.js](http://processingjs.org) file._
 
-##Run the site locally
+## Run the site locally
 
-###Install dependencies
+### Install dependencies
 	npm install
-###Run the server
+### Run the server
 	npm start
-View in browser at `http://localhost:3004`
+
+View in browser at [http://localhost:3004](http://localhost:3004)
 
 
-##Basic System
+## Technical Overview
 1.	[Node.js](http://nodejs.org) is used for the server and build processes
 1.  [Grunt](http://gruntjs.com) is used for development tasks, such as building javascript files and deploying files to s3.
 1.	[Docco](http://jashkenas.github.com/docco/) is used for rendering annotated source and injecting it into the example templates
@@ -23,7 +25,7 @@ View in browser at `http://localhost:3004`
 1.  [Require.js](http://requirejs.org) is used for loading and building site javascript files.
 
 
-##Creating a new example
+## Creating a new example
 1.	Create a new javascript file in the `src/javascripts/examples/` directory
 1.	Add a new entry into the [sitemap.js](https://github.com/hapticdata/toxiclibsjs-examples/blob/master/sitemap.js) file under `examples`, including the template that should be used, i.e. `pjs`, `require`, `canvas2d` or `index`.
 
