@@ -5,7 +5,7 @@ define(function( require, exports, module ){
         isProduction = env.get('env') === 'production';
 
     //if the site is in dev-mode log it to a different tracking id
-    ga.init({ account: isProduction ? 'UA-229975-73' : '*' });
+    ga.init({ account: isProduction ? 'UA-4451805-2' : 'UA-49543660-1' });
 
     return ga.trackPageview;
 

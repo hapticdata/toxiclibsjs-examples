@@ -1,6 +1,6 @@
 {
   "name": "toxiclibsjs-examples",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The website for toxiclibs.js",
   "author": {
     "name": "Kyle Phillips"
@@ -40,7 +40,7 @@
     "docco": "0.6.2"
   },
   "devDependencies": {
-    "requirejs": "~2.1.1",
+    "requirejs": "2.1.9",
     "grunt": "~0.4.1",
     "grunt-docco": "~0.3.0",
     "grunt-contrib-jshint": "~0.4.3",

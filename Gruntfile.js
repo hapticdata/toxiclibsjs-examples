@@ -78,8 +78,7 @@ module.exports = function (grunt){
                             include: ["dat/gui/GUI"]
                         },
                         {
-                            name: "toxi",
-                            include: [ "toxi" ]
+                            name: "toxi"
                         },
                         {
                             name: "main",
