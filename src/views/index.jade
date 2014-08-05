@@ -32,9 +32,9 @@ mixin asSeenIn()
       li
         a(href="http://my.safaribooksonline.com/book/-/9781849517942/9dot-exploring-javascript-mode/id286781626") Processing 2: Creative Programming Cookbook - Jan Vantomme
       li
-        a(href="https://vimeo.com/41631496") Constellation - Joshua Albers 
+        a(href="https://vimeo.com/41631496") Constellation - Joshua Albers
 
-block content 
+block content
   a(href="https://github.com/hapticdata/toxiclibsjs")
     img(style="position: absolute; top: 0; right: 0; border: 0;", src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png", alt="Fork me on GitHub")
   section.header.above.container-fluid
@@ -44,14 +44,13 @@ block content
           h1 Toxiclibs.js
           h2 an open-source library for computational design in javascript.
           :markdown
-            
-            [Toxiclibs](http://toxiclibs.org) was originally written by 
+            [Toxiclibs](http://toxiclibs.org) was originally written by
             [Karsten Schmidt](http://postspectacular.com) for Java and
-            [Processing](http://processing.org) and is being ported to 
+            [Processing](http://processing.org) and is being ported to
             javascript by [Kyle Phillips](http://hapticdata.com).
 
             Toxiclibs.js works great with Canvas, SVG or any DOM element.
-            Examples below pair with such fine libraries as: 
+            Examples below pair with such fine libraries as:
             [Processing.js](http://processingjs.org), [Three.js](http://threejs.org),
             or [Raphael.js](http://raphaeljs.com) for SVG.
 
@@ -76,13 +75,13 @@ block below
           * [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules for loaders such as [RequireJS](http://requirejs.org)
           * [Node.js](http://nodejs.org) package, available through [NPM](http://npmjs.org)
 
-        
+
           ####Using the files from `build/` :
-            
+
         pre.prettyprint.language-html
           - var scriptTag = ['<script type="text/javascript" src="js/toxiclibs.min.js"></script>','<script type="text/javascript">','  var myVector = new toxi.geom.Vec2D( 2, 3 ).scaleSelf(0.5);','  var myColor = toxi.color.TColor.newRGB(128/255,64/255,32/255);','</script>'].join('\n');
           code= scriptTag
-        
+
         a(name="use-with-requirejs-or-other-amd-loader")
         :markdown
           ####To use with [RequireJS](http://requirejs.org), use the contents of `lib/`:
@@ -98,7 +97,7 @@ block below
 
         :markdown
           ####To use with [Node.js](http://nodejs.org):
-              
+
               npm install toxiclibsjs
 
         pre.prettyprint.language-js
@@ -128,9 +127,9 @@ block below
         :markdown
           ####Create custom builds easily
           If you are working with the `build/` files you may wish to [create a custom build](https://github.com/hapticdata/toxiclibsjs/blob/master/README.md#creating-builds)
-          that only includes the modules you are using in order to reduce file size. 
+          that only includes the modules you are using in order to reduce file size.
           _If you are [using the files as AMD modules](#use-with-requirejs-or-other-amd-loader) there is no need for this._
-          
+
           To generate a custom build, space-delimit the modules you want:
 
               ./bin/toxiclibsjs --include "toxi/geom/Vec2D toxi/physics2d" --minify --out "./build/toxiclibsjs-custom.min.js"
@@ -138,16 +137,16 @@ block below
     div.page-header
       :markdown
         ##Differences from the original [Toxiclibs](http://toxiclibs.org)
-  
+
     div.row-fluid
       div.span6
         :markdown
           There are several areas where _toxiclibs.js_ stands apart to remain more
           idiomatic and helpful in the javascript environment.
-          For a complete description of the conveniences added to toxiclibs.js, 
-          read the [sugar](https://github.com/hapticdata/toxiclibsjs/blob/develop/docs/sugar.md) 
+          For a complete description of the conveniences added to toxiclibs.js,
+          read the [sugar](https://github.com/hapticdata/toxiclibsjs/blob/develop/docs/sugar.md)
           file in the repository. Some examples of these differences are:
-          
+
           - _loose-typed_ for working more naturally with javascript objects, no `instanceof` tests are ever used
           - `toxi.THREE.ToxiclibsSupport` for easing work with [Three.js](http://threejs.org)
           - `toxi.color.TColor` additions for [complete interoperability with CSS and X11 color names](https://github.com/hapticdata/toxiclibsjs/blob/develop/docs/sugar.md#toxicolortcolor).
@@ -164,11 +163,11 @@ block below
           | }
 
         :markdown
-          This section will occassionally be expanded on. If you have a suggestion, or have a question on how something works, feel free to [leave an issue](https://github.com/hapticdata/toxiclibsjs/issues) and I am quick to respond. 
+          This section will occassionally be expanded on. If you have a suggestion, or have a question on how something works, feel free to [leave an issue](https://github.com/hapticdata/toxiclibsjs/issues) and I am quick to respond.
 
       div.span6
         :markdown
-          Many of the constructors and other functions have additional support 
+          Many of the constructors and other functions have additional support
           for option objects. For example:
 
         pre.prettyprint.language-js
