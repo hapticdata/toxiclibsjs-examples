@@ -6,3 +6,4 @@ docs/
 .idea/
 src/stylesheets
 /www/
+npm-debug.log

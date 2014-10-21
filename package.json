@@ -29,7 +29,7 @@
     "webgl"
   ],
   "dependencies": {
-    "jade": "*",
+    "jade": "~1.5.0",
     "async": "~0.1.22",
     "markdown-js": "0.0.3",
     "express": "~3.3.7",

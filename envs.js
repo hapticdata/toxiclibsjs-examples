@@ -56,6 +56,11 @@ creds = {
  */
 exports = module.exports = function( env, config ){
     env = env || process.env.NODE_ENV;
+
+    if (env !== 'staging' && env !== 'production') {
+        env = 'dev';
+    }
+
     return _.defaults( _.defaults(creds[env], config || {}), defaults );
 };
 
