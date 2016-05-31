@@ -2,6 +2,7 @@ var express = require('express'),
     fs = require('fs'),
     http = require('http'),
     path = require('path'),
+    mkdirp = require('mkdirp'),
     _ = require('underscore'),
     envs = require('./envs'),
     str = require('underscore.string'),
@@ -31,12 +32,15 @@ var omitFor = function(key, omits){
  */
 config = envs( app.get('env') );
 
-//docco is async but doesnt provide callback support :(
-generateDocco( __dirname +'/'+ config.examples, {
-    output: __dirname +'/'+ config.doccoPath,
-    extension: '.js',
-    template: __dirname +'/'+ 'src/views/docco.jst'
-});
+var doccoPath = path.join(__dirname, config.doccoPath);
+mkdirp(doccoPath, function(){
+  //docco is async but doesnt provide callback support :(
+  generateDocco( path.join(__dirname, config.examples), {
+      output: doccoPath,
+      extension: '.js',
+      template: path.join(__dirname,'src/views/docco.jst')
+  });
+})
 
 app.configure(function(){
     read = require('./server/utils').read(config);

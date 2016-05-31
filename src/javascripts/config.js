@@ -18,6 +18,6 @@ requirejs.config({
     'templates': '../views',
     'text': 'vendor/text',
     'three': 'vendor/three',
-    'toxi': '../toxiclibsjs/lib/toxi'//'http://raw.github.com/hapticdata/toxiclibsjs/feature-color/lib/toxi'
+    'toxi': 'http://s3.amazonaws.com/toxiclibsjs/toxiclibsjs/lib/toxi'//'../toxiclibsjs'
   }
 });

@@ -34,7 +34,8 @@ defaults = {
 creds = {
     dev: {
         //the root location for the static assets over http
-        staticUrl: '/'
+        staticUrl: '/',
+        toxiclibsjsBuildUrl: 'http://s3.amazonaws.com/toxiclibsjs/toxiclibsjs/build/toxiclibs.min.js',
     },
     staging: {
         staticUrl: '/',
@@ -63,4 +64,3 @@ exports = module.exports = function( env, config ){
 
     return _.defaults( _.defaults(creds[env], config || {}), defaults );
 };
-

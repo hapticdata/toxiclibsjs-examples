@@ -29,15 +29,16 @@
     "webgl"
   ],
   "dependencies": {
-    "jade": "~1.5.0",
     "async": "~0.1.22",
-    "markdown-js": "0.0.3",
+    "docco": "0.6.2",
     "express": "~3.3.7",
+    "jade": "~1.5.0",
     "less-middleware": "~0.1.12",
-    "underscore": "~1.4.4",
-    "underscore.string": "~2.3.3",
+    "markdown-js": "0.0.3",
+    "mkdirp": "^0.5.1",
     "toxiclibsjs": "*",
-    "docco": "0.6.2"
+    "underscore": "~1.4.4",
+    "underscore.string": "~2.3.3"
   },
   "devDependencies": {
     "requirejs": "2.1.9",
