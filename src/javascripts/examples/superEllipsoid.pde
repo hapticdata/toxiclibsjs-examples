@@ -1,4 +1,4 @@
-//#Super Ellipsoid Mesh Builder
+//# Super Ellipsoid Mesh Builder
 //original example by [Karsten Schmidt](http://postspectacular.com),
 //Toxiclibs ported to js by [Kyle Phillips](http://workofkylephillips.com)
 //
@@ -75,13 +75,13 @@ void draw() {
   translate(width / 2, height / 2, 0);
   rotateX(mouseY * 0.01);
   rotateY(mouseX * 0.01);
-  
+
   gfx.origin(300);
-  
+
   if (isWireFrame) {
     noFill();
     stroke(255);
-  } 
+  }
   else {
     fill(255);
     noStroke();
@@ -91,7 +91,7 @@ void draw() {
   if (isWireFrame) {
     noFill();
     stroke(255);
-  } 
+  }
   else {
     fill(255);
     noStroke();

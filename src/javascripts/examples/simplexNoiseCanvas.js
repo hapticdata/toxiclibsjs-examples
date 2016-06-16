@@ -1,4 +1,4 @@
-//#Simplex Noise
+//# Simplex Noise
 //**Usage:** use the select box to change dimensions
 //Demonstrates the use of `toxi.math.noise.SimplexNoise`
 

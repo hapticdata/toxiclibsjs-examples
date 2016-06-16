@@ -1,4 +1,4 @@
-//#Mesh Align-to-Axis
+//# Mesh Align-to-Axis
 //This example uses toxiclibs.js directly with WebGL and no other libraries.
 //It shows how to dynamically create a simple box mesh and align it
 //with a given direction vector using the `pointTowards()` method of the

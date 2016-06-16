@@ -1,4 +1,4 @@
-//#Color Waves
+//# Color Waves
 //Demonstrates using `toxi.color.TColor` as well as `toxi.geom.Vec2D` and `toxi.geom.Rect`. Distance between
 //the circles and mouse position determines color and size.
 window.onload = function(){

@@ -1,4 +1,4 @@
-//#Arc-Polar Coordinates
+//# Arc-Polar Coordinates
 //- original example by [Karsten Schmidt](http://postspectacular.com)
 //- toxiclibs.js by [Kyle Phillips](http://haptic-data.com)
 //
@@ -50,7 +50,7 @@ void draw() {
   if (abs(theta-mousePos.y)>PI) {
     if (theta>mousePos.y) {
       theta-=TWO_PI;
-    } 
+    }
     else {
       mousePos.y-=TWO_PI;
     }

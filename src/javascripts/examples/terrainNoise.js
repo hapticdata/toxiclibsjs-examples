@@ -1,4 +1,4 @@
-//#Terrain Noise
+//# Terrain Noise
 //##with [Three.js](http://mrdoob.github.com/three.js) and [Require.js](http://requirejs.org)
 //**toxiclibs.js by [Kyle Phillips](http://haptic-data.com)**
 //

@@ -1,4 +1,4 @@
-//#Smooth Doodle
+//# Smooth Doodle
 //Demonstrates the use of `toxi.geom.Spline2D`
 
 

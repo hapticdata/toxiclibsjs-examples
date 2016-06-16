@@ -1,4 +1,4 @@
-//#Polar Unravel
+//# Polar Unravel
 //
 //- original example by [Karsten Schmidt](//postspectacular.com)
 //- Toxiclibs ported to js by [Kyle Phillips](//hapticdata.com)
@@ -72,7 +72,7 @@ void draw() {
     Vec2D circ = polar.copy().toCartesian();
     // create another coord splicing the circle at the top and using theta difference as position on a line
     Vec2D linear = new Vec2D((MathUtils.THREE_HALVES_PI - polar.y) * w2 / PI + w2, 0);
-    // interprete circular position as normal/direction vector 
+    // interprete circular position as normal/direction vector
     Vec2D dir = circ.getNormalized();
     // interpolate both position & normal based on current transition state
     circ.interpolateToSelf(linear, transition,is);

@@ -1,4 +1,4 @@
-//#Circle from 3 Points
+//# Circle from 3 Points
 //- original example by [Karsten Schmidt](http://postspectacular.com)
 //- ported to javascript by [Kyle Phillips](http://haptic-data.com)
 //

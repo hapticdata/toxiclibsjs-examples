@@ -1,4 +1,4 @@
-//#Flocking
+//# Flocking
 //by [Daniel Shiffman](http://www.shiffman.net)
 //created for The Nature of Code class, ITP, Spring 2009.
 //Ported to toxiclibs by Karsten Schmidt</p>
@@ -26,7 +26,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 
 var Vec2D = toxi.geom.Vec2D;
 
@@ -133,7 +133,7 @@ class Boid {
       else desired.scaleSelf(maxspeed);
       // Steering = Desired minus Velocity
       steer = desired.sub(vel).limit(maxforce);  // Limit to maximum steering force
-    } 
+    }
     else {
       steer = new Vec2D();
     }
@@ -260,7 +260,7 @@ class Flock {
 
   void run() {
     for (int i = 0; i < boids.size(); i++) {
-      Boid b = (Boid) boids.get(i);  
+      Boid b = (Boid) boids.get(i);
       b.run(boids);  // Passing the entire list of boids to each boid individually
     }
   }
@@ -269,9 +269,3 @@ class Flock {
     boids.add(b);
   }
 }
-
-
-
-
-
-

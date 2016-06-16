@@ -1,4 +1,4 @@
-//#Subdivision Basics
+//# Subdivision Basics
 //**Usage:** select a subdivision strategy and click "subdivide",
 //click "deform" to randomly deform the mesh, click + drag to rotate the mesh
 //
@@ -19,7 +19,7 @@ require([
 	'toxi/geom/mesh/LaplacianSmooth',
 	'toxi/geom/mesh/VertexSelector'
 ], function( $, THREE, datGui, ToxiclibsSupport, Terrain, AABB, Sphere, Vec3D, subdiv, OBJWriter, LaplacianSmooth, VertexSelector ){
-	
+
 	var $container = $('#example-container'), gui = new datGui();
 	var scene, camera, renderer, controls, material, meshes = {};
 	$container.width( window.innerWidth );

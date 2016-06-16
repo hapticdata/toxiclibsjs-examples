@@ -1,4 +1,6 @@
-//#Theme Discs
+//# Theme Discs
+//Rendered with [d3.js](http://d3js.org)
+
 //**Usage:** Select _"view sorted"_  and adjust the _"Sorting Criteria"_ to sort the colors into
 //clusters. Click _"Generate New"_ to create a new theme with a new random bright color added to the range.
 //This demonstrates construction of `toxi.color.TColor` themes via textual descriptions of shades and Colors

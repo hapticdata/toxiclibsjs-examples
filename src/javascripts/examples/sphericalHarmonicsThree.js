@@ -1,4 +1,6 @@
-//#Spherical Harmonics Mesh Builder
+//# Spherical Harmonics Mesh Builder
+//Rendered with [THREE.js](http://threejs.org)
+
 //Demonstrates how to use the `toxi.geom.mesh.SurfaceMeshBuilder` class
 //in conjunction with a spherical harmonics function to dynamically create a variety
 //of organic looking forms. The function is described in detail on

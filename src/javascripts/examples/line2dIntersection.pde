@@ -1,4 +1,4 @@
-//#Line2D Intersection
+//# Line2D Intersection
 //
 //- ported to javascript by [Kyle Phillips](http://haptic-data.com)
 //- original example by [Karsten Schmidt](http://postspectacular.com)
@@ -31,14 +31,14 @@
 //such as `new toxi.geom.Vec2D()`
 var Vec2D = toxi.geom.Vec2D,
     Line2D = toxi.geom.Line2D;
- 
+
 void setup() {
   size(640,480);
   smooth();
   textSize(9);
 
 }
- 
+
 void draw() {
   background(240);
   Line2D l=new Line2D(new Vec2D(250,50), new Vec2D(450,350));
