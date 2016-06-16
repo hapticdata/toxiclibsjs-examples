@@ -20,6 +20,7 @@ exports.topics = [
 exports.apis = [
     { "id": "Canvas 2D", "tag": "canvas" },
     { "id": "D3.js", "tag": "d3" },
+    { "id": "P5.js", "tag": "p5js" },
     { "id": "Processing.js", "tag": "pjs" },
     { "id": "Raphael.js", "tag": "raphael.js" },
     { "id": "Require.js", "tag": "require" },
@@ -27,7 +28,33 @@ exports.apis = [
     { "id": "WebGL", "tag": "webgl" }
 ];
 
-exports.examples = [{
+exports.examples = [
+  {
+    "title": "Poly Smooth",
+    "src": "polySmoothP5.js",
+    "thumbnail": "polySmooth.gif",
+    "tags": "geom, p5js",
+    "template": "p5js"
+  } ,
+  {
+      "title": "Polygon Clipping",
+      "src": "polygonClippingP5.js",
+      "thumbnail": "polygonClipping.gif",
+      "tags": "geom, p5js",
+      "template": "p5js"
+  },
+  {
+      "title": "Bezier Tween",
+      "src": "bezierTweenP5.js",
+      "thumbnail": "bezierTween.gif",
+      "tags": "math, p5js",
+      "template": "p5js",
+      "dependencies": [
+            "javascripts/vendor/dat.gui.min.js"
+        ]
+  },
+
+  {
     "title": "Theme Discs",
     "src": "themeDiscs.js",
     "thumbnail": "themeDiscs.jpg",

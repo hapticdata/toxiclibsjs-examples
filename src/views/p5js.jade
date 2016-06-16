@@ -1,0 +1,11 @@
+extends layout
+
+block meta
+    script(src='//cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.1/p5.js')
+    meta(name="viewport", content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
+
+block content
+  div.above#example-container
+  include toxi.min.jade
+  script(src="#{staticUrl}javascripts/examples/#{src}")
+  //script(type="application/processing", data-processing-target="myCanvas") !{script}
