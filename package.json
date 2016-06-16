@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "async": "~0.1.22",
-    "docco": "0.6.2",
+    "docco": "0.7.0",
     "express": "~3.3.7",
     "jade": "~1.5.0",
     "less-middleware": "~0.1.12",
