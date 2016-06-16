@@ -53,6 +53,16 @@ exports.examples = [
             "javascripts/vendor/dat.gui.min.js"
         ]
   },
+  {
+      "title": "Force Directed Graph",
+      "src": "forceDirectedGraphP5.js",
+      "thumbnail": "forceDirectedGraph.jpg",
+      "tags": "physics, p5js",
+      "template": "p5js",
+      "dependencies": [
+          "javascripts/vendor/dat.gui.min.js"
+      ]
+  },
 
   {
     "title": "Theme Discs",

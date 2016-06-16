@@ -20,7 +20,7 @@ defaults = {
     toxiclibsjsDir: 'node_modules/toxiclibsjs/',
     layout: 'src/views/layout.jade',
     examples: 'src/javascripts/examples/',
-    githubExamples: 'https://github.com/hapticdata/toxiclibsjs-examples/blob/develop/src/javascripts/examples/',
+    githubExamples: 'https://github.com/hapticdata/toxiclibsjs-examples/blob/master/src/javascripts/examples/',
     //the root location of the site
     rootUrl: '/',
     //the hard-disk location of static files to serve during development
