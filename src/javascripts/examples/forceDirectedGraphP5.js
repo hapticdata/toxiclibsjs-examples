@@ -88,7 +88,7 @@ function draw(){
     // update the physics world
     physics.update();
 
-    background(200);
+    background(255);
 
     // display all points
     if(options.showParticles){
