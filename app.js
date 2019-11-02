@@ -36,6 +36,7 @@ var doccoPath = path.join(__dirname, config.doccoPath);
 mkdirp(doccoPath, function(){
   //docco is async but doesnt provide callback support :(
   generateDocco( path.join(__dirname, config.examples), {
+      css: '',
       output: doccoPath,
       extension: '.js',
       template: path.join(__dirname,'src/views/docco.jst')
